@@ -1,6 +1,8 @@
 ﻿# CMakeList.txt : CMake project for ProEngine, include source and define
 # project specific logic here.
 #
+
+project(ProEngineApplication)
 cmake_minimum_required (VERSION 3.2)
 
 # Enable Hot Reload for MSVC compilers if supported.
@@ -9,18 +11,6 @@ if (POLICY CMP0141)
   set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT "$<IF:$<AND:$<C_COMPILER_ID:MSVC>,$<CXX_COMPILER_ID:MSVC>>,$<$<CONFIG:Debug,RelWithDebInfo>:EditAndContinue>,$<$<CONFIG:Debug,RelWithDebInfo>:ProgramDatabase>>")
 endif()
 
-project ("Program")
-
 add_subdirectory (ProEngine)
+add_subdirectory (Program)
 
-# Add source to this project's executable.
-add_executable (Program "Program/Program.cpp" "Program/Program.h" "ProEngine/ProEngine.h" "ProEngine/ProEngine.cpp")
-
-target_link_libraries (Program ProEngine)
-target_include_directories (Program PUBLIC ${CMAKE_SOURCE_DIR}/ProEngine)
-
-if (CMAKE_VERSION VERSION_GREATER 3.12)
-  set_property(TARGET Program PROPERTY CXX_STANDARD 20)
-endif()
-
-# TODO: Add tests and install targets if needed.
