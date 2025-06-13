@@ -4,9 +4,9 @@ project(ProEngine LANGUAGES CXX)
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     GLOBAL CONFIGURATION                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-set(CMAKE_CXX_STANDARD            20)
-set(CMAKE_CXX_STANDARD_REQUIRED   ON)
-set(CMAKE_CXX_EXTENSIONS          OFF)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -15,24 +15,24 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ┃                  THIRD-PARTY CONFIGURATION              ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 # Disable shared libs, installs, and tests
-set(BUILD_SHARED_LIBS        OFF CACHE BOOL "" FORCE)
-set(CMAKE_SKIP_INSTALL_RULES ON  CACHE BOOL "" FORCE)
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(CMAKE_SKIP_INSTALL_RULES ON CACHE BOOL "" FORCE)
 
 # GLFW-specific build options
-set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(GLFW_INSTALL        OFF CACHE BOOL "" FORCE)
+set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                 DEPENDENCY DIRECTORY SETUP              ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-set(spdlog_DIR  ThirdParty/spdlog)
-set(imgui_DIR   ThirdParty/imgui)
-set(glfw_DIR    ThirdParty/glfw)
-set(glad_DIR    ThirdParty/glad)
-set(glm_DIR     ThirdParty/glm)
+set(spdlog_DIR ThirdParty/spdlog)
+set(imgui_DIR ThirdParty/imgui)
+set(glfw_DIR ThirdParty/glfw)
+set(glad_DIR ThirdParty/glad)
+set(glm_DIR ThirdParty/glm)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -58,7 +58,7 @@ elseif (APPLE)
     set(PROENGINE_PLATFORM_DEFINE PROENGINE_PLATFORM_APPLE)
 elseif (UNIX)
     set(PROENGINE_PLATFORM_DEFINE PROENGINE_PLATFORM_LINUX)
-endif()
+endif ()
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -92,10 +92,33 @@ endfunction()
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 find_package(OpenGL REQUIRED)
 
-
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     ENGINE MODULES                      ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# ── Rendering Library ─────────────────────────────────────
+engine_add_library(PERendering
+        Core/Renderer/GraphicsContext.h
+        Core/Renderer/GraphicsContext.cpp
+        Core/Renderer/Renderer.h
+        Core/Renderer/Renderer.cpp
+        Core/Renderer/RenderCommand.h
+        Core/Renderer/RenderCommand.cpp
+        Core/Renderer/RendererAPI.h
+        Core/Renderer/RendererAPI.cpp
+)
+target_link_libraries(PERendering
+        spdlog
+        glfw
+        glad
+)
+target_include_directories(PERendering PUBLIC
+        PECore
+        ${spdlog_DIR}/include
+        ${glfw_DIR}/include
+        ${glad_DIR}/include
+        ${glm_DIR}
+)
 
 # ── Core Library ──────────────────────────────────────────
 engine_add_library(PECore
@@ -110,16 +133,20 @@ engine_add_library(PECore
 target_link_libraries(PECore PUBLIC
         spdlog
         glfw
+        glad
 )
 target_include_directories(PECore PUBLIC
         ${spdlog_DIR}/include
         ${glfw_DIR}/include
+        ${glad_DIR}/include
 )
 
 # ── Layer ─────────────────────────────────────────────────
 engine_add_library(PELayer
-        Core/Imgui/ImguiLayer.h
-        Core/Imgui/ImguiLayer.cpp
+        Core/Layer/Layer.h
+        Core/Layer/Layer.cpp
+        Core/Layer/LayerStack.h
+        Core/Layer/LayerStack.cpp
 )
 target_link_libraries(PELayer PUBLIC
         ImGui
@@ -133,7 +160,11 @@ engine_add_library(PEImgui
         Core/Imgui/ImguiLayer.cpp
 )
 target_include_directories(PEImgui PUBLIC
+        PELayer
         ${imgui_DIR}
+)
+target_link_libraries(PEImgui
+        ImGui
 )
 
 # ── Input Handling ────────────────────────────────────────
@@ -168,6 +199,24 @@ target_include_directories(PEEvent PUBLIC
 )
 
 # ── Application Framework ──────────────────────────────────
+engine_add_library(PEWindow
+    Core/Window/GenericGLFWWindow.h
+    Core/Window/GenericGLFWWindow.cpp
+    Core/Window/Window.h
+    Core/Window/Window.cpp
+)
+target_link_libraries(PEWindow
+        PERendering
+        spdlog
+        glfw
+        glad
+        glm
+)
+target_include_directories(PEWindow PUBLIC
+        ${glm_DIR}
+)
+
+# ── Application Framework ──────────────────────────────────
 engine_add_library(PEApplication
         Core/Application/EntryPoint.h
         Core/Application/Application.h
@@ -176,9 +225,23 @@ engine_add_library(PEApplication
 target_link_libraries(PEApplication PUBLIC
         PECore
         PEEvent
+        PELayer
+        PEWindow
         PEImgui
 )
 
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃                     PLATFORM MODULES                    ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+engine_add_library(PEPlatform
+        Platform/OpenGL/OpenGLContext.cpp
+        Platform/OpenGL/OpenGLContext.h
+        Platform/OpenGL/OpenGLRendererAPI.h
+        Platform/OpenGL/OpenGLRendererAPI.cpp
+)
+target_link_libraries(PEPlatform
+        PERendering
+)
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                ENGINE INTERFACE AGGREGATE               ┃

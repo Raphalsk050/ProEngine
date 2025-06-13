@@ -1,7 +1,11 @@
 #pragma once
 #include <string>
 #include "PEPCH.h"
+#include "Core/Event/KeyEvent.h"
+#include "Core/Event/WindowApplicationEvent.h"
 #include "Core/Layer/Layer.h"
+#include "Core/Layer/LayerStack.h"
+#include "Core/Window/GenericGLFWWindow.h"
 
 using namespace std;
 
@@ -29,13 +33,25 @@ namespace ProEngine {
     Application(const ApplicationSpecification &specification);
 
     ~Application();
+    void OnEvent(Event& e);
 
     void PushLayer(Layer *layer);
-
     void PushOverlay(Layer *layer);
+    bool OnWindowClose(WindowCloseEvent& e);
+
+    bool OnWindowResize(WindowResizeEvent& e);
+    bool OnKeyPressed(KeyPressedEvent& e);
+    void Close();
 
   private:
     ApplicationSpecification specification_;
+
+  private:
+    LayerStack layer_stack_;
+    Scope<Window> window_;
+    bool running_ = true;
+    bool minimized_ = false;
+    float last_frame_time_ = 0.0f;
 
   private:
     static Application *instance_;

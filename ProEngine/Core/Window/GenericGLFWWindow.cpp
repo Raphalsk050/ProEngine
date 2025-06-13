@@ -5,52 +5,52 @@
 #include "Core/Event/WindowApplicationEvent.h"
 #include "Core/Renderer/Renderer.h"
 #include "Core/Renderer/RendererAPI.h"
-#include "FEPCH.h"
-#include "glad/glad.h"
+#include "PEPCH.h"
+#include <glad/glad.h>
 
-namespace ForgeEngine {
+namespace ProEngine {
 
     static uint8_t s_GLFWWindowCount = 0;
 
     static void GLFWErrorCallback(int error, const char* description)
     {
-        FENGINE_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
+        PENGINE_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
     }
 
     GenericWindow::GenericWindow(const WindowProps& props)
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         GenericWindow::Init(props);
     }
 
     GenericWindow::~GenericWindow()
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         Shutdown();
     }
 
     void GenericWindow::Init(const WindowProps& props)
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         data_.Title = props.Title;
         data_.Width = props.Width;
         data_.Height = props.Height;
 
-        FENGINE_CORE_INFO("Creating window {0} ({1}, {2})", props.Title,
+        PENGINE_CORE_INFO("Creating window {0} ({1}, {2})", props.Title,
                           props.Width, props.Height);
 
         if (s_GLFWWindowCount == 0) {
-            FENGINE_PROFILE_SCOPE("glfwInit");
+            PENGINE_PROFILE_SCOPE("glfwInit");
             int success = glfwInit();
-            FENGINE_CORE_ASSERT(success, "Could not initialize GLFW!");
+            PENGINE_CORE_ASSERT(success, "Could not initialize GLFW!");
             glfwSetErrorCallback(GLFWErrorCallback);
         }
 
         {
-            FENGINE_PROFILE_SCOPE("glfwCreateWindow");
+            PENGINE_PROFILE_SCOPE("glfwCreateWindow");
 #if defined(DEBUG)
             if (Renderer::GetAPI() == RendererAPI::API::OpenGL)
                 glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
@@ -81,7 +81,7 @@ namespace ForgeEngine {
 
             WindowResizeEvent event(width, height);
             data.EventCallback(event);
-            FENGINE_CORE_INFO("Window Resized ({},{})", width, height);
+            PENGINE_CORE_INFO("Window Resized ({},{})", width, height);
             glad_glViewport(0, 0, width, height);
         });
 
@@ -159,7 +159,7 @@ namespace ForgeEngine {
 
     void GenericWindow::Shutdown()
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         glfwDestroyWindow(window_);
         --s_GLFWWindowCount;
@@ -169,7 +169,7 @@ namespace ForgeEngine {
 
     void GenericWindow::OnUpdate()
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         // glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         // glClear(GL_COLOR_BUFFER_BIT);
@@ -179,7 +179,7 @@ namespace ForgeEngine {
 
     void GenericWindow::SetVSync(bool enabled)
     {
-        FENGINE_PROFILE_FUNCTION();
+        PENGINE_PROFILE_FUNCTION();
 
         if (enabled)
             glfwSwapInterval(1);

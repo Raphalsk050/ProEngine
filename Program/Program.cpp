@@ -1,5 +1,7 @@
 ﻿#include <ProEngine.h>
 
+#include "SampleLayer.h"
+
 using namespace std;
 
 namespace ProEngine {
@@ -7,7 +9,8 @@ namespace ProEngine {
   public:
     explicit Sample(const ApplicationSpecification &spec)
       : Application(spec) {
-      //PushLayer(new NidavellirLayer());
+      PushLayer(new SampleLayer());
+      PENGINE_CORE_INFO("Application created");
     }
   };
 
