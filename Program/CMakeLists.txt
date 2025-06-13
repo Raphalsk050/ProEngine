@@ -1,6 +1,6 @@
 project(SampleApp LANGUAGES CXX)
 
-add_executable(SampleApp Program.cpp)
+add_executable(SampleApp Program.cpp SampleLayer.cpp SampleLayer.h)
 target_link_libraries(SampleApp PUBLIC ProEngine ImGui)
 target_include_directories(SampleApp PUBLIC ${PROJECT_SOURCE_DIR}/ProEngine ${PROJECT_SOURCE_DIR}/ProEngine/ThirdParty/imgui)
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include "PEPCH.h"
+#include "Core/Layer/Layer.h"
 
 using namespace std;
 
@@ -28,6 +29,10 @@ namespace ProEngine {
     Application(const ApplicationSpecification &specification);
 
     ~Application();
+
+    void PushLayer(Layer *layer);
+
+    void PushOverlay(Layer *layer);
 
   private:
     ApplicationSpecification specification_;

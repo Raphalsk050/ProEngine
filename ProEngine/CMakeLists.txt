@@ -116,6 +116,17 @@ target_include_directories(PECore PUBLIC
         ${glfw_DIR}/include
 )
 
+# ── Layer ─────────────────────────────────────────────────
+engine_add_library(PELayer
+        Core/Imgui/ImguiLayer.h
+        Core/Imgui/ImguiLayer.cpp
+)
+target_link_libraries(PELayer PUBLIC
+        ImGui
+        PECore
+        PEEvent
+)
+
 # ── ImGui Integration ─────────────────────────────────────
 engine_add_library(PEImgui
         Core/Imgui/ImguiLayer.h
