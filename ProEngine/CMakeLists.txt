@@ -128,7 +128,7 @@ engine_add_library(PECore
         Core/Assert/Assert.h
         Core/Debug/Instrumentor.h
         Core/Time.h
-        Core/TimeStep.h
+        Core/Timestep.h
 )
 target_link_libraries(PECore PUBLIC
         spdlog
@@ -240,7 +240,12 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLRendererAPI.cpp
 )
 target_link_libraries(PEPlatform
-        PERendering
+        spdlog
+        glfw
+        glad
+)
+target_include_directories(PEPlatform PUBLIC
+        ${glm_DIR}
 )
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -251,6 +256,7 @@ add_library(ProEngine INTERFACE)
 target_link_libraries(ProEngine INTERFACE
         PECore
         PEApplication
+        PEPlatform
 )
 
 

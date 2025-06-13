@@ -20,10 +20,14 @@ namespace ProEngine
         int status = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
         PENGINE_CORE_ASSERT(status, "Failed to initialize Glad!");
 
+        auto vendor = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        auto version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+        auto renderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+
         PENGINE_CORE_INFO("OpenGL Info:");
-        PENGINE_CORE_INFO("  Vendor: {0}", *glGetString(GL_VENDOR));
-        PENGINE_CORE_INFO("  Renderer: {0}", *glGetString(GL_RENDERER));
-        PENGINE_CORE_INFO("  Version: {0}", *glGetString(GL_VERSION));
+        PENGINE_CORE_INFO("  Vendor:   {0}",   vendor);
+        PENGINE_CORE_INFO("  Renderer: {0}",   renderer);
+        PENGINE_CORE_INFO("  Version:  {0}",   version);
 
         // TODO: Fix this check
         PENGINE_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 1),
