@@ -2,6 +2,19 @@
 
 cmake_minimum_required(VERSION 3.10...3.21)
 
+if(POLICY CMP0065)
+    cmake_policy(SET CMP0065 NEW)
+endif()
+
+if(POLICY CMP0156)
+    cmake_policy(SET CMP0156 NEW)
+endif()
+
+if(POLICY CMP0179)
+    cmake_policy(SET CMP0179 NEW)
+endif()
+
+
 # ---------------------------------------------------------------------------------------
 # Start spdlog project
 # ---------------------------------------------------------------------------------------

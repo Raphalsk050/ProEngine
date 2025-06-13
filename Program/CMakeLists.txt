@@ -1,5 +1,18 @@
 project(SampleApp LANGUAGES CXX)
 
+if(POLICY CMP0065)
+    cmake_policy(SET CMP0065 NEW)
+endif()
+
+if(POLICY CMP0156)
+    cmake_policy(SET CMP0156 NEW)
+endif()
+
+if(POLICY CMP0179)
+    cmake_policy(SET CMP0179 NEW)
+endif()
+
+
 add_executable(SampleApp Program.cpp SampleLayer.cpp SampleLayer.h)
 target_link_libraries(SampleApp PUBLIC ProEngine ImGui)
 target_include_directories(SampleApp PUBLIC ${PROJECT_SOURCE_DIR}/ProEngine ${PROJECT_SOURCE_DIR}/ProEngine/ThirdParty/imgui)

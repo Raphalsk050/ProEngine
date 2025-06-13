@@ -6,7 +6,7 @@ if [ ! -d "$BUILD_DIR" ]; then
     echo "build directory has been created!"  
 fi
 
-cmake -G Ninja -B ${BUILD_DIR} -Wdev, --debug-output and --trace -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake -G Ninja -B ${BUILD_DIR} -Wdev --debug-output --trace -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
 cd ${BUILD_DIR}
 

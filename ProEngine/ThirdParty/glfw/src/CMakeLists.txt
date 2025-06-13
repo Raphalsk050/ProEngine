@@ -1,4 +1,17 @@
 
+if(POLICY CMP0065)
+    cmake_policy(SET CMP0065 NEW)
+endif()
+
+if(POLICY CMP0156)
+    cmake_policy(SET CMP0156 NEW)
+endif()
+
+if(POLICY CMP0179)
+    cmake_policy(SET CMP0179 NEW)
+endif()
+
+
 add_library(glfw ${GLFW_LIBRARY_TYPE}
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3.h"
                  "${GLFW_SOURCE_DIR}/include/GLFW/glfw3native.h"

@@ -1,6 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
 project(ImGui)
 
+if(POLICY CMP0065)
+    cmake_policy(SET CMP0065 NEW)
+endif()
+
+if(POLICY CMP0156)
+    cmake_policy(SET CMP0156 NEW)
+endif()
+
+if(POLICY CMP0179)
+    cmake_policy(SET CMP0179 NEW)
+endif()
+
+
 # List of sources and headers
 set(IMGUI_SOURCES
         imconfig.h
