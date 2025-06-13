@@ -21,7 +21,6 @@ build/
 mono_crash.*
 
 # Build results
-[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -35,7 +34,6 @@ bld/
 [Bb]in/
 [Oo]bj/
 [Oo]ut/
-[Ll]og/
 [Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
