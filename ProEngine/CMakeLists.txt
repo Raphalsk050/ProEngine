@@ -240,6 +240,7 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/FpsInspector.cpp
             Core/Editor/Frame/MainEditorInterface.h
             Core/Editor/Frame/MainEditorInterface.cpp
+            Core/Editor/CommandSystem.h
     )
     target_link_libraries(PEEditor PUBLIC
             spdlog

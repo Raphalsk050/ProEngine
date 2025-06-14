@@ -6,6 +6,7 @@
 #include "Core/Editor/Frame/FpsInspector.h"
 #include "Core/Editor/Frame/MainEditorInterface.h"
 #endif
+#include "Core/Editor/CommandSystem.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
 
@@ -111,7 +112,18 @@ namespace ProEngine
         main_editor_interface_ = new MainEditorInterface();
         PushLayer(imgui_layer_);
         PushLayer(main_editor_interface_);
+
+        RegisterEngineCommands();
 #endif
+    }
+
+    // Helper function that register commands in the engine to run something
+    void Application::RegisterEngineCommands() const
+    {
+        CommandSystem::Get().RegisterCommand("Exit",[this](const std::vector<std::string>&)
+        {
+            Get().Close();
+        });
     }
 
     void Application::Close()

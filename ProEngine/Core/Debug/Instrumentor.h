@@ -221,9 +221,9 @@ namespace ProEngine {
 #define PENGINE_PROFILE_END_SESSION()                                          \
     ::ProEngine::Instrumentor::Get().EndSession()
 #define PENGINE_PROFILE_SCOPE_LINE2(name, line)                                \
-    constexpr auto fixedName##line                                               \
-            = ::ProEngine::InstrumentorUtils::CleanupOutputString(               \
-                    name, "__cdecl ");                                           \
+    constexpr auto fixedName##line                                             \
+            = ::ProEngine::InstrumentorUtils::CleanupOutputString(             \
+                    name, "__cdecl ");                                         \
     ::ProEngine::InstrumentationTimer timer##line(fixedName##line.Data)
 #define PENGINE_PROFILE_SCOPE_LINE(name, line)                                 \
     PENGINE_PROFILE_SCOPE_LINE2(name, line)

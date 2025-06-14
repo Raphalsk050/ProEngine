@@ -78,6 +78,9 @@ namespace ProEngine
         ApplicationSpecification specification_;
 
     private:
+        void RegisterEngineCommands() const;
+
+    private:
         LayerStack layer_stack_;
         Scope<Window> window_;
 

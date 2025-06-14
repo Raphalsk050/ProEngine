@@ -2,6 +2,7 @@
 
 
 #include "imgui.h"
+#include "Core/Editor/CommandSystem.h"
 
 namespace ProEngine
 {
@@ -163,6 +164,7 @@ namespace ProEngine
             if (strlen(inputBuf) > 0)
             {
                 PENGINE_CORE_COMMAND("{}", std::string("> ") + inputBuf);
+                CommandSystem::Get().Execute(inputBuf);
                 inputBuf[0] = '\0';
             }
         }
