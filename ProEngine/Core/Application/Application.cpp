@@ -19,7 +19,10 @@ namespace ProEngine
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
         window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
+
+#ifdef PROENGINE_ENABLE_EDITOR
         InitializeEditor();
+#endif
     }
 
     Application::~Application() = default;
@@ -133,6 +136,7 @@ namespace ProEngine
                         layer->OnUpdate(timestep);
                 }
 
+#ifdef PROENGINE_ENABLE_EDITOR
                 imgui_layer_->Begin();
                 {
                     PENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
@@ -141,6 +145,7 @@ namespace ProEngine
                         layer->OnImGuiRender();
                 }
                 imgui_layer_->End();
+#endif
             }
 
             window_->OnUpdate();

@@ -2,19 +2,22 @@
 #include <memory>
 
 // this flag serves to show the shader's possible compilation errors and warnings
-//#define PROENGINE_SHADER_DEBUG
+// #define PROENGINE_SHADER_DEBUG
 
 // to controls the render debug
-//#define PROENGINE_RENDER_DEBUG
+// #define PROENGINE_RENDER_DEBUG
 
 // to enable the culling debug
-//#define PROENGINE_CULLING_DEBUG
+// #define PROENGINE_CULLING_DEBUG
 
 // to debug the frustum information
-//#define PROENGINE_DEBUG_FRUSTUM
+// #define PROENGINE_DEBUG_FRUSTUM
 
 // to debug key input
-//#define PROENGINE_DEBUG_INPUT_KEYS
+// #define PROENGINE_DEBUG_INPUT_KEYS
+
+// to enable the runtime editor
+#define PROENGINE_ENABLE_EDITOR
 
 #ifdef DEBUG
 #if defined(PROENGINE_PLATFORM_WINDOWS)
