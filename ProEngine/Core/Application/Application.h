@@ -5,7 +5,7 @@
 #include "PEPCH.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
-#include "Core/Imgui/ImguiLayer.h"
+#include "Core/Editor/ImguiLayer.h"
 #include "Core/Layer/Layer.h"
 #include "Core/Layer/LayerStack.h"
 #include "Core/Window/GenericGLFWWindow.h"
@@ -13,6 +13,8 @@
 using namespace std;
 
 namespace ProEngine {
+  class Console;
+
   struct ApplicationCommandLineArgs {
     int Count = 0;
     char **Args = nullptr;
@@ -60,6 +62,8 @@ namespace ProEngine {
     LayerStack layer_stack_;
     Scope<Window> window_;
     ImGuiLayer* imgui_layer_;
+    Console* console_layer_;
+
     bool running_ = true;
     bool minimized_ = false;
     float last_frame_time_ = 0.0f;

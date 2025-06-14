@@ -211,13 +211,28 @@ target_include_directories(PEWindow PUBLIC
         ${glm_DIR}
 )
 
+# ── Editor ──────────────────────────────────────────────────
+engine_add_library(PEEditor
+        Core/Editor/ImguiLayer.h
+        Core/Editor/ImguiLayer.cpp
+        Core/Editor/Frame/Console.h
+        Core/Editor/Frame/Console.cpp
+)
+target_link_libraries(PEEditor PUBLIC
+        spdlog
+        ImGui
+        glm
+)
+target_include_directories(PEEditor PUBLIC
+        ${imgui_DIR}
+        ${glm_DIR}
+)
+
 # ── Application Framework ──────────────────────────────────
 engine_add_library(PEApplication
         Core/Application/EntryPoint.h
         Core/Application/Application.h
         Core/Application/Application.cpp
-        Core/Imgui/ImguiLayer.h
-        Core/Imgui/ImguiLayer.cpp
 )
 target_link_libraries(PEApplication PUBLIC
         PECore
@@ -258,6 +273,7 @@ target_link_libraries(ProEngine INTERFACE
         PEWindow
         PEApplication
         PEPlatform
+        PEEditor
         PEEvent
         PEInput
 )

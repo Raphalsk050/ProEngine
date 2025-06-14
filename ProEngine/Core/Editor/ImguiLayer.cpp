@@ -1,4 +1,4 @@
-#include "Core/Imgui/ImguiLayer.h"
+#include "Core/Editor/ImguiLayer.h"
 
 #define IMGUI_IMPL_OPENGL_LOADER_GLAD
 #include <examples/imgui_impl_glfw.h>
@@ -152,7 +152,7 @@ namespace ProEngine
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //ImGuizmo::BeginFrame();
         ImGui::ShowDemoWindow();

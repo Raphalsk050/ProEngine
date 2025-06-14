@@ -1,12 +1,14 @@
 #include "Application.h"
 
 #include "Core/Time.h"
+#include "Core/Editor/Frame/Console.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
 
 namespace ProEngine
 {
     Application* Application::instance_ = nullptr;
+
 
     Application::Application(const ApplicationSpecification& specification) : specification_(specification)
     {
@@ -17,7 +19,9 @@ namespace ProEngine
         window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
 
         imgui_layer_ = new ImGuiLayer();
+        console_layer_ = new Console();
         PushLayer(imgui_layer_);
+        PushLayer(console_layer_);
     }
 
     Application::~Application() = default;
@@ -87,7 +91,8 @@ namespace ProEngine
         running_ = false;
     }
 
-    void Application::SubmitToMainThread(const std::function<void()> &function) {
+    void Application::SubmitToMainThread(const std::function<void()>& function)
+    {
         std::scoped_lock<std::mutex> lock(main_thread_queue_mutex_);
 
         main_thread_queue_.emplace_back(function);
@@ -98,7 +103,8 @@ namespace ProEngine
     {
         PENGINE_PROFILE_FUNCTION();
 
-        while (running_) {
+        while (running_)
+        {
             PENGINE_PROFILE_SCOPE("RunLoop");
 
             float time = Time::GetTime();
@@ -107,11 +113,12 @@ namespace ProEngine
 
             ExecuteMainThreadQueue();
 
-            if (!minimized_) {
+            if (!minimized_)
+            {
                 {
                     PENGINE_PROFILE_SCOPE("LayerStack OnUpdate");
 
-                    for (Layer *layer: layer_stack_)
+                    for (Layer* layer : layer_stack_)
                         layer->OnUpdate(timestep);
                 }
 
@@ -119,7 +126,7 @@ namespace ProEngine
                 {
                     PENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
 
-                    for (Layer *layer: layer_stack_)
+                    for (Layer* layer : layer_stack_)
                         layer->OnImGuiRender();
                 }
                 imgui_layer_->End();
@@ -129,10 +136,11 @@ namespace ProEngine
         }
     }
 
-    void Application::ExecuteMainThreadQueue() {
+    void Application::ExecuteMainThreadQueue()
+    {
         std::scoped_lock<std::mutex> lock(main_thread_queue_mutex_);
 
-        for (auto &func: main_thread_queue_)
+        for (auto& func : main_thread_queue_)
             func();
 
         main_thread_queue_.clear();

@@ -73,7 +73,7 @@ namespace ProEngine {
         SetVSync(true);
 
         // Set GLFW callbacks
-        glfwSetWindowSizeCallback(window_, [](GLFWwindow* window, int width,
+        glfwSetFramebufferSizeCallback(window_, [](GLFWwindow* window, int width,
                                               int height) {
             WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
             data.Width = width;
@@ -82,7 +82,7 @@ namespace ProEngine {
             WindowResizeEvent event(width, height);
             data.EventCallback(event);
             PENGINE_CORE_INFO("Window Resized ({},{})", width, height);
-            glad_glViewport(0, 0, width, height);
+            glViewport(0, 0, width, height);
         });
 
         glfwSetWindowCloseCallback(window_, [](GLFWwindow* window) {
