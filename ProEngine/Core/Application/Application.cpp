@@ -15,6 +15,9 @@ namespace ProEngine
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
         window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
+
+        imgui_layer_ = new ImGuiLayer();
+        PushLayer(imgui_layer_);
     }
 
     Application::~Application() = default;
@@ -112,14 +115,14 @@ namespace ProEngine
                         layer->OnUpdate(timestep);
                 }
 
-                // imgui_layer_->Begin();
-                // {
-                //     PENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
-                //
-                //     for (Layer *layer: layer_stack_)
-                //         layer->OnImGuiRender();
-                // }
-                // imgui_layer_->End();
+                imgui_layer_->Begin();
+                {
+                    PENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
+
+                    for (Layer *layer: layer_stack_)
+                        layer->OnImGuiRender();
+                }
+                imgui_layer_->End();
             }
 
             window_->OnUpdate();

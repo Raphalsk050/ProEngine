@@ -162,19 +162,6 @@ target_link_libraries(PELayer PUBLIC
         PEEvent
 )
 
-# ── ImGui Integration ─────────────────────────────────────
-engine_add_library(PEImgui
-        Core/Imgui/ImguiLayer.h
-        Core/Imgui/ImguiLayer.cpp
-)
-target_include_directories(PEImgui PUBLIC
-        PELayer
-        ${imgui_DIR}
-)
-target_link_libraries(PEImgui
-        ImGui
-)
-
 # ── Input Handling ────────────────────────────────────────
 engine_add_library(PEInput
         Core/Input/KeyCodes.h
@@ -229,13 +216,18 @@ engine_add_library(PEApplication
         Core/Application/EntryPoint.h
         Core/Application/Application.h
         Core/Application/Application.cpp
+        Core/Imgui/ImguiLayer.h
+        Core/Imgui/ImguiLayer.cpp
 )
 target_link_libraries(PEApplication PUBLIC
         PECore
         PEEvent
         PELayer
         PEWindow
-        PEImgui
+)
+target_include_directories(PEApplication PUBLIC
+        ${imgui_DIR}
+        ${glm_DIR}
 )
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -263,8 +255,11 @@ add_library(ProEngine INTERFACE)
 
 target_link_libraries(ProEngine INTERFACE
         PECore
+        PEWindow
         PEApplication
         PEPlatform
+        PEEvent
+        PEInput
 )
 
 

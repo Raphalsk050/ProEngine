@@ -5,6 +5,7 @@
 #include "PEPCH.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
+#include "Core/Imgui/ImguiLayer.h"
 #include "Core/Layer/Layer.h"
 #include "Core/Layer/LayerStack.h"
 #include "Core/Window/GenericGLFWWindow.h"
@@ -41,6 +42,10 @@ namespace ProEngine {
     void PushOverlay(Layer *layer);
     bool OnWindowClose(WindowCloseEvent& e);
 
+    Window &GetWindow() const { return *window_; }
+    static Application &Get() { return *instance_; }
+
+
     bool OnWindowResize(WindowResizeEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
     void Close();
@@ -54,6 +59,7 @@ namespace ProEngine {
   private:
     LayerStack layer_stack_;
     Scope<Window> window_;
+    ImGuiLayer* imgui_layer_;
     bool running_ = true;
     bool minimized_ = false;
     float last_frame_time_ = 0.0f;
