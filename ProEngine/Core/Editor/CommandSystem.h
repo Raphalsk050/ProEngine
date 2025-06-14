@@ -30,23 +30,23 @@ namespace ProEngine
 
         void PrintRegisteredCommands()
         {
-            // 1. Coleta os nomes dos comandos
+            // 1. Collect the names of the commands
             std::vector<std::string> commandNames;
             for (const auto& [name, _] : commands_)
                 commandNames.push_back(name);
 
-            // 2. Define o maior comprimento do nome
+            // 2. Determine the length of the longest command
             size_t maxCommandLength = 0;
             for (const auto& cmd : commandNames)
                 maxCommandLength = std::max(maxCommandLength, cmd.size());
 
-            // 3. Configurações
-            const int padding = 4;  // espaços totais (2 antes e 2 depois do comando)
-            const std::string border = "###############";  // moldura lateral (15 chars)
-            const int contentWidth = static_cast<int>(maxCommandLength + padding);  // parte central com comando
-            const int lineWidth = border.size() * 2 + 2 + 1 + contentWidth + 1 + 2; // borda + espaços + pipes + conteúdo
+            // 3. Configuration
+            const int padding = 4;  // total padding (2 spaces before and 2 after the command)
+            const std::string border = "###############";  // side border (15 characters)
+            const int contentWidth = static_cast<int>(maxCommandLength + padding);  // center area width
+            const int lineWidth = border.size() * 2 + 2 + 1 + contentWidth + 1 + 2; // border + spaces + pipes + content
 
-            // 4. Cabeçalho
+            // 4. Header
             {
                 std::string title = " REGISTERED COMMANDS ";
                 int sideWidth = (lineWidth - static_cast<int>(title.size())) / 2;
@@ -54,7 +54,7 @@ namespace ProEngine
                 PENGINE_CORE_INFO("{}", line);
             }
 
-            // 5. Comandos com alinhamento absoluto
+            // 5. Commands with absolute alignment
             for (const auto& cmd : commandNames)
             {
                 int space = contentWidth - static_cast<int>(cmd.size());
@@ -71,8 +71,9 @@ namespace ProEngine
                 PENGINE_CORE_INFO("{}", line);
             }
 
-            // 6. Rodapé
+            // 6. Footer
             PENGINE_CORE_INFO("{0:#^{1}}", "", lineWidth);
+
         }
 
         void Execute(const std::string& input)
