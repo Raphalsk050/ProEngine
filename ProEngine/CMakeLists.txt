@@ -217,6 +217,8 @@ engine_add_library(PEEditor
         Core/Editor/ImguiLayer.cpp
         Core/Editor/Frame/Console.h
         Core/Editor/Frame/Console.cpp
+        Core/Editor/Frame/FpsInspector.h
+        Core/Editor/Frame/FpsInspector.cpp
 )
 target_link_libraries(PEEditor PUBLIC
         spdlog

@@ -2,6 +2,7 @@
 
 #include "Core/Time.h"
 #include "Core/Editor/Frame/Console.h"
+#include "Core/Editor/Frame/FpsInspector.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
 
@@ -17,11 +18,7 @@ namespace ProEngine
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
         window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
-
-        imgui_layer_ = new ImGuiLayer();
-        console_layer_ = new Console();
-        PushLayer(imgui_layer_);
-        PushLayer(console_layer_);
+        InitializeEditor();
     }
 
     Application::~Application() = default;
@@ -84,6 +81,17 @@ namespace ProEngine
         }
 
         return false;
+    }
+
+    void Application::InitializeEditor()
+    {
+        imgui_layer_ = new ImGuiLayer();
+
+        console_layer_ = new Console();
+        fps_inspector_layer_ = new FpsInspector();
+        PushLayer(imgui_layer_);
+        PushLayer(fps_inspector_layer_);
+        PushLayer(console_layer_);
     }
 
     void Application::Close()
