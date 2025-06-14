@@ -120,9 +120,19 @@ namespace ProEngine
     // Helper function that register commands in the engine to run something
     void Application::RegisterEngineCommands() const
     {
-        CommandSystem::Get().RegisterCommand("Exit",[this](const std::vector<std::string>&)
+        CommandSystem::Get().RegisterCommand("exit",[this](const std::vector<std::string>&)
         {
             Get().Close();
+        });
+
+        CommandSystem::Get().RegisterCommand("help",[this](const std::vector<std::string>&)
+        {
+            CommandSystem::Get().PrintRegisteredCommands();
+        });
+
+        CommandSystem::Get().RegisterCommand("some_helpful_command",[this](const std::vector<std::string>&)
+        {
+            PENGINE_CORE_INFO("Some helpful command was pressed!");
         });
     }
 
