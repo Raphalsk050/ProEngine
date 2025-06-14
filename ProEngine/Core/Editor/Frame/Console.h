@@ -1,6 +1,7 @@
 #pragma once
 #include "imgui.h"
 #include "Core/Layer/Layer.h"
+#include "Core/Application/Application.h"
 #include "Core/Log/PELog.h"
 #include "spdlog/sinks/ringbuffer_sink.h"
 
@@ -17,11 +18,12 @@ namespace ProEngine
         void OnImGuiRender() override;
         void OnEvent(Event& event) override;
 
-        void OpenConsole();
-        void CloseConsole();
+        void Open();
+        void Close();
+        void ToggleWindow();
 
     private:
-        bool open_;
+        bool opened_;
         ImVec2 console_size_;
         ImFont* console_font_;
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> log_sink_;

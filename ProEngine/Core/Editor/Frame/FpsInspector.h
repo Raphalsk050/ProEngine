@@ -17,6 +17,7 @@ namespace ProEngine
         void OnEvent(Event& event) override;
         void Open();
         void Close();
+        void ToggleWindow();
 
     private:
         static std::vector<float> SmoothValues(const std::vector<float>& values, float alpha);

@@ -48,7 +48,7 @@ namespace ProEngine
     void FpsInspector::OnImGuiRender()
     {
         Layer::OnImGuiRender();
-
+        if (!opened_) return;
         PlotGraph();
     }
 
@@ -65,6 +65,14 @@ namespace ProEngine
     void FpsInspector::Close()
     {
         opened_ = false;
+    }
+
+    void FpsInspector::ToggleWindow()
+    {
+        if (opened_)
+            Close();
+        else
+            Open();
     }
 
     void FpsInspector::UpdateFPSHistory(const float frame)

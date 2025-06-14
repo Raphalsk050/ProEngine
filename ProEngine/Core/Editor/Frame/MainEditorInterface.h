@@ -24,12 +24,14 @@ namespace ProEngine
         ImGuiIO* io_;
         void ConfigureDockSpace();
         void RenderTopMenuOptions();
-        void OpenConsole();
+        void ToggleConsole();
 
-        void OpenFPSHistory();
+        void ToggleFPSHistory();
 
         Console* console_;
+        bool console_open_;
         FpsInspector* fps_inspector_;
+        bool fps_history_open_;
 
     };
 }

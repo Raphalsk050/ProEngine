@@ -19,6 +19,9 @@
 // to enable the runtime editor
 // #define PROENGINE_ENABLE_EDITOR
 
+// to debug the layers
+// #define PROENGINE_DEBUG_LAYERS
+
 #ifdef DEBUG
 #if defined(PROENGINE_PLATFORM_WINDOWS)
     #define PROENGINE_DEBUGBREAK() __debugbreak()

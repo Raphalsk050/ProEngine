@@ -10,6 +10,7 @@ namespace ProEngine
 {
     MainEditorInterface::MainEditorInterface(): io_(nullptr), console_(nullptr), fps_inspector_(nullptr)
     {
+        debug_name_ = "MainEditorLayer";
     }
 
     MainEditorInterface::~MainEditorInterface()
@@ -88,12 +89,12 @@ namespace ProEngine
             {
                 if (ImGui::MenuItem("Console"))
                 {
-                    OpenConsole();
+                    ToggleConsole();
                 }
 
                 if (ImGui::MenuItem("FPS History"))
                 {
-                    OpenFPSHistory();
+                    ToggleFPSHistory();
                 }
                 ImGui::EndMenu();
             }
@@ -102,17 +103,25 @@ namespace ProEngine
         }
     }
 
-    void MainEditorInterface::OpenConsole()
+    void MainEditorInterface::ToggleConsole()
     {
-        console_ = new Console();
-        Application::Get().PushLayer(console_);
-        console_->OpenConsole();
+        if (!console_)
+        {
+            console_ = new Console();
+            Application::Get().PushLayer(console_);
+        }
+
+        console_->ToggleWindow();
     }
 
-    void MainEditorInterface::OpenFPSHistory()
+    void MainEditorInterface::ToggleFPSHistory()
     {
-        fps_inspector_ = new FpsInspector();
-        Application::Get().PushLayer(fps_inspector_);
-        fps_inspector_->Open();
+        if (!fps_inspector_)
+        {
+            fps_inspector_ = new FpsInspector();
+            Application::Get().PushLayer(fps_inspector_);
+        }
+
+        fps_inspector_->ToggleWindow();
     }
 }

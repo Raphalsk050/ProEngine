@@ -5,8 +5,9 @@
 
 namespace ProEngine
 {
-    Console::Console(): open_(false)
+    Console::Console(): opened_(false)
     {
+        debug_name_ = "ConsoleLayer";
     }
 
     Console::~Console()
@@ -41,8 +42,8 @@ namespace ProEngine
         ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
         console_size_ = ImGui::GetWindowContentRegionMax();
 
-
-        if (ImGui::Begin("Console", nullptr))
+        if (!opened_) return;
+        if (ImGui::Begin("Console", &opened_))
         {
             if (ImGui::Button("Clear"))
             {
@@ -83,14 +84,26 @@ namespace ProEngine
         Layer::OnEvent(event);
     }
 
-    void Console::OpenConsole()
+    void Console::Open()
     {
-        open_ = true;
+        opened_ = true;
     }
 
-    void Console::CloseConsole()
+    void Console::Close()
     {
-        open_ = false;
+        opened_ = false;
+    }
+
+    void Console::ToggleWindow()
+    {
+        if (opened_)
+        {
+            Close();
+        }
+        else
+        {
+            Open();
+        }
     }
 
     void Console::RenderConsoleOutputWindow()
@@ -149,7 +162,7 @@ namespace ProEngine
         {
             if (strlen(inputBuf) > 0)
             {
-                PENGINE_CORE_COMMAND("{}",std::string("> ") + inputBuf);
+                PENGINE_CORE_COMMAND("{}", std::string("> ") + inputBuf);
                 inputBuf[0] = '\0';
             }
         }

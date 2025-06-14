@@ -24,10 +24,18 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃              ENGINE FEATURE FLAGS (OPTIONS)             ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-if(PROENGINE_ENABLE_EDITOR)
-    add_compile_definitions(PROENGINE_ENABLE_EDITOR)
-endif()
-option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
+
+# Helper macro to define an option and propagate it as a compile definition
+macro(proengine_define_option FLAG_NAME DESCRIPTION DEFAULT)
+    option(${FLAG_NAME} "${DESCRIPTION}" ${DEFAULT})
+    if(${FLAG_NAME})
+        add_compile_definitions(${FLAG_NAME})
+    endif()
+endmacro()
+
+proengine_define_option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
+proengine_define_option(PROENGINE_DEBUG_LAYERS "Enable debug rendering for layers" OFF)
+
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                  THIRD-PARTY CONFIGURATION              ┃

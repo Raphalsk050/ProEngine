@@ -54,6 +54,20 @@ namespace ProEngine
         layer->OnAttach();
     }
 
+    void Application::PopLayer(Layer* layer)
+    {
+        PENGINE_PROFILE_FUNCTION();
+        layer->OnDetach();
+        layer_stack_.PopLayer(layer);
+    }
+
+    void Application::PopOverlay(Layer* layer)
+    {
+        PENGINE_PROFILE_FUNCTION();
+        layer->OnDetach();
+        layer_stack_.PopOverlay(layer);
+    }
+
     bool Application::OnWindowClose(WindowCloseEvent& e)
     {
         running_ = false;
@@ -94,13 +108,9 @@ namespace ProEngine
 #ifdef PROENGINE_ENABLE_EDITOR
         imgui_layer_ = new ImGuiLayer();
 
-        console_layer_ = new Console();
-        fps_inspector_layer_ = new FpsInspector();
         main_editor_interface_ = new MainEditorInterface();
         PushLayer(imgui_layer_);
         PushLayer(main_editor_interface_);
-        PushLayer(fps_inspector_layer_);
-        PushLayer(console_layer_);
 #endif
     }
 
@@ -125,6 +135,16 @@ namespace ProEngine
         {
             PENGINE_PROFILE_SCOPE("RunLoop");
 
+            int i = 0;
+            for (auto layer : layer_stack_)
+            {
+#ifdef PROENGINE_DEBUG_LAYERS
+                PENGINE_CORE_CRITICAL("Layer N.:{} Added layer name: {}", i, layer->GetName());
+#endif
+                i++;
+            }
+
+
             float time = Time::GetTime();
             Timestep timestep = time - last_frame_time_;
             last_frame_time_ = time;
@@ -146,7 +166,10 @@ namespace ProEngine
                     PENGINE_PROFILE_SCOPE("LayerStack OnImGuiRender");
 
                     for (Layer* layer : layer_stack_)
-                        layer->OnImGuiRender();
+                    {
+                        if (layer)
+                            layer->OnImGuiRender();
+                    }
                 }
                 imgui_layer_->End();
 #endif
