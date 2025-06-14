@@ -20,3 +20,9 @@ target_include_directories(SampleApp PUBLIC ${PROJECT_SOURCE_DIR}/ProEngine ${PR
 if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET SampleApp PROPERTY CXX_STANDARD 20)
 endif()
+
+add_custom_command(TARGET SampleApp POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/ProEngine/Assets
+        $<TARGET_FILE_DIR:SampleApp>/../ProEngine/Assets
+)

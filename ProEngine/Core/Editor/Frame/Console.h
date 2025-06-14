@@ -22,7 +22,11 @@ namespace ProEngine
 
     private:
         bool open_;
+        ImVec2 console_size_;
+        ImFont* console_font_;
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> log_sink_;
         ImGuiWindowFlags window_flags_ = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoTitleBar;
+        void RenderConsoleOutputWindow();
+        void RenderConsoleInputWindow();
     };
 } // ProEngine

@@ -27,6 +27,7 @@ namespace ProEngine {
 #define PENGINE_CORE_INFO(...)     ::ProEngine::PELog::GetCoreLogger()->info(__VA_ARGS__)
 #define PENGINE_CORE_WARN(...)     ::ProEngine::PELog::GetCoreLogger()->warn(__VA_ARGS__)
 #define PENGINE_CORE_ERROR(...)    ::ProEngine::PELog::GetCoreLogger()->error(__VA_ARGS__)
+#define PENGINE_CORE_COMMAND(...)  ::ProEngine::PELog::GetCoreLogger()->debug(__VA_ARGS__)
 #define PENGINE_CORE_CRITICAL(...) ::ProEngine::PELog::GetCoreLogger()->critical(__VA_ARGS__)
 
 #else

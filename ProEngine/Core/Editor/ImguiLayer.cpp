@@ -31,6 +31,12 @@ namespace ProEngine
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
 
+        io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/PT-Root-UI/pt-root-ui_regular.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/Inter/Inter-Regular.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/Nunito/Nunito-Regular.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/Raleway/Raleway-Regular.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/JetBrains/JetBrainsMonoNerdFont-Regular.ttf", 16.0f);
+
         //io.Fonts->AddFontFromFileTTF(font_path_, 18.0f);
 
         //io.Fonts->Build();
