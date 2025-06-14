@@ -17,7 +17,7 @@
 // #define PROENGINE_DEBUG_INPUT_KEYS
 
 // to enable the runtime editor
-#define PROENGINE_ENABLE_EDITOR
+// #define PROENGINE_ENABLE_EDITOR
 
 #ifdef DEBUG
 #if defined(PROENGINE_PLATFORM_WINDOWS)

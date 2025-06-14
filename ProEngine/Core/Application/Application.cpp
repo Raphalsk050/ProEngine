@@ -1,9 +1,11 @@
 #include "Application.h"
 
 #include "Core/Time.h"
+#ifdef PROENGINE_ENABLE_EDITOR
 #include "Core/Editor/Frame/Console.h"
 #include "Core/Editor/Frame/FpsInspector.h"
 #include "Core/Editor/Frame/MainEditorInterface.h"
+#endif
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
 
@@ -89,6 +91,7 @@ namespace ProEngine
 
     void Application::InitializeEditor()
     {
+#ifdef PROENGINE_ENABLE_EDITOR
         imgui_layer_ = new ImGuiLayer();
 
         console_layer_ = new Console();
@@ -98,6 +101,7 @@ namespace ProEngine
         PushLayer(main_editor_interface_);
         PushLayer(fps_inspector_layer_);
         PushLayer(console_layer_);
+#endif
     }
 
     void Application::Close()

@@ -1,14 +1,16 @@
 ﻿cmake_minimum_required(VERSION 3.16)
 
-if(POLICY CMP0156)
+if (POLICY CMP0156)
     cmake_policy(SET CMP0156 NEW)
-endif()
+endif ()
 
-if(POLICY CMP0179)
+if (POLICY CMP0179)
     cmake_policy(SET CMP0179 NEW)
-endif()
+endif ()
 
 project(ProEngine LANGUAGES CXX)
+
+
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     GLOBAL CONFIGURATION                ┃
@@ -18,6 +20,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃              ENGINE FEATURE FLAGS (OPTIONS)             ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+if(PROENGINE_ENABLE_EDITOR)
+    add_compile_definitions(PROENGINE_ENABLE_EDITOR)
+endif()
+option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                  THIRD-PARTY CONFIGURATION              ┃
@@ -195,10 +205,10 @@ target_include_directories(PEEvent PUBLIC
 
 # ── Application Framework ──────────────────────────────────
 engine_add_library(PEWindow
-    Core/Window/GenericGLFWWindow.h
-    Core/Window/GenericGLFWWindow.cpp
-    Core/Window/Window.h
-    Core/Window/Window.cpp
+        Core/Window/GenericGLFWWindow.h
+        Core/Window/GenericGLFWWindow.cpp
+        Core/Window/Window.h
+        Core/Window/Window.cpp
 )
 target_link_libraries(PEWindow
         PERendering
@@ -212,25 +222,27 @@ target_include_directories(PEWindow PUBLIC
 )
 
 # ── Editor ──────────────────────────────────────────────────
-engine_add_library(PEEditor
-        Core/Editor/ImguiLayer.h
-        Core/Editor/ImguiLayer.cpp
-        Core/Editor/Frame/Console.h
-        Core/Editor/Frame/Console.cpp
-        Core/Editor/Frame/FpsInspector.h
-        Core/Editor/Frame/FpsInspector.cpp
-        Core/Editor/Frame/MainEditorInterface.h
-        Core/Editor/Frame/MainEditorInterface.cpp
-)
-target_link_libraries(PEEditor PUBLIC
-        spdlog
-        ImGui
-        glm
-)
-target_include_directories(PEEditor PUBLIC
-        ${imgui_DIR}
-        ${glm_DIR}
-)
+if (PROENGINE_ENABLE_EDITOR)
+    engine_add_library(PEEditor
+            Core/Editor/ImguiLayer.h
+            Core/Editor/ImguiLayer.cpp
+            Core/Editor/Frame/Console.h
+            Core/Editor/Frame/Console.cpp
+            Core/Editor/Frame/FpsInspector.h
+            Core/Editor/Frame/FpsInspector.cpp
+            Core/Editor/Frame/MainEditorInterface.h
+            Core/Editor/Frame/MainEditorInterface.cpp
+    )
+    target_link_libraries(PEEditor PUBLIC
+            spdlog
+            ImGui
+            glm
+    )
+    target_include_directories(PEEditor PUBLIC
+            ${imgui_DIR}
+            ${glm_DIR}
+    )
+endif ()
 
 # ── Application Framework ──────────────────────────────────
 engine_add_library(PEApplication
@@ -277,11 +289,13 @@ target_link_libraries(ProEngine INTERFACE
         PEWindow
         PEApplication
         PEPlatform
-        PEEditor
         PEEvent
         PEInput
 )
 
+if (PROENGINE_ENABLE_EDITOR)
+    target_link_libraries(ProEngine INTERFACE PEEditor)
+endif ()
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃            IMGUI CONSUMER CONFIGURATION                 ┃
