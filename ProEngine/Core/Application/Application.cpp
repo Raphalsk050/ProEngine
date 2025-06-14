@@ -3,6 +3,7 @@
 #include "Core/Time.h"
 #include "Core/Editor/Frame/Console.h"
 #include "Core/Editor/Frame/FpsInspector.h"
+#include "Core/Editor/Frame/MainEditorInterface.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
 
@@ -76,7 +77,7 @@ namespace ProEngine
         case Key::Escape:
             {
                 PENGINE_CORE_INFO("Escape key was pressed!");
-                Application::Close();
+                Close();
             }
         }
 
@@ -89,7 +90,9 @@ namespace ProEngine
 
         console_layer_ = new Console();
         fps_inspector_layer_ = new FpsInspector();
+        main_editor_interface_ = new MainEditorInterface();
         PushLayer(imgui_layer_);
+        PushLayer(main_editor_interface_);
         PushLayer(fps_inspector_layer_);
         PushLayer(console_layer_);
     }

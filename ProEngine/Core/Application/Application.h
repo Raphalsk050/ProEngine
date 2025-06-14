@@ -12,6 +12,11 @@
 
 namespace ProEngine
 {
+    class MainEditorInterface;
+}
+
+namespace ProEngine
+{
     class FpsInspector;
 }
 
@@ -78,6 +83,7 @@ namespace ProEngine
         ImGuiLayer* imgui_layer_{};
         Console* console_layer_{};
         FpsInspector* fps_inspector_layer_{};
+        MainEditorInterface* main_editor_interface_;
 
         bool running_ = true;
         bool minimized_ = false;
