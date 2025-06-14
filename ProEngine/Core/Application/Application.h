@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <functional>
+#include <mutex>
 #include "PEPCH.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
@@ -42,6 +44,9 @@ namespace ProEngine {
     bool OnWindowResize(WindowResizeEvent& e);
     bool OnKeyPressed(KeyPressedEvent& e);
     void Close();
+    void SubmitToMainThread(const std::function<void()>& function);
+    void Run();
+    void ExecuteMainThreadQueue();
 
   private:
     ApplicationSpecification specification_;
@@ -52,6 +57,8 @@ namespace ProEngine {
     bool running_ = true;
     bool minimized_ = false;
     float last_frame_time_ = 0.0f;
+    vector<function<void()> > main_thread_queue_;
+    mutex main_thread_queue_mutex_;
 
   private:
     static Application *instance_;

@@ -10,7 +10,6 @@ namespace ProEngine {
     explicit Sample(const ApplicationSpecification &spec)
       : Application(spec) {
       PushLayer(new SampleLayer());
-      PENGINE_CORE_INFO("Application created");
     }
   };
 
