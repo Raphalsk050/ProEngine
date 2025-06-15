@@ -29,9 +29,9 @@ namespace ProEngine
         FramebufferSpecification spec;
         spec.Width = Application::Get().GetWindow().GetWidth();
         spec.Height = Application::Get().GetWindow().GetHeight();
-        framebuffer_ = Framebuffer::Create(spec);
-        // viewport_size_ = {(float)spec.Width, (float)spec.Height};
-        // camera_controller_.OnResize(spec.Width, spec.Height);
+        // framebuffer_ = Framebuffer::Create(spec);
+        viewport_size_ = {(float)spec.Width, (float)spec.Height};
+        camera_controller_.OnResize(spec.Width, spec.Height);
     }
 
     void SampleLayer::OnDetach()
@@ -42,22 +42,22 @@ namespace ProEngine
     void SampleLayer::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
-        // camera_controller_.OnUpdate(ts);
-        // time_ += ts;
-        // glm::vec3 position = glm::vec3(0.0f, 2.0f, 0.0f);
+        camera_controller_.OnUpdate(ts);
+        time_ += ts;
+        glm::vec3 position = glm::vec3(0.0f, 2.0f, 0.0f);
         //
         // // TODO(rafael): pass this viewport logic to the editor renderer
-        // RenderCommand::SetClearColor({0.01, 0.01, 0.01, 1.0f});
-        // RenderCommand::Clear();
+        RenderCommand::SetClearColor({0.5, 0.01, 0.01, 1.0f});
+        RenderCommand::Clear();
         // framebuffer_->Bind();
         //
-        // Renderer3D::BeginScene(camera_controller_.GetCamera());
+        Renderer3D::BeginScene(camera_controller_.GetCamera());
         //
         // Renderer3D::DrawSphere(position, 0.2f, glm::vec4(1.0), 0);
         // Renderer3D::SetAmbientLight(glm::vec3(1.0f), 0.2);
         // Renderer3D::DrawMesh(glm::vec3(0.0f, -2.0, 0.0), glm::vec3(100.0f), glm::vec3(0.0f), Mesh::CreatePlane(), glm::vec4(1.0), 1);
         //
-        // Renderer3D::EndScene();
+        Renderer3D::EndScene();
         // framebuffer_->Unbind();
     }
 
