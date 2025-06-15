@@ -45,7 +45,9 @@ namespace ProEngine
 
             if (ImGui::Button("Create Entity"))
             {
+                PENGINE_PROFILE_FUNCTION();
                 active_scene_->CreateEntity("New Entity");
+                PENGINE_CORE_TRACE("Entity Created!");
             }
 
             ImGui::Separator();
@@ -156,20 +158,26 @@ namespace ProEngine
         {
             if (ImGui::MenuItem("Create Child"))
             {
+                PENGINE_PROFILE_FUNCTION();
                 EntityHandle child = active_scene_->CreateEntity("Child Entity");
                 child.SetParent(entity);
+                PENGINE_CORE_TRACE("Child entity created");
             }
 
             if (ImGui::MenuItem("Duplicate"))
             {
+                PENGINE_PROFILE_FUNCTION();
                 DuplicateEntity(entity);
+                PENGINE_CORE_TRACE("Entity Duplicated");
             }
 
             ImGui::Separator();
 
             if (ImGui::MenuItem("Rename"))
             {
+                PENGINE_PROFILE_FUNCTION();
                 //entity.GetComponent<TagComponent>().tag = "Rename";
+                PENGINE_CORE_TRACE("Entity Renamed");
             }
 
             ImGui::Separator();

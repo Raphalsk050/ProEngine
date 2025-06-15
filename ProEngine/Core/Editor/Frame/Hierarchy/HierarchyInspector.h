@@ -1,7 +1,6 @@
 #pragma once
 #include "Core/Layer/Layer.h"
 #include "Core/Scene/Scene.h"
-#include <entt.hpp>
 #include <vector>
 
 namespace ProEngine

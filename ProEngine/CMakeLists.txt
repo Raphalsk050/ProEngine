@@ -263,6 +263,8 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/MainEditorInterface.cpp
             Core/Editor/Frame/Hierarchy/HierarchyInspector.h
             Core/Editor/Frame/Hierarchy/HierarchyInspector.cpp
+            Core/Editor/AnimatedPopup.h
+            Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h
     )
     target_link_libraries(PEEditor PUBLIC
