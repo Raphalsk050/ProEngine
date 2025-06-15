@@ -32,8 +32,9 @@ macro(proengine_define_option FLAG_NAME DESCRIPTION DEFAULT)
     endif ()
 endmacro()
 
-proengine_define_option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
-proengine_define_option(PROENGINE_DEBUG_LAYERS "Enable debug rendering for layers" OFF)
+proengine_define_option(PROENGINE_ENABLE_EDITOR  "Enable runtime editor module" OFF)
+proengine_define_option(PROENGINE_DEBUG_LAYERS   "Enable debug rendering for layers" OFF)
+proengine_define_option(PROENGINE_ENABLE_ASSERTS "Enable engine asserts" OFF)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -133,6 +134,10 @@ engine_add_library(PERendering
         Core/Renderer/RenderCommand.cpp
         Core/Renderer/RendererAPI.h
         Core/Renderer/RendererAPI.cpp
+        Core/Renderer/Framebuffer.h
+        Core/Renderer/Framebuffer.cpp
+        Core/Renderer/Shader.h
+        Core/Renderer/Shader.cpp
 )
 target_link_libraries(PERendering
         spdlog
@@ -306,6 +311,10 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLContext.h
         Platform/OpenGL/OpenGLRendererAPI.h
         Platform/OpenGL/OpenGLRendererAPI.cpp
+        Platform/OpenGL/OpenGLFramebuffer.h
+        Platform/OpenGL/OpenGLFramebuffer.cpp
+        Platform/OpenGL/OpenGLShader.h
+        Platform/OpenGL/OpenGLShader.cpp
 )
 target_link_libraries(PEPlatform
         spdlog

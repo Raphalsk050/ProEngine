@@ -6,8 +6,7 @@
 namespace ProEngine {
 #pragma once
 
-#ifdef PENGINE_ENABLE_ASSERTS
-
+#ifdef PROENGINE_ENABLE_ASSERTS
   // Alteratively we could use the same "default" message for both "WITH_MSG" and "NO_MSG" and
   // provide support for custom formatting by concatenating the formatting string instead of having the format inside the default message
 #define PENGINE_INTERNAL_ASSERT_IMPL(type, check, msg, ...) { if(!(check)) { PENGINE##type##ERROR(msg, __VA_ARGS__); PENGINE_DEBUGBREAK(); } }
