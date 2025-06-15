@@ -10,7 +10,6 @@ namespace ProEngine
     {
         auto& tr = GetComponent<TransformComponent>();
         entt::entity new_parent = parent.handle_;
-        //if (tr.parent == new_parent) return;
 
         glm::vec3 world_pos{0.0f};
         if (keep_world_position)
