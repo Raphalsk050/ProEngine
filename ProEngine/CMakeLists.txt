@@ -134,8 +134,13 @@ engine_add_library(PERendering
         Core/Renderer/Buffer.cpp
         Core/Renderer/Renderer.h
         Core/Renderer/Renderer.cpp
+        Core/Renderer/Renderer3D.h
+        Core/Renderer/Renderer3D.cpp
         Core/Renderer/RenderCommand.h
         Core/Renderer/RenderCommand.cpp
+        Core/Renderer/Mesh.h
+        Core/Renderer/Mesh.cpp
+        Core/Renderer/Material.h
         Core/Renderer/RendererAPI.h
         Core/Renderer/RendererAPI.cpp
         Core/Renderer/Framebuffer.h
@@ -148,11 +153,14 @@ engine_add_library(PERendering
         Core/Renderer/Texture.cpp
         Core/Renderer/VertexArray.h
         Core/Renderer/VertexArray.cpp
+        Core/Renderer/InstancedRenderer.h
+        Core/Renderer/InstancedRenderer.cpp
 )
 target_link_libraries(PERendering
         spdlog
         glfw
         glad
+        Entt
 )
 target_include_directories(PERendering PUBLIC
         PECore

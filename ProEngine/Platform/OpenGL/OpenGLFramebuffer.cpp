@@ -19,7 +19,7 @@ namespace ProEngine
 
     void OpenGLFramebuffer::Invalidate()
     {
-        if (renderer_id_)
+        if (renderer_id_ > -1)
         {
             glDeleteFramebuffers(1, &renderer_id_);
             glDeleteTextures(1, &color_attachment_);

@@ -6,6 +6,9 @@
 #include "glad/glad.h"
 #include <memory>
 
+#include "Core/Renderer/Material.h"
+#include "Core/Renderer/Mesh.h"
+
 namespace ProEngine
 {
     struct TagComponent
@@ -35,5 +38,18 @@ namespace ProEngine
             return mat;
         }
     };
-} // namespace GLStudy
 
+    struct ModelRendererComponent
+    {
+        Ref<Model> Model;
+        Ref<Material> OverrideMaterial;
+
+        ModelRendererComponent() = default;
+        ModelRendererComponent(const ModelRendererComponent&) = default;
+
+        ModelRendererComponent(const Ref<ProEngine::Model>& model)
+            : Model(model)
+        {
+        }
+    };
+} // namespace ProEngine
