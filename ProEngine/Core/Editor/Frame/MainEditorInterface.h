@@ -4,6 +4,11 @@
 
 namespace ProEngine
 {
+    class HierarchyInspector;
+}
+
+namespace ProEngine
+{
     class FpsInspector;
     class Console;
 
@@ -25,13 +30,11 @@ namespace ProEngine
         void ConfigureDockSpace();
         void RenderTopMenuOptions();
         void ToggleConsole();
-
+        void ToggleHierarchyInspector();
         void ToggleFPSHistory();
 
         Console* console_;
-        bool console_open_;
         FpsInspector* fps_inspector_;
-        bool fps_history_open_;
-
+        HierarchyInspector* hierarchy_inspector_;
     };
 }

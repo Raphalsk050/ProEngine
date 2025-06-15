@@ -5,6 +5,7 @@
 #include "Console.h"
 #include "FpsInspector.h"
 #include "Core/Application/Application.h"
+#include "Hierarchy/HierarchyInspector.h"
 
 namespace ProEngine
 {
@@ -46,7 +47,8 @@ namespace ProEngine
     {
         Layer::OnImGuiRender();
 
-        if (!io_) {
+        if (!io_)
+        {
             return;
         }
 
@@ -96,6 +98,11 @@ namespace ProEngine
                 {
                     ToggleFPSHistory();
                 }
+
+                if (ImGui::MenuItem("Hierarchy"))
+                {
+                    ToggleHierarchyInspector();
+                }
                 ImGui::EndMenu();
             }
 
@@ -112,6 +119,18 @@ namespace ProEngine
         }
 
         console_->ToggleWindow();
+    }
+
+    // TODO(rafael): create a window generic class to be the parent of these kind of layers
+    void MainEditorInterface::ToggleHierarchyInspector()
+    {
+        if (!hierarchy_inspector_)
+        {
+            hierarchy_inspector_ = new HierarchyInspector();
+            Application::Get().PushLayer(hierarchy_inspector_);
+        }
+
+        hierarchy_inspector_->ToggleWindow();
     }
 
     void MainEditorInterface::ToggleFPSHistory()

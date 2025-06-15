@@ -8,6 +8,7 @@
 #include "Core/Editor/ImguiLayer.h"
 #include "Core/Layer/Layer.h"
 #include "Core/Layer/LayerStack.h"
+#include "Core/Scene/Scene.h"
 #include "Core/Window/GenericGLFWWindow.h"
 
 namespace ProEngine
@@ -64,7 +65,7 @@ namespace ProEngine
 
         Window& GetWindow() const { return *window_; }
         static Application& Get() { return *instance_; }
-
+        Scene* GetActiveScene() const;
 
         bool OnWindowResize(WindowResizeEvent& e);
         bool OnKeyPressed(KeyPressedEvent& e);
@@ -94,6 +95,7 @@ namespace ProEngine
         bool running_ = true;
         bool minimized_ = false;
         float last_frame_time_ = 0.0f;
+        Scope<Scene> main_scene_;
         vector<function<void()>> main_thread_queue_;
         mutex main_thread_queue_mutex_;
 

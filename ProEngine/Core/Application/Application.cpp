@@ -22,6 +22,7 @@ namespace ProEngine
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
         window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
+        main_scene_ = CreateScope<Scene>();
 
 #ifdef PROENGINE_ENABLE_EDITOR
         InitializeEditor();
@@ -75,6 +76,11 @@ namespace ProEngine
         return true;
     }
 
+    Scene* Application::GetActiveScene() const
+    {
+        return main_scene_.get();
+    }
+
     bool Application::OnWindowResize(WindowResizeEvent& e)
     {
         PENGINE_PROFILE_FUNCTION();
@@ -120,17 +126,17 @@ namespace ProEngine
     // Helper function that register commands in the engine to run something
     void Application::RegisterEngineCommands() const
     {
-        CommandSystem::Get().RegisterCommand("exit",[this](const std::vector<std::string>&)
+        CommandSystem::Get().RegisterCommand("exit", [this](const std::vector<std::string>&)
         {
             Get().Close();
         });
 
-        CommandSystem::Get().RegisterCommand("help",[this](const std::vector<std::string>&)
+        CommandSystem::Get().RegisterCommand("help", [this](const std::vector<std::string>&)
         {
             CommandSystem::Get().PrintRegisteredCommands();
         });
 
-        CommandSystem::Get().RegisterCommand("some_helpful_command",[this](const std::vector<std::string>&)
+        CommandSystem::Get().RegisterCommand("some_helpful_command", [this](const std::vector<std::string>&)
         {
             PENGINE_CORE_INFO("Some helpful command was pressed!");
         });

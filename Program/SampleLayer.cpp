@@ -1,6 +1,10 @@
 #include "SampleLayer.h"
 
-namespace ProEngine {
+#include "Core/Application/Application.h"
+#include "Core/Scene/EntityHandle.h"
+
+namespace ProEngine
+{
     SampleLayer::SampleLayer() : Layer("SampleLayer")
     {
     }
@@ -8,6 +12,12 @@ namespace ProEngine {
     void SampleLayer::OnAttach()
     {
         Layer::OnAttach();
+        Application::Get().GetActiveScene()->CreateEntity();
+
+        for (int i = 0; i < 10; i++)
+        {
+            Application::Get().GetActiveScene()->CreateEntity("Entity(" + std::to_string(i) + ")");
+        }
     }
 
     void SampleLayer::OnDetach()

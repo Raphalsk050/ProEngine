@@ -1,5 +1,4 @@
 ﻿#include <ProEngine.h>
-
 #include "SampleLayer.h"
 
 using namespace std;

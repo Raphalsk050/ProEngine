@@ -11,7 +11,6 @@ endif ()
 project(ProEngine LANGUAGES CXX)
 
 
-
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     GLOBAL CONFIGURATION                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -28,9 +27,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Helper macro to define an option and propagate it as a compile definition
 macro(proengine_define_option FLAG_NAME DESCRIPTION DEFAULT)
     option(${FLAG_NAME} "${DESCRIPTION}" ${DEFAULT})
-    if(${FLAG_NAME})
+    if (${FLAG_NAME})
         add_compile_definitions(${FLAG_NAME})
-    endif()
+    endif ()
 endmacro()
 
 proengine_define_option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
@@ -59,6 +58,7 @@ set(imgui_DIR ThirdParty/imgui)
 set(glfw_DIR ThirdParty/glfw)
 set(glad_DIR ThirdParty/glad)
 set(glm_DIR ThirdParty/glm)
+set(entt_DIR ThirdParty/entt)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -69,6 +69,7 @@ add_subdirectory(${imgui_DIR})
 add_subdirectory(${glfw_DIR})
 add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
+add_subdirectory(${entt_DIR})
 
 target_compile_definitions(ImGui PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -229,6 +230,26 @@ target_include_directories(PEWindow PUBLIC
         ${glm_DIR}
 )
 
+# ── Scene ──────────────────────────────────────────────────
+engine_add_library(PEScene
+        Core/Scene/Scene.h
+        Core/Scene/Scene.cpp
+        Core/Scene/EntityHandle.h
+        Core/Scene/EntityHandle.cpp
+        Core/Scene/Components.h
+)
+target_link_libraries(PEScene
+        PERendering
+        spdlog
+        glfw
+        glad
+        glm
+        Entt
+)
+target_include_directories(PEScene PUBLIC
+        ${glm_DIR}
+)
+
 # ── Editor ──────────────────────────────────────────────────
 if (PROENGINE_ENABLE_EDITOR)
     engine_add_library(PEEditor
@@ -240,16 +261,20 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/FpsInspector.cpp
             Core/Editor/Frame/MainEditorInterface.h
             Core/Editor/Frame/MainEditorInterface.cpp
+            Core/Editor/Frame/Hierarchy/HierarchyInspector.h
+            Core/Editor/Frame/Hierarchy/HierarchyInspector.cpp
             Core/Editor/CommandSystem.h
     )
     target_link_libraries(PEEditor PUBLIC
             spdlog
             ImGui
+            Entt
             glm
     )
     target_include_directories(PEEditor PUBLIC
             ${imgui_DIR}
             ${glm_DIR}
+            ${entt_DIR}
     )
 endif ()
 
@@ -264,6 +289,7 @@ target_link_libraries(PEApplication PUBLIC
         PEEvent
         PELayer
         PEWindow
+        PEScene
 )
 target_include_directories(PEApplication PUBLIC
         ${imgui_DIR}
