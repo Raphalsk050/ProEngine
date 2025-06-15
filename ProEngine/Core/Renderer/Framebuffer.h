@@ -20,11 +20,11 @@ namespace ProEngine {
 
         virtual uint32_t GetColorAttachmentRendererID() const = 0;
 
-        const FramebufferSpecification& GetSpecification() const { return m_Specification; }
+        const FramebufferSpecification& GetSpecification() const { return specification_; }
 
         static Ref<Framebuffer> Create(const FramebufferSpecification& spec);
     protected:
-        FramebufferSpecification m_Specification;
+        FramebufferSpecification specification_;
     };
 
 }
