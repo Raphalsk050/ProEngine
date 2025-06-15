@@ -235,7 +235,6 @@ engine_add_library(PEWindow
         Core/Window/Window.cpp
 )
 target_link_libraries(PEWindow
-        PERendering
         spdlog
         glfw
         glad
@@ -262,6 +261,26 @@ target_link_libraries(PEScene
         Entt
 )
 target_include_directories(PEScene PUBLIC
+        ${glm_DIR}
+)
+
+# ── Camera ──────────────────────────────────────────────────
+engine_add_library(PECamera
+        Core/Camera/Camera.h
+        Core/Camera/Camera3D.h
+        Core/Camera/Camera3D.cpp
+        Core/Camera/Camera3DController.h
+        Core/Camera/Camera3DController.cpp
+)
+target_link_libraries(PECamera
+        PERendering
+        spdlog
+        glfw
+        glad
+        glm
+        Entt
+)
+target_include_directories(PECamera PUBLIC
         ${glm_DIR}
 )
 
@@ -356,6 +375,7 @@ target_link_libraries(ProEngine INTERFACE
         PEPlatform
         PERendering
         PEEvent
+        PECamera
         PEInput
 )
 
