@@ -10,6 +10,10 @@ Ref<Framebuffer> Framebuffer::Create(const FramebufferSpecification& spec)
     {
     case RendererAPI::API::OpenGL:
         return CreateRef<OpenGLFramebuffer>(spec);
+#ifdef __APPLE__
+    case RendererAPI::API::Metal:
+        return nullptr;
+#endif
     }
 
     PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");

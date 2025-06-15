@@ -11,9 +11,15 @@ namespace ProEngine
     {
         switch (Renderer::GetAPI())
         {
-        case RendererAPI::API::None: PENGINE_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
+        case RendererAPI::API::None:
+            PENGINE_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
             return nullptr;
-        case RendererAPI::API::OpenGL: return CreateRef<OpenGLUniformBuffer>(size, binding);
+        case RendererAPI::API::OpenGL:
+            return CreateRef<OpenGLUniformBuffer>(size, binding);
+#ifdef __APPLE__
+        case RendererAPI::API::Metal:
+            return nullptr;
+#endif
         }
 
         PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");

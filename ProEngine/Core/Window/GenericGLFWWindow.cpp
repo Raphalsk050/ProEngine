@@ -56,10 +56,19 @@ namespace ProEngine {
                 glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 #endif
 
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-            glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-            glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+            if (Renderer::GetAPI() == RendererAPI::API::OpenGL) {
+                // The rendering system relies on Direct State Access (DSA)
+                // functions introduced in OpenGL 4.5 such as glCreateFramebuffers
+                // and glCreateTextures. Request at least an OpenGL 4.5 context to
+                // ensure these functions are available at runtime.
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+                glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
+                glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+                glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+            } else if (Renderer::GetAPI() == RendererAPI::API::Metal) {
+                // For Metal we do not request an OpenGL context
+                glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+            }
 
             window_ = glfwCreateWindow((int)props.Width, (int)props.Height,
                                        data_.Title.c_str(), nullptr, nullptr);

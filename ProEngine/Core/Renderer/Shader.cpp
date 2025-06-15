@@ -14,6 +14,10 @@ Ref<Shader> Shader::Create(const std::string& filepath) {
       return nullptr;
     case RendererAPI::API::OpenGL:
       return CreateRef<OpenGLShader>(filepath);
+#ifdef __APPLE__
+    case RendererAPI::API::Metal:
+      return nullptr;
+#endif
   }
 
   PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -30,6 +34,10 @@ Ref<Shader> Shader::Create(const std::string& name,
       return nullptr;
     case RendererAPI::API::OpenGL:
       return CreateRef<OpenGLShader>(name, vertexSrc, fragmentSrc);
+#ifdef __APPLE__
+    case RendererAPI::API::Metal:
+      return nullptr;
+#endif
   }
 
   PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");

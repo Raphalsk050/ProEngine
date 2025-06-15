@@ -361,6 +361,15 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLTexture2D.h
         Platform/OpenGL/OpenGLTexture2D.cpp
 )
+
+if(APPLE)
+    target_sources(PEPlatform PRIVATE
+        Platform/Metal/MetalContext.mm
+        Platform/Metal/MetalContext.h
+        Platform/Metal/MetalRendererAPI.mm
+        Platform/Metal/MetalRendererAPI.h
+    )
+endif()
 target_link_libraries(PEPlatform
         spdlog
         glfw

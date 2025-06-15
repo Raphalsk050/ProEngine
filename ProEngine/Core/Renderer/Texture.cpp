@@ -16,6 +16,10 @@ namespace ProEngine
             return nullptr;
         case RendererAPI::API::OpenGL:
             return CreateRef<OpenGLTexture2D>(specification);
+#ifdef __APPLE__
+        case RendererAPI::API::Metal:
+            return nullptr;
+#endif
         }
 
         PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");
@@ -32,6 +36,10 @@ namespace ProEngine
             return nullptr;
         case RendererAPI::API::OpenGL:
             return CreateRef<OpenGLTexture2D>(path);
+#ifdef __APPLE__
+        case RendererAPI::API::Metal:
+            return nullptr;
+#endif
         }
 
         PENGINE_CORE_ASSERT(false, "Unknown RendererAPI!");

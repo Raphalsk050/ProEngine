@@ -12,8 +12,10 @@ namespace ProEngine
 
         enum class API
         {
-            None = 0, OpenGL = 1
-          };
+            None = 0,
+            OpenGL = 1,
+            Metal = 2
+        };
 
 
         virtual void Init() = 0;

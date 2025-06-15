@@ -29,9 +29,11 @@ namespace ProEngine
         PENGINE_CORE_INFO("  Renderer: {0}",   renderer);
         PENGINE_CORE_INFO("  Version:  {0}",   version);
 
-        // TODO: Fix this check
-        PENGINE_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 1),
-                        "Pro-Engine requires at least OpenGL version 4.1!");
+        // The engine uses DSA functions (glCreateFramebuffers, glCreateTextures,
+        // etc) which are part of OpenGL 4.5. Ensure the driver provides at
+        // least this version.
+        PENGINE_CORE_ASSERT(GLVersion.major > 4 || (GLVersion.major == 4 && GLVersion.minor >= 5),
+                            "Pro-Engine requires at least OpenGL version 4.5!");
     }
 
     void OpenGLContext::SwapBuffers()
