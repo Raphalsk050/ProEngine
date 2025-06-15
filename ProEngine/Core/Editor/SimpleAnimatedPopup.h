@@ -20,11 +20,13 @@ namespace ProEngine
             is_open_ = false;
         }
 
-        void Draw(const char* title, const char* message)
+        void Draw(const char* title, const char* message, ImVec2 center = ImVec2(0.0f, 0.0f))
         {
             if (!is_open_) return;
 
             // Calcula o progresso da animação (0.0 a 1.0)
+            auto centerX = center.x;
+            auto centerY = center.y;
             auto now = std::chrono::steady_clock::now();
             float time_elapsed = std::chrono::duration<float>(now - start_time_).count();
             float progress = std::min(time_elapsed / animation_duration_, 1.0f);
@@ -34,17 +36,20 @@ namespace ProEngine
 
             // Configura o popup no centro da tela
             ImVec2 screen_size = ImGui::GetIO().DisplaySize;
-            ImVec2 center = ImVec2(screen_size.x * 0.5f, screen_size.y * 0.5f);
-            ImGui::SetNextWindowPos(center, ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+            float right_offset = (1.0f - progress) * (screen_size.x * 0.5f - ImGui::GetWindowViewport()->GetWorkSize().x * 0.5f);
+
+            center = ImVec2(0.0f, screen_size.y * 0.8f);
+            //center = ImVec2(centerX, centerY);
+            ImGui::SetNextWindowPos(ImVec2(right_offset, center.y), ImGuiCond_Always, ImVec2(1.0f, 0.5f));
 
             // Animação de scale e fade
             ImGui::PushStyleVar(ImGuiStyleVar_Alpha, progress);
-            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
             ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.2f, 0.2f, 0.2f, 0.95f));
 
             // Scale effect - movimento de baixo para cima
-            float y_offset = (1.0f - progress) * 50.0f;
-            ImGui::SetNextWindowPos(ImVec2(center.x, center.y + y_offset), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+            float y_offset = (1.0f - progress) * 200.0f;
+            ImGui::SetNextWindowPos(ImVec2(right_offset, center.y), ImGuiCond_Always, ImVec2(-2.0f, 0.5f));
 
             ImGuiWindowFlags flags = ImGuiWindowFlags_NoResize |
                 ImGuiWindowFlags_NoMove |

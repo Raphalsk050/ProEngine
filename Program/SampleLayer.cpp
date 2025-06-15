@@ -34,44 +34,43 @@ namespace ProEngine
     void SampleLayer::OnImGuiRender()
     {
         Layer::OnImGuiRender();
-
-        static PopupWithoutOverlay popup_without_overlay;
-        static PopupWithOverlay popup_with_overlay;
-        static ModalPopup modal_popup;
-        static SimplestPopup simplest_popup;
-
-        if (ImGui::Begin("Teste de Popups"))
-        {
-            ImGui::Text("Escolha o tipo de popup:");
-            ImGui::Separator();
-
-            if (ImGui::Button("Popup Sem Overlay", ImVec2(200, 30)))
-            {
-                popup_without_overlay.Open();
-            }
-
-            if (ImGui::Button("Popup Com Overlay Clicável", ImVec2(200, 30)))
-            {
-                popup_with_overlay.Open();
-            }
-
-            if (ImGui::Button("Popup Modal Nativo", ImVec2(200, 30)))
-            {
-                modal_popup.Open();
-            }
-
-            if (ImGui::Button("Popup Mais Simples", ImVec2(200, 30)))
-            {
-                simplest_popup.Toggle();
-            }
-        }
-        ImGui::End();
-
-        // Desenha os popups
-        popup_without_overlay.Draw("Aviso", "Este é um popup sem overlay!\nVocê ainda pode interagir com o resto da interface.");
-        popup_with_overlay.Draw("Informação", "Este popup tem overlay.\nClique fora para fechar.");
-        modal_popup.Draw("Confirmação", "Deseja continuar com a operação?");
-        simplest_popup.Draw();
+        // static PopupWithoutOverlay popup_without_overlay;
+        // static PopupWithOverlay popup_with_overlay;
+        // static ModalPopup modal_popup;
+        // static SimplestPopup simplest_popup;
+        //
+        // if (ImGui::Begin("Teste de Popups"))
+        // {
+        //     ImGui::Text("Escolha o tipo de popup:");
+        //     ImGui::Separator();
+        //
+        //     if (ImGui::Button("Popup Sem Overlay", ImVec2(200, 30)))
+        //     {
+        //         popup_without_overlay.Open();
+        //     }
+        //
+        //     if (ImGui::Button("Popup Com Overlay Clicável", ImVec2(200, 30)))
+        //     {
+        //         popup_with_overlay.Open();
+        //     }
+        //
+        //     if (ImGui::Button("Popup Modal Nativo", ImVec2(200, 30)))
+        //     {
+        //         modal_popup.Open();
+        //     }
+        //
+        //     if (ImGui::Button("Popup Mais Simples", ImVec2(200, 30)))
+        //     {
+        //         simplest_popup.Toggle();
+        //     }
+        // }
+        // ImGui::End();
+        //
+        // // Desenha os popups
+        // popup_without_overlay.Draw("Aviso", "Este é um popup sem overlay!\nVocê ainda pode interagir com o resto da interface.");
+        // popup_with_overlay.Draw("Informação", "Este popup tem overlay.\nClique fora para fechar.");
+        // modal_popup.Draw("Confirmação", "Deseja continuar com a operação?");
+        // simplest_popup.Draw();
     }
 
     void SampleLayer::OnEvent(Event& event)

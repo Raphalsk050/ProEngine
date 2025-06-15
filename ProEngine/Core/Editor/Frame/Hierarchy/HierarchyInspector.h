@@ -3,6 +3,8 @@
 #include "Core/Scene/Scene.h"
 #include <vector>
 
+#include "Core/Editor/SimpleAnimatedPopup.h"
+
 namespace ProEngine
 {
     class EntityHandle;
@@ -38,13 +40,14 @@ namespace ProEngine
         entt::registry* registry_ = nullptr;
         Scene* active_scene_;
 
+
         entt::entity selected_entity_ = entt::null;
         EntityHandle* entity_handle_ = nullptr;
 
         std::vector<EntityHandle> entities_to_delete_;
 
         ImGuiTreeNodeFlags flags_ = ImGuiTreeNodeFlags_OpenOnArrow |
-                                   ImGuiTreeNodeFlags_OpenOnDoubleClick |
-                                   ImGuiTreeNodeFlags_SpanAvailWidth;
+            ImGuiTreeNodeFlags_OpenOnDoubleClick |
+            ImGuiTreeNodeFlags_SpanAvailWidth;
     };
 }
