@@ -1,6 +1,5 @@
 #include "Core/Renderer/Renderer3D.h"
 #include "Config.h"
-#include "Core/Renderer/InstancedRenderer.h"
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/Shader.h"
 #include "Core/Renderer/UniformBuffer.h"
@@ -35,20 +34,6 @@ namespace ProEngine
         static constexpr uint32_t MaxIndices = 200000;
         static constexpr uint32_t MaxTextureSlots = 32;
 
-        // Instancing configuration
-        uint32_t InstancingThreshold
-            = 3; // Minimum objects to enable instancing
-        bool AutoInstancingEnabled = true;
-
-        // Collection of render items for batching
-        std::vector<Renderer3D::RenderItem> RenderQueue;
-
-        // Mapping mesh+material -> items for efficient batching
-        std::unordered_map<std::string, std::vector<Renderer3D::RenderItem>>
-        MeshBatches;
-
-        // Reference to the InstancedRenderer
-        std::unique_ptr<InstancedRenderer> InstanceRenderer;
 
         // Active camera for frustum culling
         const Camera3D* ActiveCamera = nullptr;
@@ -290,13 +275,6 @@ namespace ProEngine
         if (s_Data.MeshShader == nullptr)
             PENGINE_CORE_CRITICAL("Mesh shader not found");
 
-        // Initialize InstancedRenderer
-        s_Data.InstanceRenderer = std::make_unique<InstancedRenderer>();
-        s_Data.InstanceRenderer->Init();
-
-        PENGINE_CORE_INFO(
-            "Instanced rendering system initialized with threshold: {}",
-            s_Data.InstancingThreshold);
 
         // Create line rendering resources
         s_Data.LineVertexArray = VertexArray::Create();
@@ -356,13 +334,6 @@ namespace ProEngine
     void Renderer3D::Shutdown()
     {
         PENGINE_PROFILE_FUNCTION();
-
-        // Shutdown instanced renderer
-        if (s_Data.InstanceRenderer)
-        {
-            s_Data.InstanceRenderer->Shutdown();
-            s_Data.InstanceRenderer.reset();
-        }
 
         delete[] s_Data.LineVertexBufferBase;
     }
@@ -426,29 +397,11 @@ namespace ProEngine
         s_Data.Stats.CulledMeshCount
             = s_Data.TotalMeshCount - s_Data.VisibleMeshCount;
 
-        ProcessBatches();
-
         Flush();
-
-        if (s_Data.Stats.TotalInstances > 0)
-        {
-            uint32_t drawCallsWithoutInstancing
-                = s_Data.Stats.IndividualDrawCalls
-                + s_Data.Stats.TotalInstances;
-            uint32_t actualDrawCalls = s_Data.Stats.IndividualDrawCalls
-                + s_Data.Stats.InstancedDrawCalls;
-            s_Data.Stats.InstancingEfficiency
-                = (float)(drawCallsWithoutInstancing - actualDrawCalls)
-                / (float)drawCallsWithoutInstancing * 100.0f;
-        }
     }
 
     void Renderer3D::StartBatch()
     {
-        // Clear previous frame's data
-        s_Data.RenderQueue.clear();
-        s_Data.MeshBatches.clear();
-
         // Reset line rendering
         s_Data.LineVertexCount = 0;
         s_Data.LineVertexBufferPtr = s_Data.LineVertexBufferBase;
@@ -458,117 +411,8 @@ namespace ProEngine
         s_Data.VisibleMeshCount = 0;
         s_Data.TotalMeshCount = 0;
 
-        // Reset instanced renderer stats
-        if (s_Data.InstanceRenderer) { s_Data.InstanceRenderer->ResetStats(); }
     }
 
-    void Renderer3D::ProcessBatches()
-    {
-        PENGINE_PROFILE_FUNCTION();
-
-        if (!s_Data.AutoInstancingEnabled)
-        {
-            // If auto instancing is disabled, render everything individually
-            for (const auto& item : s_Data.RenderQueue)
-            {
-                RenderIndividualItem(item);
-            }
-            return;
-        }
-
-        // Group items by mesh and material
-        for (const auto& item : s_Data.RenderQueue)
-        {
-            std::string meshKey = GetMeshKey(item.MeshPtr, item.MaterialPtr);
-            s_Data.MeshBatches[meshKey].push_back(item);
-        }
-
-        // Process each group
-        for (const auto& [meshKey, items] : s_Data.MeshBatches)
-        {
-            if (ShouldUseInstancing(items)) { RenderInstancedBatch(items); }
-            else
-            {
-                for (const auto& item : items) { RenderIndividualItem(item); }
-            }
-        }
-    }
-
-    void Renderer3D::RenderInstancedBatch(const std::vector<RenderItem>& items)
-    {
-        PENGINE_PROFILE_FUNCTION();
-
-        if (items.empty() || !s_Data.InstanceRenderer) return;
-
-        // Prepare data for instancing
-        std::vector<glm::mat4> transforms;
-        std::vector<glm::vec4> colors;
-        std::vector<int> entityIDs;
-
-        transforms.reserve(items.size());
-        colors.reserve(items.size());
-        entityIDs.reserve(items.size());
-
-        for (const auto& item : items)
-        {
-            transforms.push_back(item.Transform);
-            colors.push_back(item.Color);
-            entityIDs.push_back(item.EntityID);
-        }
-
-        // Use InstancedRenderer
-        s_Data.InstanceRenderer->DrawInstancedMesh(transforms, items[0].MeshPtr,
-                                                   colors, entityIDs);
-
-        // Update statistics
-        s_Data.Stats.InstancedDrawCalls++;
-        s_Data.Stats.TotalInstances += items.size();
-        s_Data.Stats.InstancedObjects += items.size();
-
-#ifdef FENGINE_SHADER_DEBUG
-        FENGINE_CORE_TRACE(
-            "Rendered {} instances of mesh {} in single draw call",
-            items.size(),
-            GetMeshKey(items[0].MeshPtr, items[0].MaterialPtr));
-#endif
-
-    }
-
-    void Renderer3D::RenderIndividualItem(const RenderItem& item)
-    {
-        PENGINE_PROFILE_FUNCTION();
-
-        Ref<Material> material = item.MaterialPtr;
-        if (!material)
-        {
-            // Use default material with specified color
-            s_Data.DefaultMaterial->SetAlbedoColor(item.Color);
-            material = s_Data.DefaultMaterial;
-        }
-
-        DrawMeshInternal(item.Transform, item.MeshPtr, material, item.EntityID);
-        s_Data.Stats.IndividualObjects++;
-    }
-
-    bool Renderer3D::ShouldUseInstancing(const std::vector<RenderItem>& items)
-    {
-        return s_Data.AutoInstancingEnabled
-            && items.size() >= s_Data.InstancingThreshold
-            && items.size() <= s_Data.InstanceRenderer->GetMaxInstances();
-    }
-
-    std::string Renderer3D::GetMeshKey(Ref<Mesh> mesh, Ref<Material> material)
-    {
-        // Use mesh and material pointers as unique key
-        uintptr_t meshPtr = reinterpret_cast<uintptr_t>(mesh.get());
-        uintptr_t matPtr = reinterpret_cast<uintptr_t>(material.get());
-        return std::to_string(meshPtr) + "_" + std::to_string(matPtr);
-    }
-
-    void Renderer3D::SubmitRenderItem(const RenderItem& item)
-    {
-        s_Data.RenderQueue.push_back(item);
-    }
 
     void Renderer3D::DrawMesh(const glm::mat4& transform, Ref<Mesh> mesh,
                               const glm::vec4& color, int entityID)
@@ -577,15 +421,9 @@ namespace ProEngine
 
         if (!PerformCulling(entityID, transform)) { return; }
 
-        RenderItem item;
-        item.Transform = transform;
-        item.MeshPtr = mesh;
-        item.MaterialPtr = nullptr; // Use color directly
-        item.Color = color;
-        item.EntityID = entityID;
-        item.ItemType = RenderItem::Type::Mesh;
-
-        SubmitRenderItem(item);
+        s_Data.DefaultMaterial->SetAlbedoColor(color);
+        DrawMeshInternal(transform, mesh, s_Data.DefaultMaterial, entityID);
+        s_Data.Stats.IndividualObjects++;
     }
 
     void Renderer3D::DrawMesh(const glm::mat4& transform, Ref<Mesh> mesh,
@@ -595,15 +433,9 @@ namespace ProEngine
 
         if (!PerformCulling(entityID, transform)) { return; }
 
-        RenderItem item;
-        item.Transform = transform;
-        item.MeshPtr = mesh;
-        item.MaterialPtr = material;
-        item.Color = material ? material->GetAlbedoColor() : glm::vec4(1.0f);
-        item.EntityID = entityID;
-        item.ItemType = RenderItem::Type::Mesh;
-
-        SubmitRenderItem(item);
+        DrawMeshInternal(transform, mesh, material ? material : s_Data.DefaultMaterial,
+                        entityID);
+        s_Data.Stats.IndividualObjects++;
     }
 
     void Renderer3D::DrawMesh(const glm::vec3& position, const glm::vec3& scale,
@@ -810,11 +642,6 @@ namespace ProEngine
         }
     }
 
-    void Renderer3D::NextBatch()
-    {
-        Flush();
-        StartBatch();
-    }
 
     void Renderer3D::PreparePrimitives()
     {
@@ -822,28 +649,6 @@ namespace ProEngine
         s_Data.SphereMesh = Mesh::CreateSphere();
     }
 
-    void Renderer3D::SetInstancingThreshold(uint32_t threshold)
-    {
-        s_Data.InstancingThreshold = threshold;
-        PENGINE_CORE_INFO("Instancing threshold set to: {}", threshold);
-    }
-
-    uint32_t Renderer3D::GetInstancingThreshold()
-    {
-        return s_Data.InstancingThreshold;
-    }
-
-    void Renderer3D::EnableAutoInstancing(bool enable)
-    {
-        s_Data.AutoInstancingEnabled = enable;
-        PENGINE_CORE_INFO("Auto instancing {}",
-                          enable ? "enabled" : "disabled");
-    }
-
-    bool Renderer3D::IsAutoInstancingEnabled()
-    {
-        return s_Data.AutoInstancingEnabled;
-    }
 
     bool Renderer3D::IsPointVisible(const glm::vec3& point)
     {
@@ -943,20 +748,6 @@ namespace ProEngine
             / (float)s_Data.TotalMeshCount * 100.0f;
     }
 
-    float Renderer3D::GetInstancingEfficiency()
-    {
-        return s_Data.Stats.InstancingEfficiency;
-    }
-
-    uint32_t Renderer3D::GetInstancedObjectCount()
-    {
-        return s_Data.Stats.InstancedObjects;
-    }
-
-    uint32_t Renderer3D::GetIndividualObjectCount()
-    {
-        return s_Data.Stats.IndividualObjects;
-    }
 
     void Renderer3D::DebugCulling()
     {
@@ -985,26 +776,6 @@ namespace ProEngine
 #endif
     }
 
-    void Renderer3D::DebugInstancing()
-    {
-#ifdef FENGINE_CULLING_DEBUG
-        FENGINE_CORE_INFO("=== INSTANCING DEBUG ===");
-        FENGINE_CORE_INFO("Auto instancing: {}", s_Data.AutoInstancingEnabled
-                          ? "ENABLED"
-                          : "DISABLED");
-        FENGINE_CORE_INFO("Instancing threshold: {}",
-                          s_Data.InstancingThreshold);
-        FENGINE_CORE_INFO("Render queue size: {}", s_Data.RenderQueue.size());
-        FENGINE_CORE_INFO("Mesh batches: {}", s_Data.MeshBatches.size());
-        FENGINE_CORE_INFO("Instanced draw calls: {}",
-                          s_Data.Stats.InstancedDrawCalls);
-        FENGINE_CORE_INFO("Individual draw calls: {}",
-                          s_Data.Stats.IndividualDrawCalls);
-        FENGINE_CORE_INFO("Total instances: {}", s_Data.Stats.TotalInstances);
-        FENGINE_CORE_INFO("Instancing efficiency: {:.2f}%",
-                          s_Data.Stats.InstancingEfficiency);
-#endif
-    }
 
     void Renderer3D::RecalculateEntityBounds(int entityID)
     {

@@ -162,17 +162,6 @@ namespace ProEngine
                 = 0.0f; // Porcentagem de redução de draw calls
         };
 
-        struct RenderItem
-        {
-            glm::mat4 Transform;
-            Ref<Mesh> MeshPtr;
-            Ref<Material> MaterialPtr;
-            glm::vec4 Color;
-            int EntityID;
-
-            // Para compatibilidade com diferentes tipos de renderização
-            enum class Type { Mesh, Cube, Sphere } ItemType = Type::Mesh;
-        };
 
         static void Init();
         static void Shutdown();
@@ -183,9 +172,7 @@ namespace ProEngine
         static void BeginScene(const Camera3DController& cameraController);
         static void EndScene();
 
-        static void StartBatch();
         static void Flush();
-        static void NextBatch();
 
         static bool IsPointVisible(const glm::vec3& point);
         static bool IsSphereVisible(const glm::vec3& center, float radius);
@@ -238,10 +225,6 @@ namespace ProEngine
         static void EnableWireframe(bool enable);
         static bool IsWireframeEnabled();
 
-        static void SetInstancingThreshold(uint32_t threshold);
-        static uint32_t GetInstancingThreshold();
-        static void EnableAutoInstancing(bool enable);
-        static bool IsAutoInstancingEnabled();
 
         static void ResetStats();
         static Statistics GetStats();
@@ -252,27 +235,14 @@ namespace ProEngine
         static uint32_t GetCulledMeshCount();
         static float GetCullingEfficiency();
 
-        // Novas estatísticas de instancing
-        static float GetInstancingEfficiency();
-        static uint32_t GetInstancedObjectCount();
-        static uint32_t GetIndividualObjectCount();
-
         static void DebugCulling();
-        static void DebugInstancing();
         static void RecalculateEntityBounds(int entityID);
         static void ClearCullingData();
 
         static void PreparePrimitives();
 
     private:
-        static void SubmitRenderItem(const RenderItem& item);
-        static void ProcessBatches();
-        static void RenderInstancedBatch(const std::vector<RenderItem>& items);
-        static void RenderIndividualItem(const RenderItem& item);
-
-        // Helpers para agrupamento
-        static bool ShouldUseInstancing(const std::vector<RenderItem>& items);
-        static std::string GetMeshKey(Ref<Mesh> mesh, Ref<Material> material);
+        static void StartBatch();
 
         // Função helper para culling centralizado (mantida)
         friend bool PerformCulling(int entityID, const glm::mat4& transform,
