@@ -21,7 +21,7 @@ namespace ProEngine
         instance_ = this;
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
-        window_->SetEventCallback(PROENGINE_BIND_EVENT_FN(Application::OnEvent));
+        window_->SetEventCallback(PENGINE_BIND_EVENT_FN(Application::OnEvent));
         main_scene_ = CreateScope<Scene>();
 
 #ifdef PROENGINE_ENABLE_EDITOR
@@ -36,9 +36,9 @@ namespace ProEngine
         PENGINE_PROFILE_FUNCTION();
 
         EventDispatcher dispatcher(e);
-        dispatcher.Dispatch<WindowCloseEvent>(PROENGINE_BIND_EVENT_FN(Application::OnWindowClose));
-        dispatcher.Dispatch<WindowResizeEvent>(PROENGINE_BIND_EVENT_FN(Application::OnWindowResize));
-        dispatcher.Dispatch<KeyPressedEvent>(PROENGINE_BIND_EVENT_FN(Application::OnKeyPressed));
+        dispatcher.Dispatch<WindowCloseEvent>(PENGINE_BIND_EVENT_FN(Application::OnWindowClose));
+        dispatcher.Dispatch<WindowResizeEvent>(PENGINE_BIND_EVENT_FN(Application::OnWindowResize));
+        dispatcher.Dispatch<KeyPressedEvent>(PENGINE_BIND_EVENT_FN(Application::OnKeyPressed));
 
         for (auto it = layer_stack_.rbegin(); it != layer_stack_.rend(); ++it)
         {

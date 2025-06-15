@@ -32,8 +32,8 @@ macro(proengine_define_option FLAG_NAME DESCRIPTION DEFAULT)
     endif ()
 endmacro()
 
-proengine_define_option(PROENGINE_ENABLE_EDITOR  "Enable runtime editor module" OFF)
-proengine_define_option(PROENGINE_DEBUG_LAYERS   "Enable debug rendering for layers" OFF)
+proengine_define_option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" OFF)
+proengine_define_option(PROENGINE_DEBUG_LAYERS "Enable debug rendering for layers" OFF)
 proengine_define_option(PROENGINE_ENABLE_ASSERTS "Enable engine asserts" OFF)
 
 
@@ -60,6 +60,7 @@ set(glfw_DIR ThirdParty/glfw)
 set(glad_DIR ThirdParty/glad)
 set(glm_DIR ThirdParty/glm)
 set(entt_DIR ThirdParty/entt)
+set(stbimage_DIR ThirdParty/stbimage)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -71,6 +72,7 @@ add_subdirectory(${glfw_DIR})
 add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
 add_subdirectory(${entt_DIR})
+add_subdirectory(${stbimage_DIR})
 
 target_compile_definitions(ImGui PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -128,6 +130,8 @@ find_package(OpenGL REQUIRED)
 engine_add_library(PERendering
         Core/Renderer/GraphicsContext.h
         Core/Renderer/GraphicsContext.cpp
+        Core/Renderer/Buffer.h
+        Core/Renderer/Buffer.cpp
         Core/Renderer/Renderer.h
         Core/Renderer/Renderer.cpp
         Core/Renderer/RenderCommand.h
@@ -138,6 +142,12 @@ engine_add_library(PERendering
         Core/Renderer/Framebuffer.cpp
         Core/Renderer/Shader.h
         Core/Renderer/Shader.cpp
+        Core/Renderer/UniformBuffer.h
+        Core/Renderer/UniformBuffer.cpp
+        Core/Renderer/Texture.h
+        Core/Renderer/Texture.cpp
+        Core/Renderer/VertexArray.h
+        Core/Renderer/VertexArray.cpp
 )
 target_link_libraries(PERendering
         spdlog
@@ -315,11 +325,20 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLFramebuffer.cpp
         Platform/OpenGL/OpenGLShader.h
         Platform/OpenGL/OpenGLShader.cpp
+        Platform/OpenGL/OpenGLBuffer.h
+        Platform/OpenGL/OpenGLBuffer.cpp
+        Platform/OpenGL/OpenGLVertexArray.h
+        Platform/OpenGL/OpenGLVertexArray.cpp
+        Platform/OpenGL/OpenGLUniformBuffer.h
+        Platform/OpenGL/OpenGLUniformBuffer.cpp
+        Platform/OpenGL/OpenGLTexture2D.h
+        Platform/OpenGL/OpenGLTexture2D.cpp
 )
 target_link_libraries(PEPlatform
         spdlog
         glfw
         glad
+        stbimage
 )
 target_include_directories(PEPlatform PUBLIC
         ${glm_DIR}
@@ -335,6 +354,7 @@ target_link_libraries(ProEngine INTERFACE
         PEWindow
         PEApplication
         PEPlatform
+        PERendering
         PEEvent
         PEInput
 )
