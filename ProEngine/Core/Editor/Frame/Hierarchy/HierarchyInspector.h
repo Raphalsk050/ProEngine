@@ -10,6 +10,13 @@ namespace ProEngine
 {
     class EntityHandle;
 
+    struct SelectedEntityValues
+    {
+        glm::vec3 selected_entity_position = glm::vec3(0.0f);
+        glm::vec3 selected_entity_rotation = glm::vec3(0.0f);
+        glm::vec3 selected_entity_scale = glm::vec3(1.0f);
+    };
+
     class HierarchyInspector : public Layer
     {
     public:
@@ -46,6 +53,7 @@ namespace ProEngine
         entt::entity selected_entity_ = entt::null;
         EntityHandle entity_handle_;
         EntityHandle* selected_entity_handle_ = nullptr;
+        SelectedEntityValues selected_entity_transform_;
 
         std::vector<EntityHandle> entities_to_delete_;
 

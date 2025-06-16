@@ -30,19 +30,13 @@ namespace ProEngine
 
         // Create an example entity with renderer component
         auto* scene = Application::Get().GetActiveScene();
-        cube_entity_0_ = scene->CreateEntity("Cube Entity 1");
-        cube_entity_1_ = scene->CreateEntity("Cube Entity 2");
+        sphere_entity_ = scene->CreateEntity("Sphere");
+        cube_entity_ = scene->CreateEntity("Cube");
 
-        cube_entity_0_.SetPosition({1.0,1.0,1.0});
-
-        render_command_1_ = cube_entity_0_.AddComponent<RendererComponent>();
-        render_command_2_ = cube_entity_1_.AddComponent<RendererComponent>();
-
-        render_command_2_.mesh = MeshType::Model;
-        render_command_2_.mesh_ptr = Mesh::CreateSphere(1.0);
-        render_command_1_.color = glm::vec4(1.0f);
-        render_command_2_.color = glm::vec4(1.0f);
-
+        RendererComponent rc = RendererComponent({.mesh = MeshType::Sphere});
+        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
+        rc = RendererComponent({.mesh = MeshType::Cube});
+        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
@@ -56,14 +50,10 @@ namespace ProEngine
         framebuffer_->Bind();
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
-        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 1.0);
-
-        Renderer3D::DrawBox(line_p1_position_, {1.0f,1.0f,1.0f}, line_color_);
-        Renderer3D::DrawLine3D(line_p1_position_, line_p2_position_, line_color_);
+        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 10.0);
 
         // Let the active scene render its entities
         Application::Get().GetActiveScene()->OnUpdate(ts);
-
         Renderer3D::EndScene();
         framebuffer_->Unbind();
     }

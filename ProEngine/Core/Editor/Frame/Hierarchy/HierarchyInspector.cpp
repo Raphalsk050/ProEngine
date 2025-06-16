@@ -4,6 +4,8 @@
 #include "Core/Application/Application.h"
 #include <imgui.h>
 
+#include "gtc/type_ptr.hpp"
+
 
 namespace ProEngine
 {
@@ -215,19 +217,28 @@ namespace ProEngine
 
     void HierarchyInspector::DrawEntityPropertiesWindow()
     {
-        if (selected_entity_ == entt::null) return;
         ImGui::Begin("Properties");
         if (entity_handle_)
         {
-            float position[3] = { entity_handle_.GetPosition().x, entity_handle_.GetPosition().y, entity_handle_.GetPosition().z };
-            float rotation[3] = { entity_handle_.GetRotation().x, entity_handle_.GetRotation().y, entity_handle_.GetRotation().z };
-            float scale[3]    = { entity_handle_.GetScale().x, entity_handle_.GetScale().y, entity_handle_.GetScale().z };
+            selected_entity_transform_.selected_entity_position = entity_handle_.GetPosition();
+            selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
+            selected_entity_transform_.selected_entity_scale = entity_handle_.GetScale();
+
             ImGui::Text("Position");
-            ImGui::InputFloat3("##", position);
-            ImGui::Text("Rotation");
-            ImGui::InputFloat3("##", rotation);
-            ImGui::Text("Scale");
-            ImGui::InputFloat3("##", scale);
+            if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 0.2f))
+            {
+                entity_handle_.SetPosition(selected_entity_transform_.selected_entity_position);
+            }
+
+            if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 0.2f))
+            {
+                entity_handle_.SetRotation(selected_entity_transform_.selected_entity_rotation);
+            }
+
+            if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 0.2f))
+            {
+                entity_handle_.SetScale(selected_entity_transform_.selected_entity_scale);
+            }
         }
         ImGui::End();
     }
