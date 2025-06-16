@@ -19,8 +19,7 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        camera_controller_.SetPosition({0.0f, 0.0f, -10.0f});
-        camera_controller_.SetRotation({0.0f, 0.0f, 0.0f});
+        // Keep the default camera position so the scene is visible
 
         FramebufferSpecification spec;
         spec.Width = Application::Get().GetWindow().GetWidth();
