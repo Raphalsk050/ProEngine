@@ -161,6 +161,7 @@ target_link_libraries(PERendering
         glfw
         glad
         Entt
+        PEPlatform
 )
 target_include_directories(PERendering PUBLIC
         PECore
@@ -380,8 +381,8 @@ target_link_libraries(ProEngine INTERFACE
         PECore
         PEWindow
         PEApplication
-        PEPlatform
         PERendering
+        PEPlatform
         PEEvent
         PECamera
         PEInput

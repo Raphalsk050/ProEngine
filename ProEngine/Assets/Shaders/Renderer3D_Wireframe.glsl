@@ -15,7 +15,7 @@ layout(std140) uniform Camera
 uniform mat4 u_Transform;
 uniform int u_EntityID; // ← ADICIONADO: Uniform para entity ID
 
-layout(location = 0) out flat int v_EntityID;
+layout(location = 0) flat out int v_EntityID;
 
 void main()
 {
@@ -30,7 +30,7 @@ void main()
 layout(location = 0) out vec4 o_Color;
 layout(location = 1) out int o_EntityID;
 
-layout(location = 0) in flat int v_EntityID;
+layout(location = 0) flat in int v_EntityID;
 
 // Material uniform buffer
 uniform vec4 u_Color;

@@ -17,7 +17,7 @@ struct VertexOutput
 };
 
 layout(location = 0) out VertexOutput Output;
-layout(location = 1) out flat int v_EntityID;
+layout(location = 1) flat out int v_EntityID;
 
 void main()
 {
@@ -38,7 +38,7 @@ struct VertexOutput
 };
 
 layout(location = 0) in VertexOutput Input;
-layout(location = 1) in flat int v_EntityID;
+layout(location = 1) flat in int v_EntityID;
 
 void main()
 {
