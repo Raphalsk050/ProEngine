@@ -19,7 +19,7 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        camera_controller_.SetPosition({0.0f, 0.0f, 0.0f});
+        camera_controller_.SetPosition({0.0f, 0.0f, -10.0f});
         camera_controller_.SetRotation({0.0f, 0.0f, 0.0f});
 
         FramebufferSpecification spec;
@@ -28,14 +28,21 @@ namespace ProEngine
         framebuffer_ = Framebuffer::Create(spec);
         viewport_size_ = {(float)spec.Width, (float)spec.Height};
         camera_controller_.OnResize(spec.Width, spec.Height);
-        Renderer3D::EnableWireframe(true);
 
         // Create an example entity with renderer component
         auto* scene = Application::Get().GetActiveScene();
-        cube_entity_ = scene->CreateEntity("Cube Entity");
-        auto& renderer = cube_entity_.AddComponent<RendererComponent>();
-        renderer.mesh = MeshType::Cube;
-        renderer.color = glm::vec4(0.8f, 0.8f, 0.1f, 1.0f);
+        cube_entity_0_ = scene->CreateEntity("Cube Entity 1");
+        cube_entity_1_ = scene->CreateEntity("Cube Entity 2");
+        auto& renderer = cube_entity_0_.AddComponent<RendererComponent>();
+        auto& renderer2 = cube_entity_1_.AddComponent<RendererComponent>();
+        renderer.mesh = MeshType::Model;
+        renderer.mesh_ptr = Mesh::CreateCube();
+
+        renderer2.mesh = MeshType::Model;
+        renderer2.mesh_ptr = Mesh::CreateSphere(1.0);
+        renderer.color = glm::vec4(1.0f);
+        renderer2.color = glm::vec4(1.0f);
+
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
@@ -43,11 +50,11 @@ namespace ProEngine
         Layer::OnUpdate(ts);
         camera_controller_.OnUpdate(ts);
         time_ += ts;
-        RenderCommand::SetClearColor({0.2f, 0.2f, 0.2f, 1.0f});
+        RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
         framebuffer_->Bind();
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
-        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 0.2);
+        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 1.0);
 
         // Let the active scene render its entities
         Application::Get().GetActiveScene()->OnUpdate(ts);

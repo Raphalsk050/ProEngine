@@ -59,10 +59,10 @@ namespace ProEngine
     {
         MeshType mesh{MeshType::Triangle};
         glm::vec4 color{1.0f};
-        bool depth_test{true};
-        bool culling{true};
+        bool depth_test{false};
+        bool culling{false};
         GLenum cull_face{GL_BACK};
-        bool double_sided{false};
+        bool double_sided{true};
         std::shared_ptr<Model> model{nullptr};
         std::shared_ptr<Mesh> mesh_ptr{nullptr};
     };

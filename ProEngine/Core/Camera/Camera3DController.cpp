@@ -32,6 +32,9 @@ namespace ProEngine
         case ControlMode::FirstPerson:
             UpdateFirstPersonMode(ts);
             break;
+        default:
+            UpdateFirstPersonMode(ts);
+            break;
         }
     }
 
@@ -138,6 +141,7 @@ namespace ProEngine
 
     bool Camera3DController::OnMouseMoved(MouseMovedEvent& e)
     {
+        PENGINE_CORE_INFO("Mouse moved!");
         if (m_FirstMouse)
         {
             m_LastMousePosition.x = e.GetX();
@@ -222,6 +226,7 @@ namespace ProEngine
             break;
         }
 
+        PENGINE_CORE_INFO("Key pressed {0}", e.GetName());
         return false;
     }
 
@@ -262,6 +267,7 @@ namespace ProEngine
     void Camera3DController::SetPosition(const glm::vec3& position)
     {
         m_Camera.SetPosition(position);
+        PENGINE_CORE_INFO("Camera position: ({0},{1},{2})", m_Camera.GetPosition().x, m_Camera.GetPosition().y, m_Camera.GetPosition().z);
     }
 
     void Camera3DController::SetRotation(const glm::vec3& rotation)

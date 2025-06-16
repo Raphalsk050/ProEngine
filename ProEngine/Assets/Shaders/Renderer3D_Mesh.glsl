@@ -81,7 +81,7 @@ uniform int u_EntityID;
 uniform sampler2D u_AlbedoMap;
 uniform sampler2D u_NormalMap;
 uniform sampler2D u_MetallicMap;
-uniform sampler2D u_RoughnessMap;
+uniform sampler2D u_RoughnessMap;d
 
 void main()
 {
@@ -105,5 +105,5 @@ void main()
     vec3 finalColor = finalAlbedo.rgb * lighting;
 
     // Output final color
-    o_Color = vec4(finalColor, finalAlbedo.a);
+    o_Color = vec4(1.0f);
 }

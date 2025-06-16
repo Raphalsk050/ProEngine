@@ -24,6 +24,9 @@ namespace ProEngine {
         std::unordered_map<KeyCode, bool> last_key_state_map_;
         Camera3DController camera_controller_ = Camera3DController(1.0f);
         float time_ = 0.0f;
-        EntityHandle cube_entity_;
+        EntityHandle cube_entity_0_;
+        EntityHandle cube_entity_1_;
+        EntityHandle cube_entity_2_;
+        EntityHandle cube_entity_3_;
     };
 } // namespace ProEngine
