@@ -26,16 +26,17 @@ namespace ProEngine
             glDeleteRenderbuffers(1, &depth_attachment_);
         }
 
-        glCreateFramebuffers(1, &renderer_id_);
+        glGenFramebuffers(1, &renderer_id_);
         glBindFramebuffer(GL_FRAMEBUFFER, renderer_id_);
 
-        glCreateTextures(GL_TEXTURE_2D, 1, &color_attachment_);
-        glTextureStorage2D(color_attachment_, 1, GL_RGBA8, specification_.Width, specification_.Height);
-        glTextureParameteri(color_attachment_, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTextureParameteri(color_attachment_, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glGenTextures(1, &color_attachment_);
+        glBindTexture(GL_TEXTURE_2D, color_attachment_);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, specification_.Width, specification_.Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_attachment_, 0);
 
-        glCreateRenderbuffers(1, &depth_attachment_);
+        glGenRenderbuffers(1, &depth_attachment_);
         glBindRenderbuffer(GL_RENDERBUFFER, depth_attachment_);
         glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, specification_.Width, specification_.Height);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depth_attachment_);
