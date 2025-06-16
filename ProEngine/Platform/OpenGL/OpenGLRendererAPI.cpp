@@ -64,18 +64,18 @@ namespace ProEngine
         glDepthMask(GL_TRUE);
     }
 
-    // void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
-    // {
-    //     vertexArray->Bind();
-    //     uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
-    //     glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
-    // }
-    //
-    // void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
-    // {
-    //     vertexArray->Bind();
-    //     glDrawArrays(GL_LINES, 0, vertexCount);
-    // }
+    void OpenGLRendererAPI::DrawIndexed(const Ref<VertexArray>& vertexArray, uint32_t indexCount)
+    {
+        vertexArray->Bind();
+        uint32_t count = indexCount ? indexCount : vertexArray->GetIndexBuffer()->GetCount();
+        glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+    }
+
+    void OpenGLRendererAPI::DrawLines(const Ref<VertexArray>& vertexArray, uint32_t vertexCount)
+    {
+        vertexArray->Bind();
+        glDrawArrays(GL_LINES, 0, vertexCount);
+    }
 
     void OpenGLRendererAPI::SetLineWidth(float width)
     {

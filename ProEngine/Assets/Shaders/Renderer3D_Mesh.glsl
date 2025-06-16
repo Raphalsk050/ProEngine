@@ -98,12 +98,12 @@ void main()
 
     // Calculate lighting - CORRIGIDO: garantir que todos são vec3
     vec3 ambient = u_AmbientLightColor * u_AmbientLightIntensity;
-    vec3 diffuse = vec3(NdotL) * vec3(u_PointLightIntensity); // Corrigido: explicit vec3 cast
+    vec3 diffuse = vec3(NdotL) * vec3(u_PointLightIntensity);
 
     // Combine lighting with material
     vec3 lighting = ambient + diffuse;
     vec3 finalColor = finalAlbedo.rgb * lighting;
 
     // Output final color
-    o_Color = vec4(finalColor, finalAlbedo.a);
+    o_Color = vec4(finalColor,1.0f);
 }

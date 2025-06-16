@@ -4,6 +4,8 @@
 #include "Core/Application/Application.h"
 #include <imgui.h>
 
+#include "gtc/type_ptr.hpp"
+
 
 namespace ProEngine
 {
@@ -18,6 +20,7 @@ namespace ProEngine
         Layer::OnAttach();
         registry_ = &Application::Get().GetActiveScene()->GetRegistry();
         active_scene_ = Application::Get().GetActiveScene();
+        entity_handle_ = active_scene_->CreateEntity("Entity");
     }
 
     void HierarchyInspector::OnDetach()
@@ -33,8 +36,9 @@ namespace ProEngine
     void HierarchyInspector::OnImGuiRender()
     {
         Layer::OnImGuiRender();
-
         if (!opened_) return;
+        DrawEntityPropertiesWindow();
+
 
         if (ImGui::Begin("Hierarchy", &opened_))
         {
@@ -127,7 +131,7 @@ namespace ProEngine
             selected_entity_ = entity.Raw();
             if (entity_handle_)
             {
-                *entity_handle_ = entity;
+                entity_handle_ = entity;
             }
         }
 
@@ -211,6 +215,34 @@ namespace ProEngine
         }
     }
 
+    void HierarchyInspector::DrawEntityPropertiesWindow()
+    {
+        ImGui::Begin("Properties");
+        if (entity_handle_)
+        {
+            selected_entity_transform_.selected_entity_position = entity_handle_.GetPosition();
+            selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
+            selected_entity_transform_.selected_entity_scale = entity_handle_.GetScale();
+
+            ImGui::Text("Position");
+            if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 0.2f))
+            {
+                entity_handle_.SetPosition(selected_entity_transform_.selected_entity_position);
+            }
+
+            if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 0.2f))
+            {
+                entity_handle_.SetRotation(selected_entity_transform_.selected_entity_rotation);
+            }
+
+            if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 0.2f))
+            {
+                entity_handle_.SetScale(selected_entity_transform_.selected_entity_scale);
+            }
+        }
+        ImGui::End();
+    }
+
     void HierarchyInspector::DeleteEntity(EntityHandle& entity)
     {
         if (!entity.Valid()) return;
@@ -228,7 +260,7 @@ namespace ProEngine
             selected_entity_ = entt::null;
             if (entity_handle_)
             {
-                *entity_handle_ = EntityHandle{};
+                entity_handle_ = entity;
             }
         }
 

@@ -94,5 +94,6 @@ namespace ProEngine
 
     bool EntityHandle::Valid() const
     {
+        return scene_ && scene_->registry_.valid(handle_);
     }
 } // ProEngine

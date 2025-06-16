@@ -42,6 +42,6 @@ layout(location = 1) flat in int v_EntityID;
 
 void main()
 {
-    o_Color = Input.Color;
+    o_Color = vec4(1.0f);
     o_EntityID = v_EntityID;
 }

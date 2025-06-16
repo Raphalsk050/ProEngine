@@ -19,8 +19,7 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        camera_controller_.SetPosition({0.0f, 0.0f, 0.0f});
-        camera_controller_.SetRotation({0.0f, 0.0f, 0.0f});
+        // Keep the default camera position so the scene is visible
 
         FramebufferSpecification spec;
         spec.Width = Application::Get().GetWindow().GetWidth();
@@ -28,20 +27,33 @@ namespace ProEngine
         framebuffer_ = Framebuffer::Create(spec);
         viewport_size_ = {(float)spec.Width, (float)spec.Height};
         camera_controller_.OnResize(spec.Width, spec.Height);
-        Renderer3D::EnableWireframe(true);
+
+        // Create an example entity with renderer component
+        auto* scene = Application::Get().GetActiveScene();
+        sphere_entity_ = scene->CreateEntity("Sphere");
+        cube_entity_ = scene->CreateEntity("Cube");
+
+        RendererComponent rc = RendererComponent({.mesh = MeshType::Sphere});
+        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
+        rc = RendererComponent({.mesh = MeshType::Cube});
+        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
         camera_controller_.OnUpdate(ts);
+        PENGINE_CORE_INFO("Camera position: ({},{},{})", camera_controller_.GetPosition().x,camera_controller_.GetPosition().y,camera_controller_.GetPosition().z);
+
         time_ += ts;
-        RenderCommand::SetClearColor({0.2f, 0.2f, 0.2f, 1.0f});
+        RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
         framebuffer_->Bind();
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
-        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 0.2);
-        Renderer3D::DrawCube(glm::vec3(0.0f), glm::vec3(1.0f), glm::vec4(0.8f, 0.8f, 0.1f, 1.0f));
+        Renderer3D::SetAmbientLight(glm::vec3(1.0f), 10.0);
+
+        // Let the active scene render its entities
+        Application::Get().GetActiveScene()->OnUpdate(ts);
         Renderer3D::EndScene();
         framebuffer_->Unbind();
     }
