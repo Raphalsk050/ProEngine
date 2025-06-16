@@ -43,15 +43,15 @@ namespace ProEngine
 
     struct ModelRendererComponent
     {
-        Ref<Model> Model;
+        Ref<Model> model;
         Ref<Material> OverrideMaterial;
 
         ModelRendererComponent() = default;
         ModelRendererComponent(const ModelRendererComponent&) = default;
 
-        ModelRendererComponent(const Ref<ProEngine::Model>& model)
-            : Model(model)
+        ModelRendererComponent(const Ref<Model>& m)
         {
+            model = m;
         }
     };
 

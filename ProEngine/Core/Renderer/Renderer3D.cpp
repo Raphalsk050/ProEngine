@@ -605,9 +605,9 @@ namespace ProEngine
     void Renderer3D::DrawModel(const glm::mat4& transform,
                                ModelRendererComponent& src, int entityID)
     {
-        if (!src.Model) return;
+        if (!src.model) return;
 
-        for (const auto& mesh : src.Model->GetMeshes())
+        for (const auto& mesh : src.model->GetMeshes())
         {
             if (src.OverrideMaterial)
                 DrawMesh(transform, mesh, src.OverrideMaterial, entityID);

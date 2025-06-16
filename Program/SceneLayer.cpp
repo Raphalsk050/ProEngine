@@ -29,6 +29,13 @@ namespace ProEngine
         viewport_size_ = {(float)spec.Width, (float)spec.Height};
         camera_controller_.OnResize(spec.Width, spec.Height);
         Renderer3D::EnableWireframe(true);
+
+        // Create an example entity with renderer component
+        auto* scene = Application::Get().GetActiveScene();
+        cube_entity_ = scene->CreateEntity("Cube Entity");
+        auto& renderer = cube_entity_.AddComponent<RendererComponent>();
+        renderer.mesh = MeshType::Cube;
+        renderer.color = glm::vec4(0.8f, 0.8f, 0.1f, 1.0f);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
@@ -41,7 +48,10 @@ namespace ProEngine
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
         Renderer3D::SetAmbientLight(glm::vec3(1.0f), 0.2);
-        Renderer3D::DrawCube(glm::vec3(0.0f), glm::vec3(1.0f), glm::vec4(0.8f, 0.8f, 0.1f, 1.0f));
+
+        // Let the active scene render its entities
+        Application::Get().GetActiveScene()->OnUpdate(ts);
+
         Renderer3D::EndScene();
         framebuffer_->Unbind();
     }

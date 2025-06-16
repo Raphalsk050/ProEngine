@@ -3,6 +3,8 @@
 #include "Core/Layer/Layer.h"
 #include "Core/Renderer/Framebuffer.h"
 #include "Core/Renderer/Mesh.h"
+#include "Core/Scene/EntityHandle.h"
+#include "Core/Scene/Components.h"
 
 namespace ProEngine {
     class SceneLayer : public Layer {
@@ -22,5 +24,6 @@ namespace ProEngine {
         std::unordered_map<KeyCode, bool> last_key_state_map_;
         Camera3DController camera_controller_ = Camera3DController(1.0f);
         float time_ = 0.0f;
+        EntityHandle cube_entity_;
     };
 } // namespace ProEngine

@@ -260,6 +260,8 @@ engine_add_library(PEScene
         Core/Scene/Scene.cpp
         Core/Scene/EntityHandle.h
         Core/Scene/EntityHandle.cpp
+        Core/Scene/SceneRenderer.h
+        Core/Scene/SceneRenderer.cpp
         Core/Scene/Components.h
 )
 target_link_libraries(PEScene

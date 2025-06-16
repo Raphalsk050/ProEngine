@@ -1,5 +1,6 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Scene/EntityHandle.h"
+#include "Core/Scene/SceneRenderer.h"
 #include "Components.h"
 
 
@@ -16,6 +17,8 @@ namespace ProEngine
 
     void Scene::OnUpdate(Timestep ts)
     {
+        (void)ts;
+        SceneRenderer::RenderScene(this);
     }
 
     void Scene::LateUpdate(Timestep ts)
