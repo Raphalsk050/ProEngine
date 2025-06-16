@@ -34,8 +34,9 @@ namespace ProEngine
     void HierarchyInspector::OnImGuiRender()
     {
         Layer::OnImGuiRender();
-
         if (!opened_) return;
+        DrawEntityPropertiesWindow();
+
 
         if (ImGui::Begin("Hierarchy", &opened_))
         {
@@ -209,7 +210,6 @@ namespace ProEngine
             }
 
             ImGui::TreePop();
-            DrawEntityPropertiesWindow();
         }
     }
 
@@ -217,11 +217,17 @@ namespace ProEngine
     {
         if (selected_entity_ == entt::null) return;
         ImGui::Begin("Properties");
-        ImGui::Text("Entity Properties");
         if (entity_handle_)
         {
             float position[3] = { entity_handle_.GetPosition().x, entity_handle_.GetPosition().y, entity_handle_.GetPosition().z };
-            ImGui::InputFloat3("Position: ", position);
+            float rotation[3] = { entity_handle_.GetRotation().x, entity_handle_.GetRotation().y, entity_handle_.GetRotation().z };
+            float scale[3]    = { entity_handle_.GetScale().x, entity_handle_.GetScale().y, entity_handle_.GetScale().z };
+            ImGui::Text("Position");
+            ImGui::InputFloat3("##", position);
+            ImGui::Text("Rotation");
+            ImGui::InputFloat3("##", rotation);
+            ImGui::Text("Scale");
+            ImGui::InputFloat3("##", scale);
         }
         ImGui::End();
     }

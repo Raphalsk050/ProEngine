@@ -32,10 +32,12 @@ namespace ProEngine
         auto* scene = Application::Get().GetActiveScene();
         cube_entity_0_ = scene->CreateEntity("Cube Entity 1");
         cube_entity_1_ = scene->CreateEntity("Cube Entity 2");
+
+        cube_entity_0_.SetPosition({1.0,1.0,1.0});
+
+
         auto& renderer = cube_entity_0_.AddComponent<RendererComponent>();
         auto& renderer2 = cube_entity_1_.AddComponent<RendererComponent>();
-        renderer.mesh = MeshType::Model;
-        renderer.mesh_ptr = Mesh::CreateCube();
 
         renderer2.mesh = MeshType::Model;
         renderer2.mesh_ptr = Mesh::CreateSphere(1.0);
