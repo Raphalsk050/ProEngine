@@ -259,7 +259,6 @@ namespace ProEngine
     void Renderer3D::Init()
     {
         PENGINE_PROFILE_FUNCTION();
-        EarlyDepthTestManager::Initialize();
 
         s_Data.MeshShader = Shader::Create(
             "../ProEngine/Assets/Shaders/Renderer3D_Mesh.glsl");
@@ -276,6 +275,7 @@ namespace ProEngine
         s_Data.LineVertexArray = VertexArray::Create();
         s_Data.LineVertexBuffer = VertexBuffer::Create(
             Renderer3DData::MaxVertices * sizeof(LineVertex3D));
+
         s_Data.LineVertexBuffer->SetLayout({
             {ShaderDataType::Float3, "a_Position"},
             {ShaderDataType::Float4, "a_Color"},
@@ -338,21 +338,16 @@ namespace ProEngine
                                 const glm::mat4& transform)
     {
         PENGINE_PROFILE_FUNCTION();
-        EarlyDepthTestManager::BeginFrame();
 
-        s_Data.CameraBuffer.ViewProjection
-            = camera.GetProjection() * glm::inverse(transform);
-        s_Data.CameraBuffer.CameraPosition
-            = glm::vec3(glm::inverse(transform)[3]);
-        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer,
-                                            sizeof(Renderer3DData::CameraData));
+        s_Data.CameraBuffer.ViewProjection = camera.GetProjection() * glm::inverse(transform);
+        s_Data.CameraBuffer.CameraPosition = glm::vec3(glm::inverse(transform)[3]);
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer3DData::CameraData));
 
         // Update lighting data
         s_Data.LightBuffer.PointLightPosition = s_Data.PointLightPosition;
         s_Data.LightBuffer.AmbientLightColor = s_Data.AmbientLightColor;
         s_Data.LightBuffer.AmbientLightIntensity = s_Data.AmbientLightIntensity;
-        s_Data.LightUniformBuffer->SetData(&s_Data.LightBuffer,
-                                           sizeof(Renderer3DData::LightData));
+        s_Data.LightUniformBuffer->SetData(&s_Data.LightBuffer, sizeof(Renderer3DData::LightData));
 
         s_Data.ActiveCamera = nullptr;
         StartBatch();
@@ -361,19 +356,16 @@ namespace ProEngine
     void Renderer3D::BeginScene(const Camera3D& camera)
     {
         PENGINE_PROFILE_FUNCTION();
-        EarlyDepthTestManager::BeginFrame();
 
         s_Data.CameraBuffer.ViewProjection = camera.GetViewProjection();
         s_Data.CameraBuffer.CameraPosition = camera.GetPosition();
-        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer,
-                                            sizeof(Renderer3DData::CameraData));
+        s_Data.CameraUniformBuffer->SetData(&s_Data.CameraBuffer, sizeof(Renderer3DData::CameraData));
 
         // Update lighting data
         s_Data.LightBuffer.PointLightPosition = s_Data.PointLightPosition;
         s_Data.LightBuffer.AmbientLightColor = s_Data.AmbientLightColor;
         s_Data.LightBuffer.AmbientLightIntensity = s_Data.AmbientLightIntensity;
-        s_Data.LightUniformBuffer->SetData(&s_Data.LightBuffer,
-                                           sizeof(Renderer3DData::LightData));
+        s_Data.LightUniformBuffer->SetData(&s_Data.LightBuffer, sizeof(Renderer3DData::LightData));
 
         s_Data.ActiveCamera = &camera;
         StartBatch();

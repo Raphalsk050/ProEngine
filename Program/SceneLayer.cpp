@@ -35,14 +35,13 @@ namespace ProEngine
 
         cube_entity_0_.SetPosition({1.0,1.0,1.0});
 
+        render_command_1_ = cube_entity_0_.AddComponent<RendererComponent>();
+        render_command_2_ = cube_entity_1_.AddComponent<RendererComponent>();
 
-        auto& renderer = cube_entity_0_.AddComponent<RendererComponent>();
-        auto& renderer2 = cube_entity_1_.AddComponent<RendererComponent>();
-
-        renderer2.mesh = MeshType::Model;
-        renderer2.mesh_ptr = Mesh::CreateSphere(1.0);
-        renderer.color = glm::vec4(1.0f);
-        renderer2.color = glm::vec4(1.0f);
+        render_command_2_.mesh = MeshType::Model;
+        render_command_2_.mesh_ptr = Mesh::CreateSphere(1.0);
+        render_command_1_.color = glm::vec4(1.0f);
+        render_command_2_.color = glm::vec4(1.0f);
 
     }
 
@@ -50,12 +49,17 @@ namespace ProEngine
     {
         Layer::OnUpdate(ts);
         camera_controller_.OnUpdate(ts);
+        PENGINE_CORE_INFO("Camera position: ({},{},{})", camera_controller_.GetPosition().x,camera_controller_.GetPosition().y,camera_controller_.GetPosition().z);
+
         time_ += ts;
         RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
         framebuffer_->Bind();
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
         Renderer3D::SetAmbientLight(glm::vec3(1.0f), 1.0);
+
+        Renderer3D::DrawBox(line_p1_position_, {1.0f,1.0f,1.0f}, line_color_);
+        Renderer3D::DrawLine3D(line_p1_position_, line_p2_position_, line_color_);
 
         // Let the active scene render its entities
         Application::Get().GetActiveScene()->OnUpdate(ts);

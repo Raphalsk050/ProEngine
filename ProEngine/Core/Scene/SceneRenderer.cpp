@@ -11,6 +11,7 @@ void SceneRenderer::RenderScene(Scene* scene)
         auto& transform = view.get<TransformComponent>(entity);
         auto& renderer = view.get<RendererComponent>(entity);
 
+        // glm::mat4 worldTransform = scene->GetWorldMatrix(entity);
         glm::mat4 worldTransform = scene->GetWorldMatrix(entity);
         int entityID = (int)entt::to_integral(entity);
 
