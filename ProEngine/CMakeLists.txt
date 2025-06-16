@@ -180,6 +180,7 @@ engine_add_library(PECore
         Core/Debug/Instrumentor.h
         Core/Time.h
         Core/Timestep.h
+        Core/Types.h
 )
 target_link_libraries(PECore PUBLIC
         spdlog
