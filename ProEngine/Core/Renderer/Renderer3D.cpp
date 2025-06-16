@@ -141,18 +141,17 @@ namespace ProEngine
     bool PerformCulling(int entityID, const glm::mat4& transform,
                         float* outBoundingRadius = nullptr)
     {
-        if (!s_Data.ActiveCamera || entityID < 0)
+        if (!s_Data.ActiveCamera)
         {
-            if (s_Data.ActiveCamera == nullptr)
-            {
-                PENGINE_CORE_ASSERT(false, "No Active Camera!")
-                PENGINE_CORE_ERROR("No Active Camera!");
-            }
-            if (entityID < 0)
-            {
-                PENGINE_CORE_ASSERT(false, "EntityID is invalid!")
-                PENGINE_CORE_ERROR("EntityID is invalid!");
-            }
+            PENGINE_CORE_ASSERT(false, "No Active Camera!")
+            PENGINE_CORE_ERROR("No Active Camera!");
+            return true;
+        }
+
+        // Allow negative entity IDs for objects not associated with a scene
+        // entity. Skip culling in this case but continue rendering.
+        if (entityID < 0)
+        {
             return true;
         }
 
