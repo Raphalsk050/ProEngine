@@ -276,6 +276,15 @@ namespace ProEngine
 
         PENGINE_CORE_TRACE("Shader program linked successfully");
 
+        // Bind uniform blocks manually for GL 4.1
+        GLuint cameraBlock = glGetUniformBlockIndex(program, "Camera");
+        if (cameraBlock != GL_INVALID_INDEX)
+            glUniformBlockBinding(program, cameraBlock, 0);
+
+        GLuint lightBlock = glGetUniformBlockIndex(program, "Light");
+        if (lightBlock != GL_INVALID_INDEX)
+            glUniformBlockBinding(program, lightBlock, 1);
+
         // Limpar shaders individuais (já não são necessários após linking)
         for (auto id : shaderIDs)
         {

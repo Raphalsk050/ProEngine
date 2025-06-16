@@ -1,11 +1,11 @@
 #type vertex
-#version 450 core
+#version 410 core
 layout(location = 0) in vec3 a_Position;
 layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec2 a_TexCoord;
 
-layout(std140, binding = 0) uniform Camera
+layout(std140) uniform Camera
 {
     mat4 u_ViewProjection;
     vec3 u_CameraPosition;
@@ -15,7 +15,7 @@ layout(std140, binding = 0) uniform Camera
 uniform mat4 u_Transform;
 uniform int u_EntityID; // ← ADICIONADO: Uniform para entity ID
 
-layout(location = 0) out flat int v_EntityID;
+layout(location = 0) flat out int v_EntityID;
 
 void main()
 {
@@ -26,12 +26,11 @@ void main()
 }
 
 #type fragment
-#version 450 core
-layout(early_fragment_tests) in;
+#version 410 core
 layout(location = 0) out vec4 o_Color;
 layout(location = 1) out int o_EntityID;
 
-layout(location = 0) in flat int v_EntityID;
+layout(location = 0) flat in int v_EntityID;
 
 // Material uniform buffer
 uniform vec4 u_Color;

@@ -45,7 +45,7 @@ OpenGLVertexArray::OpenGLVertexArray() {
   const GLubyte* version = glGetString(GL_VERSION);
   const GLubyte* glslVersion = glGetString(GL_SHADING_LANGUAGE_VERSION);
 
-  glCreateVertexArrays(1, &m_RendererID);
+  glGenVertexArrays(1, &m_RendererID);
 }
 
 OpenGLVertexArray::~OpenGLVertexArray() {

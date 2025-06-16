@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Camera/Camera3D.h"
-#include "Core/TimeStep.h"
+#include "Core/Timestep.h"
 #include "Core/Event/WindowApplicationEvent.h"
 #include "Core/Event/MouseEvent.h"
 #include "Core/Event/KeyEvent.h"

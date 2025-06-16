@@ -1,5 +1,6 @@
 ﻿#include <ProEngine.h>
 #include "SampleLayer.h"
+#include "SceneLayer.h"
 
 using namespace std;
 
@@ -8,7 +9,7 @@ namespace ProEngine {
   public:
     explicit Sample(const ApplicationSpecification &spec)
       : Application(spec) {
-      PushLayer(new SampleLayer());
+      PushLayer(new SceneLayer());
     }
   };
 

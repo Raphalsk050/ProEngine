@@ -17,8 +17,8 @@ namespace ProEngine
     private:
         void Invalidate();
 
-        uint32_t renderer_id_ = 0;
-        uint32_t color_attachment_ = 0;
-        uint32_t depth_attachment_ = 0;
+        uint32_t renderer_id_ = -1;
+        uint32_t color_attachment_ = -1;
+        uint32_t depth_attachment_ = -1;
     };
 }

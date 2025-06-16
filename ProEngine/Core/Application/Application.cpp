@@ -9,6 +9,7 @@
 #include "Core/Editor/CommandSystem.h"
 #include "Core/Event/KeyEvent.h"
 #include "Core/Event/WindowApplicationEvent.h"
+#include "Core/Renderer/Renderer3D.h"
 
 namespace ProEngine
 {
@@ -22,6 +23,9 @@ namespace ProEngine
 
         window_ = Window::Create(WindowProps(specification_.Name, specification_.WindowWidth, specification_.WindowHeight));
         window_->SetEventCallback(PENGINE_BIND_EVENT_FN(Application::OnEvent));
+
+        Renderer3D::Init();
+
         main_scene_ = CreateScope<Scene>();
 
 #ifdef PROENGINE_ENABLE_EDITOR

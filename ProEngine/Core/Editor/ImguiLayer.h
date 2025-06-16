@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/TimeStep.h"
+#include "Core/Timestep.h"
 #include "Core/Event/Event.h"
 #include "Core/Layer/Layer.h"
 

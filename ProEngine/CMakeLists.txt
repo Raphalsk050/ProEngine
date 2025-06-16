@@ -134,8 +134,13 @@ engine_add_library(PERendering
         Core/Renderer/Buffer.cpp
         Core/Renderer/Renderer.h
         Core/Renderer/Renderer.cpp
+        Core/Renderer/Renderer3D.h
+        Core/Renderer/Renderer3D.cpp
         Core/Renderer/RenderCommand.h
         Core/Renderer/RenderCommand.cpp
+        Core/Renderer/Mesh.h
+        Core/Renderer/Mesh.cpp
+        Core/Renderer/Material.h
         Core/Renderer/RendererAPI.h
         Core/Renderer/RendererAPI.cpp
         Core/Renderer/Framebuffer.h
@@ -148,11 +153,15 @@ engine_add_library(PERendering
         Core/Renderer/Texture.cpp
         Core/Renderer/VertexArray.h
         Core/Renderer/VertexArray.cpp
+        Core/Renderer/InstancedRenderer.h
+        Core/Renderer/InstancedRenderer.cpp
 )
 target_link_libraries(PERendering
         spdlog
         glfw
         glad
+        Entt
+        PEPlatform
 )
 target_include_directories(PERendering PUBLIC
         PECore
@@ -171,6 +180,7 @@ engine_add_library(PECore
         Core/Debug/Instrumentor.h
         Core/Time.h
         Core/Timestep.h
+        Core/Types.h
 )
 target_link_libraries(PECore PUBLIC
         spdlog
@@ -306,6 +316,7 @@ if (PROENGINE_ENABLE_EDITOR)
             ImGui
             Entt
             glm
+            PEScene
     )
     target_include_directories(PEEditor PUBLIC
             ${imgui_DIR}
@@ -372,8 +383,8 @@ target_link_libraries(ProEngine INTERFACE
         PECore
         PEWindow
         PEApplication
-        PEPlatform
         PERendering
+        PEPlatform
         PEEvent
         PECamera
         PEInput
