@@ -15,3 +15,6 @@ You can enable or disable debugging tools and engine features via `#define` dire
 | `PROENGINE_DEBUG_FRUSTUM`    | Displays frustum information and visualizations for camera debugging.                                              |
 | `PROENGINE_DEBUG_INPUT_KEYS` | Logs and displays input events such as key presses.                                                                |
 | `PROENGINE_ENABLE_EDITOR`    | Enables the runtime editor for live inspection and editing.                                                        |
+
+
+<img width="1600" alt="Screenshot 2025-06-16 at 17 01 57" src="https://github.com/user-attachments/assets/1c013d1b-9e2e-4ba8-a667-7d51be4efa4c" />
