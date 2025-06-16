@@ -18,6 +18,7 @@ namespace ProEngine
         Layer::OnAttach();
         registry_ = &Application::Get().GetActiveScene()->GetRegistry();
         active_scene_ = Application::Get().GetActiveScene();
+        entity_handle_ = active_scene_->CreateEntity("Entity");
     }
 
     void HierarchyInspector::OnDetach()
@@ -127,7 +128,7 @@ namespace ProEngine
             selected_entity_ = entity.Raw();
             if (entity_handle_)
             {
-                *entity_handle_ = entity;
+                entity_handle_ = entity;
             }
         }
 
@@ -208,7 +209,21 @@ namespace ProEngine
             }
 
             ImGui::TreePop();
+            DrawEntityPropertiesWindow();
         }
+    }
+
+    void HierarchyInspector::DrawEntityPropertiesWindow()
+    {
+        if (selected_entity_ == entt::null) return;
+        ImGui::Begin("Properties");
+        ImGui::Text("Entity Properties");
+        if (entity_handle_)
+        {
+            float position[3] = { entity_handle_.GetPosition().x, entity_handle_.GetPosition().y, entity_handle_.GetPosition().z };
+            ImGui::InputFloat3("Position: ", position);
+        }
+        ImGui::End();
     }
 
     void HierarchyInspector::DeleteEntity(EntityHandle& entity)
@@ -228,7 +243,7 @@ namespace ProEngine
             selected_entity_ = entt::null;
             if (entity_handle_)
             {
-                *entity_handle_ = EntityHandle{};
+                entity_handle_ = entity;
             }
         }
 

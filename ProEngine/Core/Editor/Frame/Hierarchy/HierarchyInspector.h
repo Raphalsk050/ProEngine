@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Core/Editor/SimpleAnimatedPopup.h"
+#include "Core/Scene/EntityHandle.h"
 
 namespace ProEngine
 {
@@ -25,10 +26,11 @@ namespace ProEngine
         void Close();
         void ToggleWindow();
 
-        void SetSelectedEntityHandle(EntityHandle* handle) { entity_handle_ = handle; }
+        void SetSelectedEntityHandle(EntityHandle* handle) { entity_handle_ = *handle; }
 
     private:
         void DrawEntity(EntityHandle& entity);
+        void DrawEntityPropertiesWindow();
         void DeleteEntity(EntityHandle& entity);
         void DuplicateEntity(EntityHandle& entity);
         EntityHandle DuplicateEntityRecursive(EntityHandle& entity);
@@ -42,7 +44,8 @@ namespace ProEngine
 
 
         entt::entity selected_entity_ = entt::null;
-        EntityHandle* entity_handle_ = nullptr;
+        EntityHandle entity_handle_;
+        EntityHandle* selected_entity_handle_ = nullptr;
 
         std::vector<EntityHandle> entities_to_delete_;
 
