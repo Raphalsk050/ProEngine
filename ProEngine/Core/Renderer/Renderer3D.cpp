@@ -240,12 +240,9 @@ namespace ProEngine
             s_Data.MeshShader->SetFloat("u_MaterialRoughness",
                                         material->GetRoughness());
             s_Data.MeshShader->SetInt("u_AlbedoMap", 0);
-            s_Data.MeshShader->SetFloat4("u_NormalMap",
-                                         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            s_Data.MeshShader->SetFloat4("u_MetallicMap",
-                                         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-            s_Data.MeshShader->SetFloat4("u_RoughnessMap",
-                                         glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+            s_Data.MeshShader->SetInt("u_NormalMap", 1);
+            s_Data.MeshShader->SetInt("u_MetallicMap", 2);
+            s_Data.MeshShader->SetInt("u_RoughnessMap", 3);
             s_Data.MeshShader->SetInt("u_EntityID", entityID);
         }
 

@@ -9,14 +9,14 @@ layout(location = 2) in vec3 a_Tangent;
 layout(location = 3) in vec2 a_TexCoord;
 
 // Uniform buffers
-layout(std140, binding = 0) uniform Camera
+layout(std140) uniform Camera
 {
     mat4 u_ViewProjection;
     vec3 u_CameraPosition;
     float _padding;
 };
 
-layout(std140, binding = 1) uniform Light
+layout(std140) uniform Light
 {
     vec3 u_PointLightPosition;
     float u_PointLightIntensity;
@@ -48,7 +48,6 @@ void main()
 #version 410 core
 
 // Inputs do vertex shader
-layout(early_fragment_tests) in;
 layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
@@ -57,14 +56,14 @@ layout(location = 2) in vec2 v_TexCoord;
 layout(location = 0) out vec4 o_Color;
 
 // Uniform buffers
-layout(std140, binding = 0) uniform Camera
+layout(std140) uniform Camera
 {
     mat4 u_ViewProjection;
     vec3 u_CameraPosition;
     float _padding;
 };
 
-layout(std140, binding = 1) uniform Light
+layout(std140) uniform Light
 {
     vec3 u_PointLightPosition;
     float u_PointLightIntensity;
@@ -79,10 +78,10 @@ uniform float u_MaterialRoughness;
 uniform int u_EntityID;
 
 // Texture samplers
-layout(binding = 0) uniform sampler2D u_AlbedoMap;
-layout(binding = 1) uniform sampler2D u_NormalMap;
-layout(binding = 2) uniform sampler2D u_MetallicMap;
-layout(binding = 3) uniform sampler2D u_RoughnessMap;
+uniform sampler2D u_AlbedoMap;
+uniform sampler2D u_NormalMap;
+uniform sampler2D u_MetallicMap;
+uniform sampler2D u_RoughnessMap;
 
 void main()
 {
