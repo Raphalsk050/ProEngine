@@ -230,11 +230,13 @@ namespace ProEngine
                 entity_handle_.SetPosition(selected_entity_transform_.selected_entity_position);
             }
 
+            ImGui::Text("Rotation");
             if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 0.2f))
             {
                 entity_handle_.SetRotation(selected_entity_transform_.selected_entity_rotation);
             }
 
+            ImGui::Text("Scale");
             if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 0.2f))
             {
                 entity_handle_.SetScale(selected_entity_transform_.selected_entity_scale);
