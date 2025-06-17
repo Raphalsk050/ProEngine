@@ -1,4 +1,5 @@
 #pragma once
+#include "Editor.h"
 #include "Core/Timestep.h"
 #include "Core/Event/Event.h"
 #include "Core/Layer/Layer.h"
@@ -30,5 +31,6 @@ namespace ProEngine {
         //const char* font_path_ = "../ForgeEngine/Assets/Fonts/Inter/Inter-Regular.ttf";
         // const char* font_path_ = "../ForgeEngine/Assets/Fonts/JetBrains/JetBrainsMonoNerdFont-Regular.ttf";
         bool block_events_ = true;
+        Editor* editor_ = nullptr;
     };
 }  // namespace ProEngine

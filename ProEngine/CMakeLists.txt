@@ -312,6 +312,7 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/AnimatedPopup.h
             Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h
+            Core/Editor/Editor.h
     )
     target_link_libraries(PEEditor PUBLIC
             spdlog

@@ -43,7 +43,7 @@ namespace ProEngine
     {
         Layer::OnUpdate(ts);
         camera_controller_.OnUpdate(ts);
-        PENGINE_CORE_INFO("Camera position: ({},{},{})", camera_controller_.GetPosition().x,camera_controller_.GetPosition().y,camera_controller_.GetPosition().z);
+        //PENGINE_CORE_INFO("Camera position: ({},{},{})", camera_controller_.GetPosition().x,camera_controller_.GetPosition().y,camera_controller_.GetPosition().z);
 
         time_ += ts;
         RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});

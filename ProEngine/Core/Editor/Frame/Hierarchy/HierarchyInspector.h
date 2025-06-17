@@ -46,10 +46,8 @@ namespace ProEngine
 
     private:
         bool opened_ = false;
-        entt::registry* registry_ = nullptr;
+        entt::registry* registry_;
         Scene* active_scene_;
-
-
         entt::entity selected_entity_ = entt::null;
         EntityHandle entity_handle_;
         EntityHandle* selected_entity_handle_ = nullptr;
@@ -60,5 +58,8 @@ namespace ProEngine
         ImGuiTreeNodeFlags flags_ = ImGuiTreeNodeFlags_OpenOnArrow |
             ImGuiTreeNodeFlags_OpenOnDoubleClick |
             ImGuiTreeNodeFlags_SpanAvailWidth;
+
+    private:
+        void CopyAllComponents(entt::registry& registry, entt::entity src, entt::entity dst);
     };
 }

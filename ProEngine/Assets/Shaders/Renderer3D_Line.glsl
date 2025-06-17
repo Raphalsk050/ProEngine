@@ -42,6 +42,6 @@ layout(location = 1) flat in int v_EntityID;
 
 void main()
 {
-    o_Color = vec4(1.0f);
+    o_Color = vec4(1.0f,0.0,0.0,1.0);
     o_EntityID = v_EntityID;
 }

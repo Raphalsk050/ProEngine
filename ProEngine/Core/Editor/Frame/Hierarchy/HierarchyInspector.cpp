@@ -3,13 +3,12 @@
 #include "Core/Scene/EntityHandle.h"
 #include "Core/Application/Application.h"
 #include <imgui.h>
-
 #include "gtc/type_ptr.hpp"
 
 
 namespace ProEngine
 {
-    HierarchyInspector::HierarchyInspector()
+    HierarchyInspector::HierarchyInspector(): registry_()
     {
     }
 
@@ -224,6 +223,7 @@ namespace ProEngine
             selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
             selected_entity_transform_.selected_entity_scale = entity_handle_.GetScale();
 
+
             ImGui::Text("Position");
             if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 0.2f))
             {
@@ -273,26 +273,32 @@ namespace ProEngine
     {
         EntityHandle new_entity = active_scene_->CreateEntity(entity.GetComponent<TagComponent>().tag + " (Copy)");
 
-        const auto& transform = entity.GetComponent<TransformComponent>();
-        auto& new_transform = new_entity.GetComponent<TransformComponent>();
-        new_transform.position = transform.position;
-        new_transform.rotation = transform.rotation;
-        new_transform.scale = transform.scale;
+        // const auto& transform = entity.GetComponent<TransformComponent>();
 
-        if (transform.parent != entt::null)
-        {
-            EntityHandle parent(transform.parent, active_scene_);
-            new_entity.SetParent(parent);
-        }
+        // if (transform.parent != entt::null)
+        // {
+        //     EntityHandle parent(transform.parent, active_scene_);
+        //     new_entity.SetParent(parent);
+        // }
 
         // TODO(rafael): Copy the other components
+        // PENGINE_CORE_INFO("Entity name: {}", new_entity.GetComponent<TagComponent>().tag.c_str());
 
-        auto children = entity.GetChildren();
-        for (auto& child : children)
-        {
-            EntityHandle duplicated_child = DuplicateEntityRecursive(child);
-            duplicated_child.SetParent(new_entity);
-        }
+        CopyAllComponents(*registry_, entity.Raw(), new_entity.Raw());
+
+
+        // for(auto [id, storage]: registry_->storage()) {
+        //     if(storage.contains(entity.Raw())) {
+        //         std::cout << "  - Componente ID: " << id << "\n";
+        //     }
+        // }
+
+        // auto children = entity.GetChildren();
+        // for (auto& child : children)
+        // {
+        //     EntityHandle duplicated_child = DuplicateEntityRecursive(child);
+        //     duplicated_child.SetParent(new_entity);
+        // }
     }
 
     EntityHandle HierarchyInspector::DuplicateEntityRecursive(EntityHandle& entity)
@@ -313,6 +319,22 @@ namespace ProEngine
         }
 
         return new_entity;
+    }
+
+    void HierarchyInspector::CopyAllComponents(entt::registry& registry, entt::entity src, entt::entity dst)
+    {
+        if (!registry.valid(src) || !registry.valid(dst))
+        {
+            return;
+        }
+
+        for (auto&& [type_id, storage] : registry.storage()) {
+            if (storage.contains(src)) {
+                if (auto it = Editor::clone_functions.find(type_id); it != Editor::clone_functions.end()) {
+                    it->second(registry, src, dst);
+                }
+            }
+        }
     }
 
     bool HierarchyInspector::IsDescendantOf(EntityHandle& potential_descendant, EntityHandle& potential_ancestor)

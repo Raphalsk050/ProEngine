@@ -20,6 +20,9 @@ namespace ProEngine
 {
     ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer")
     {
+#ifdef PROENGINE_ENABLE_EDITOR
+        Editor::Initialize();
+#endif
     }
 
     void ImGuiLayer::OnAttach()
