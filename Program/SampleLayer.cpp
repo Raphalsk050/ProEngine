@@ -49,8 +49,7 @@ namespace ProEngine
         // // TODO(rafael): pass this viewport logic to the editor renderer
         RenderCommand::SetClearColor({0.5, 0.01, 0.01, 1.0f});
         RenderCommand::Clear();
-        // framebuffer_->Bind();
-        //
+
         Renderer3D::BeginScene(camera_controller_.GetCamera());
         //
         // Renderer3D::DrawSphere(position, 0.2f, glm::vec4(1.0), 0);
@@ -58,7 +57,6 @@ namespace ProEngine
         // Renderer3D::DrawMesh(glm::vec3(0.0f, -2.0, 0.0), glm::vec3(100.0f), glm::vec3(0.0f), Mesh::CreatePlane(), glm::vec4(1.0), 1);
         //
         Renderer3D::EndScene();
-        // framebuffer_->Unbind();
     }
 
     void SampleLayer::OnImGuiRender()

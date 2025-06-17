@@ -1,6 +1,7 @@
 #pragma once
 #include <imgui.h>
 #include "Core/Layer/Layer.h"
+#include "Viewport/Viewport.h"
 
 namespace ProEngine
 {
@@ -32,9 +33,11 @@ namespace ProEngine
         void ToggleConsole();
         void ToggleHierarchyInspector();
         void ToggleFPSHistory();
+        void ToggleViewport();
 
         Console* console_;
         FpsInspector* fps_inspector_;
         HierarchyInspector* hierarchy_inspector_;
+        Viewport* viewport_inspector_;
     };
 }

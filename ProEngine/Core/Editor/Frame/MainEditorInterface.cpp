@@ -103,6 +103,10 @@ namespace ProEngine
                 {
                     ToggleHierarchyInspector();
                 }
+                if (ImGui::MenuItem("Viewport"))
+                {
+                    ToggleViewport();
+                }
                 ImGui::EndMenu();
             }
 
@@ -142,5 +146,16 @@ namespace ProEngine
         }
 
         fps_inspector_->ToggleWindow();
+    }
+
+    void MainEditorInterface::ToggleViewport()
+    {
+        if (!viewport_inspector_)
+        {
+            viewport_inspector_ = new Viewport();
+            Application::Get().PushLayer(viewport_inspector_);
+        }
+
+        viewport_inspector_->ToggleWindow();
     }
 }

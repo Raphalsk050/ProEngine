@@ -56,6 +56,7 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 set(spdlog_DIR ThirdParty/spdlog)
 set(imgui_DIR ThirdParty/imgui)
+set(imguizmo_DIR ThirdParty/ImGuizmo)
 set(glfw_DIR ThirdParty/glfw)
 set(glad_DIR ThirdParty/glad)
 set(glm_DIR ThirdParty/glm)
@@ -68,6 +69,7 @@ set(stbimage_DIR ThirdParty/stbimage)
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 add_subdirectory(${spdlog_DIR})
 add_subdirectory(${imgui_DIR})
+add_subdirectory(${imguizmo_DIR})
 add_subdirectory(${glfw_DIR})
 add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
@@ -309,6 +311,8 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/MainEditorInterface.cpp
             Core/Editor/Frame/Hierarchy/HierarchyInspector.h
             Core/Editor/Frame/Hierarchy/HierarchyInspector.cpp
+            Core/Editor/Frame/Viewport/Viewport.h
+            Core/Editor/Frame/Viewport/Viewport.cpp
             Core/Editor/AnimatedPopup.h
             Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h
@@ -317,12 +321,14 @@ if (PROENGINE_ENABLE_EDITOR)
     target_link_libraries(PEEditor PUBLIC
             spdlog
             ImGui
+            ImGuizmo
             Entt
             glm
             PEScene
     )
     target_include_directories(PEEditor PUBLIC
             ${imgui_DIR}
+            ${imguizmo_DIR}
             ${glm_DIR}
             ${entt_DIR}
     )
@@ -407,6 +413,22 @@ target_include_directories(ImGui PUBLIC
 target_link_libraries(ImGui PUBLIC
         glfw
         glad
+        ${OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
+)
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃            IMGUIZMO CONSUMER CONFIGURATION              ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+target_include_directories(ImGuizmo PUBLIC
+        ${imgui_DIR}
+        ${glad_DIR}/include
+        ${glfw_DIR}/include
+)
+target_link_libraries(ImGuizmo PUBLIC
+        glfw
+        glad
+        ImGui
         ${OPENGL_LIBRARIES}
         ${CMAKE_DL_LIBS}
 )

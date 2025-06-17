@@ -17,14 +17,6 @@ namespace ProEngine {
         void OnEvent(Event& e) override;
         void OnImGuiRender() override;
     private:
-        bool OnKeyPressed(KeyPressedEvent& e);
-        bool OnKeyReleased(KeyReleasedEvent& e);
-        bool camera_movement_enabled_ = false;
-        Ref<Framebuffer> framebuffer_;
-        glm::vec2 viewport_size_ = {0.0f, 0.0f};
-        std::unordered_map<KeyCode, bool> last_key_state_map_;
-        Camera3DController camera_controller_ = Camera3DController(1.0f);
-        float time_ = 0.0f;
         EntityHandle sphere_entity_;
         EntityHandle cube_entity_;
         EntityHandle cube_entity_2_;

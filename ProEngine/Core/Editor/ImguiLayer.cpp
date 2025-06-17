@@ -11,7 +11,7 @@
 
 // TEMPORARY
 #include <GLFW/glfw3.h>
-//#include <ImGuizmo.h>
+#include <ImGuizmo.h>
 #include <glad/glad.h>
 
 #include "Core/Renderer/RenderCommand.h"
@@ -56,6 +56,7 @@ namespace ProEngine
         ImGui::StyleColorsClassic();
 
         ImGuiStyle& style = ImGui::GetStyle();
+
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             style.WindowRounding = 0.0f;
@@ -163,9 +164,11 @@ namespace ProEngine
         ImGui::NewFrame();
         glClearColor(0.1f, 0.1f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //ImGuizmo::BeginFrame();
-        ImGui::ShowDemoWindow();
-        //ShowMetricsWindow();
+        ImGuizmo::BeginFrame();
+        static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
+        static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+        // ImGui::ShowDemoWindow();
+        // ShowMetricsWindow();
     }
 
     void ImGuiLayer::End()
