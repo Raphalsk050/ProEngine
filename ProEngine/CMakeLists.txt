@@ -50,12 +50,16 @@ set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 
+# imnodes
+set(IMNODES_IMGUI_TARGET_NAME ImGui)
+
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                 DEPENDENCY DIRECTORY SETUP              ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 set(spdlog_DIR ThirdParty/spdlog)
 set(imgui_DIR ThirdParty/imgui)
+set(imnodes_DIR ThirdParty/imnodes)
 set(imguizmo_DIR ThirdParty/ImGuizmo)
 set(glfw_DIR ThirdParty/glfw)
 set(glad_DIR ThirdParty/glad)
@@ -70,6 +74,7 @@ set(stbimage_DIR ThirdParty/stbimage)
 add_subdirectory(${spdlog_DIR})
 add_subdirectory(${imgui_DIR})
 add_subdirectory(${imguizmo_DIR})
+add_subdirectory(${imnodes_DIR})
 add_subdirectory(${glfw_DIR})
 add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
@@ -322,6 +327,7 @@ if (PROENGINE_ENABLE_EDITOR)
             spdlog
             ImGui
             ImGuizmo
+            imnodes
             Entt
             glm
             PEScene
@@ -329,6 +335,7 @@ if (PROENGINE_ENABLE_EDITOR)
     target_include_directories(PEEditor PUBLIC
             ${imgui_DIR}
             ${imguizmo_DIR}
+            ${imnodes_DIR}
             ${glm_DIR}
             ${entt_DIR}
     )
@@ -426,6 +433,22 @@ target_include_directories(ImGuizmo PUBLIC
         ${glfw_DIR}/include
 )
 target_link_libraries(ImGuizmo PUBLIC
+        glfw
+        glad
+        ImGui
+        ${OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
+)
+
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃            IMNODES CONSUMER CONFIGURATION              ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+target_include_directories(imnodes PUBLIC
+        ${imgui_DIR}
+        ${glad_DIR}/include
+        ${glfw_DIR}/include
+)
+target_link_libraries(imnodes PUBLIC
         glfw
         glad
         ImGui

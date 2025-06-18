@@ -15,15 +15,16 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-        // Create an example entity with renderer component
-        auto* scene = Application::Get().GetActiveScene();
-        sphere_entity_ = scene->CreateEntity("Sphere");
-        cube_entity_ = scene->CreateEntity("Cube");
 
-        RendererComponent rc = RendererComponent({.mesh = MeshType::Sphere});
-        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
-        rc = RendererComponent({.mesh = MeshType::Cube});
-        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
+        // Create an example entity with renderer component
+        // auto* scene = Application::Get().GetActiveScene();
+        // sphere_entity_ = scene->CreateEntity("Sphere");
+        // cube_entity_ = scene->CreateEntity("Cube");
+
+        // RendererComponent rc = RendererComponent({.mesh = MeshType::Sphere});
+        // render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
+        // rc = RendererComponent({.mesh = MeshType::Cube});
+        // render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
