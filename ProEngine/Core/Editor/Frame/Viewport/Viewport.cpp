@@ -63,36 +63,56 @@ namespace ProEngine
             ImGui::Image((void*)(intptr_t)framebuffer_->GetColorAttachmentRendererID(), size, ImVec2{0, 1}, ImVec2{1, 0});
 
             ImVec2 viewportPanelPos = ImGui::GetWindowPos();
-            ImVec2 cursor_pos        = ImGui::GetItemRectMin();
-            ImVec2 panel_size        = size;
+            ImVec2 cursor_pos = ImGui::GetItemRectMin();
+            ImVec2 panel_size = size;
 
             viewport_location_ = ImGui::GetWindowPos();
             viewport_size_ = ImGui::GetWindowSize();
 
             ImGuizmo::BeginFrame();
-            static ImGuizmo::OPERATION current_gizmo_operation(ImGuizmo::TRANSLATE);
-            static ImGuizmo::MODE current_gizmo_mode(ImGuizmo::LOCAL);
+            static ImGuizmo::OPERATION current_gizmo_operation(ImGuizmo::UNIVERSAL);
+            static ImGuizmo::MODE current_gizmo_mode(ImGuizmo::WORLD);
             ImGuizmo::SetOrthographic(false);
             ImGuizmo::SetDrawlist();
 
             ImGuizmo::SetRect(cursor_pos.x, cursor_pos.y, panel_size.x, panel_size.y);
 
-            auto selected_entity_transform = &hierarchy_inspector_->GetSelectedEntityHandle()->GetComponent<TransformComponent>();
-            glm::mat4 transform = selected_entity_transform->LocalMatrix();
 
-            ImGuizmo::Manipulate(
-                glm::value_ptr(GetCamera()->GetViewMatrix()),
-                glm::value_ptr(GetCamera()->GetProjectionMatrix()),
-                current_gizmo_operation,  // ou ROTATE / SCALE
-                current_gizmo_mode,                  // ou WORLD
-                glm::value_ptr(transform)
-            );
+            if (hierarchy_inspector_->GetSelectedEntityHandle()->Valid())
+            {
+                auto selected_entity_transform = &hierarchy_inspector_->GetSelectedEntityHandle()->GetComponent<TransformComponent>();
 
-            if (ImGuizmo::IsUsing()) {
+                glm::mat4 transform = Application::Get().GetActiveScene()->GetWorldMatrix(hierarchy_inspector_->GetSelectedEntityHandle()->Raw());
 
-                selected_entity_transform->position = glm::vec3(transform[3]);
+                ImGuizmo::Manipulate(
+                    glm::value_ptr(GetCamera()->GetViewMatrix()),
+                    glm::value_ptr(GetCamera()->GetProjectionMatrix()),
+                    current_gizmo_operation,
+                    current_gizmo_mode,
+                    glm::value_ptr(transform)
+                );
+
+                if (ImGuizmo::IsUsing())
+                {
+                    selected_entity_transform->position = glm::vec3(transform[3]);
+
+                    glm::vec3 scale;
+                    scale.x = glm::length(glm::vec3(transform[0]));
+                    scale.y = glm::length(glm::vec3(transform[1]));
+                    scale.z = glm::length(glm::vec3(transform[2]));
+
+                    selected_entity_transform->scale = scale;
+
+                    glm::mat3 rotationMatrix;
+                    rotationMatrix[0] = glm::vec3(transform[0]) / scale.x;
+                    rotationMatrix[1] = glm::vec3(transform[1]) / scale.y;
+                    rotationMatrix[2] = glm::vec3(transform[2]) / scale.z;
+
+                    glm::quat rotationQuat = glm::quat_cast(rotationMatrix);
+                    glm::vec3 eulerAngles = glm::eulerAngles(rotationQuat);
+                    selected_entity_transform->rotation = eulerAngles;
+                }
             }
-
 
             ImGui::End();
         }

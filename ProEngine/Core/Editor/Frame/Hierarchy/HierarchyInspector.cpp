@@ -19,7 +19,7 @@ namespace ProEngine
         Layer::OnAttach();
         registry_ = &Application::Get().GetActiveScene()->GetRegistry();
         active_scene_ = Application::Get().GetActiveScene();
-        entity_handle_ = active_scene_->CreateEntity("Entity");
+        entity_handle_ = EntityHandle();
     }
 
     void HierarchyInspector::OnDetach()
@@ -128,7 +128,7 @@ namespace ProEngine
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
         {
             selected_entity_ = entity.Raw();
-            if (entity_handle_)
+            if (entity.Valid())
             {
                 entity_handle_ = entity;
             }
