@@ -4,7 +4,9 @@
 
 #include "Console.h"
 #include "FpsInspector.h"
+#include "ImGuizmo.h"
 #include "Core/Application/Application.h"
+#include "gtc/type_ptr.hpp"
 #include "Hierarchy/HierarchyInspector.h"
 
 namespace ProEngine
@@ -67,7 +69,7 @@ namespace ProEngine
         // layers initialization
         hierarchy_inspector_ = new HierarchyInspector();
         fps_inspector_ = new FpsInspector();
-        viewport_inspector_ = new Viewport();
+        viewport_inspector_ = new Viewport(hierarchy_inspector_);
         console_ = new Console();
 
         // push layers
@@ -169,7 +171,7 @@ namespace ProEngine
     {
         if (!viewport_inspector_)
         {
-            viewport_inspector_ = new Viewport();
+            viewport_inspector_ = new Viewport(hierarchy_inspector_);
             Application::Get().PushLayer(viewport_inspector_);
         }
 

@@ -35,6 +35,8 @@ namespace ProEngine
 
         void SetSelectedEntityHandle(EntityHandle* handle) { entity_handle_ = *handle; }
 
+        EntityHandle* GetSelectedEntityHandle() { return &entity_handle_; }
+
     private:
         void DrawEntity(EntityHandle& entity);
         void DrawEntityPropertiesWindow();

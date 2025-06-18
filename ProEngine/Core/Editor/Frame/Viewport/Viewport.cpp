@@ -1,10 +1,9 @@
 #include "Viewport.h"
-
 #include "Core/Renderer/Renderer3D.h"
 
 namespace ProEngine
 {
-    Viewport::Viewport() : Layer("Viewport")
+    Viewport::Viewport(HierarchyInspector* hierarchy_inspector) : Layer("Viewport"), hierarchy_inspector_(hierarchy_inspector)
     {
         auto& window = Application::Get().GetWindow();
         camera_controller_ = Camera3DController(window.GetWidth() / (float)window.GetHeight());
@@ -22,7 +21,7 @@ namespace ProEngine
         spec.Width = Application::Get().GetWindow().GetWidth();
         spec.Height = Application::Get().GetWindow().GetHeight();
         framebuffer_ = Framebuffer::Create(spec);
-        viewport_size_ = {(float)spec.Width, (float)spec.Height};
+        window_size_ = {(float)spec.Width, (float)spec.Height};
         camera_controller_.OnResize(spec.Width, spec.Height);
     }
 
@@ -55,13 +54,46 @@ namespace ProEngine
         if (ImGui::Begin("Viewport", &opened_))
         {
             ImVec2 size = ImGui::GetContentRegionAvail();
-            if (size.x > 0 && size.y > 0 && (size.x != viewport_size_.x || size.y != viewport_size_.y))
+            if (size.x > 0 && size.y > 0 && (size.x != window_size_.x || size.y != window_size_.y))
             {
                 framebuffer_->Resize((uint32_t)size.x, (uint32_t)size.y);
                 camera_controller_.OnResize(size.x, size.y);
-                viewport_size_ = {size.x, size.y};
+                window_size_ = {size.x, size.y};
             }
             ImGui::Image((void*)(intptr_t)framebuffer_->GetColorAttachmentRendererID(), size, ImVec2{0, 1}, ImVec2{1, 0});
+
+            ImVec2 viewportPanelPos = ImGui::GetWindowPos();
+            ImVec2 cursor_pos        = ImGui::GetItemRectMin();
+            ImVec2 panel_size        = size;
+
+            viewport_location_ = ImGui::GetWindowPos();
+            viewport_size_ = ImGui::GetWindowSize();
+
+            ImGuizmo::BeginFrame();
+            static ImGuizmo::OPERATION current_gizmo_operation(ImGuizmo::TRANSLATE);
+            static ImGuizmo::MODE current_gizmo_mode(ImGuizmo::LOCAL);
+            ImGuizmo::SetOrthographic(false);
+            ImGuizmo::SetDrawlist();
+
+            ImGuizmo::SetRect(cursor_pos.x, cursor_pos.y, panel_size.x, panel_size.y);
+
+            auto selected_entity_transform = &hierarchy_inspector_->GetSelectedEntityHandle()->GetComponent<TransformComponent>();
+            glm::mat4 transform = selected_entity_transform->LocalMatrix();
+
+            ImGuizmo::Manipulate(
+                glm::value_ptr(GetCamera()->GetViewMatrix()),
+                glm::value_ptr(GetCamera()->GetProjectionMatrix()),
+                current_gizmo_operation,  // ou ROTATE / SCALE
+                current_gizmo_mode,                  // ou WORLD
+                glm::value_ptr(transform)
+            );
+
+            if (ImGuizmo::IsUsing()) {
+
+                selected_entity_transform->position = glm::vec3(transform[3]);
+            }
+
+
             ImGui::End();
         }
     }

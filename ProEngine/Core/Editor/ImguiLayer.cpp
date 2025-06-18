@@ -11,9 +11,9 @@
 
 // TEMPORARY
 #include <GLFW/glfw3.h>
-#include <ImGuizmo.h>
 #include <glad/glad.h>
 
+#include "Core/Renderer/Framebuffer.h"
 #include "Core/Renderer/RenderCommand.h"
 
 namespace ProEngine
@@ -117,9 +117,7 @@ namespace ProEngine
         if (corner != -1)
         {
             ImGuiViewport* viewport = ImGui::GetMainViewport();
-            ImVec2 work_area_pos =
-                viewport->GetWorkPos(); // Instead of using viewport->Pos we use
-            // GetWorkPos() to avoid menu bars, if any!
+            ImVec2 work_area_pos = viewport->GetWorkPos();
             ImVec2 work_area_size = viewport->GetWorkSize();
             ImVec2 window_pos =
                 ImVec2((corner & 1)
@@ -178,9 +176,7 @@ namespace ProEngine
         ImGui::NewFrame();
         glClearColor(0.1f, 0.1f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        ImGuizmo::BeginFrame();
-        static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
-        static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+
         // SaveDefaultLayout();
         // ImGui::ShowDemoWindow();
         // ShowMetricsWindow();

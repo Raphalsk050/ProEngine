@@ -12,7 +12,7 @@ namespace ProEngine
     Camera3DController::Camera3DController(float aspectRatio, ControlMode mode)
         : m_AspectRatio(aspectRatio), m_ControlMode(mode)
     {
-        m_Camera = Camera3D(60.0f, aspectRatio, 0.1f, 1000.0f);
+        m_Camera = Camera3D(fov_, aspectRatio, 0.1f, 1000.0f);
         m_Camera.SetPosition({0.0f, 2.0f, 5.0f});
     }
 
@@ -261,7 +261,7 @@ namespace ProEngine
     {
         m_AspectRatio = width / height;
         m_Camera.SetViewport(width, height);
-        m_Camera.SetPerspective(90.0f, m_AspectRatio, 0.1f, 1000.0f);
+        m_Camera.SetPerspective(fov_, m_AspectRatio, 0.1f, 1000.0f);
     }
 
     void Camera3DController::SetPosition(const glm::vec3& position)
