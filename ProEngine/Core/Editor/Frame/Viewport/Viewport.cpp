@@ -1,5 +1,7 @@
 #include "Viewport.h"
 #include "Core/Renderer/Renderer3D.h"
+#include "Core/Scene/EntityHandle.h"
+#include <glad/glad.h>
 
 namespace ProEngine
 {
@@ -20,6 +22,7 @@ namespace ProEngine
         FramebufferSpecification spec;
         spec.Width = Application::Get().GetWindow().GetWidth();
         spec.Height = Application::Get().GetWindow().GetHeight();
+        spec.EnableEntityIDAttachment = true;
         framebuffer_ = Framebuffer::Create(spec);
         window_size_ = {(float)spec.Width, (float)spec.Height};
         camera_controller_.OnResize(spec.Width, spec.Height);
@@ -38,6 +41,8 @@ namespace ProEngine
         RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
 
         framebuffer_->Bind();
+        int idClear = -1;
+        glClearBufferiv(GL_COLOR, 1, &idClear);
         RenderCommand::Clear();
         Renderer3D::BeginScene(camera_controller_.GetCamera());
         Renderer3D::SetAmbientLight(glm::vec3(1.0f), 10.0);
@@ -65,6 +70,37 @@ namespace ProEngine
             ImVec2 viewportPanelPos = ImGui::GetWindowPos();
             ImVec2 cursor_pos = ImGui::GetItemRectMin();
             ImVec2 panel_size = size;
+
+            if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+            {
+                ImVec2 mousePos = ImGui::GetMousePos();
+                int mx = (int)(mousePos.x - cursor_pos.x);
+                int my = (int)(mousePos.y - cursor_pos.y);
+
+                my = (int)panel_size.y - my;
+                PENGINE_CORE_INFO("mouse position: ({0},{1})", mx, my);
+
+                if (mx >= 0 && my >= 0 && mx < (int)panel_size.x && my < (int)panel_size.y)
+                {
+                    framebuffer_->Bind();
+                    int pixelData = -1;
+                    glReadBuffer(GL_COLOR_ATTACHMENT1);
+                    glReadPixels(mx, my, 1, 1, GL_RED_INTEGER, GL_INT, &pixelData);
+                    glReadBuffer(GL_COLOR_ATTACHMENT0);
+                    framebuffer_->Unbind();
+
+                    PENGINE_CORE_INFO("pixelData: {0}", pixelData);
+                    if (pixelData != -1)
+                    {
+                        EntityHandle handle(static_cast<entt::entity>(pixelData), Application::Get().GetActiveScene());
+                        if (handle.Valid())
+                        {
+                            hierarchy_inspector_->SetSelectedEntityHandle(&handle);
+                            PENGINE_CORE_INFO("Selected entity name: {0}", handle.GetComponent<TagComponent>().tag);
+                        }
+                    }
+                }
+            }
 
             viewport_location_ = ImGui::GetWindowPos();
             viewport_size_ = ImGui::GetWindowSize();

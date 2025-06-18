@@ -7,6 +7,7 @@ namespace ProEngine {
     struct FramebufferSpecification
     {
         uint32_t Width = 0, Height = 0;
+        bool EnableEntityIDAttachment = false;
     };
 
     class Framebuffer
@@ -19,6 +20,7 @@ namespace ProEngine {
         virtual void Resize(uint32_t width, uint32_t height) = 0;
 
         virtual uint32_t GetColorAttachmentRendererID() const = 0;
+        virtual uint32_t GetEntityIDAttachmentRendererID() const = 0;
 
         const FramebufferSpecification& GetSpecification() const { return specification_; }
 

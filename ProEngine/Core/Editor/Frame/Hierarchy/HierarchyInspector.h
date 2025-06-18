@@ -33,7 +33,11 @@ namespace ProEngine
         void Close();
         void ToggleWindow();
 
-        void SetSelectedEntityHandle(EntityHandle* handle) { entity_handle_ = *handle; }
+        void SetSelectedEntityHandle(EntityHandle* handle)
+        {
+            entity_handle_ = *handle;
+            selected_entity_ = handle->Raw();
+        }
 
         EntityHandle* GetSelectedEntityHandle() { return &entity_handle_; }
 

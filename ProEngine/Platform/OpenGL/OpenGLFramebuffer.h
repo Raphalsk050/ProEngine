@@ -13,12 +13,14 @@ namespace ProEngine
         virtual void Unbind() const override;
         virtual void Resize(uint32_t width, uint32_t height) override;
         virtual uint32_t GetColorAttachmentRendererID() const override { return color_attachment_; }
+        virtual uint32_t GetEntityIDAttachmentRendererID() const override { return entity_id_attachment_; }
 
     private:
         void Invalidate();
 
         uint32_t renderer_id_ = -1;
         uint32_t color_attachment_ = -1;
+        uint32_t entity_id_attachment_ = 0;
         uint32_t depth_attachment_ = -1;
     };
 }

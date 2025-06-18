@@ -26,11 +26,13 @@ layout(std140) uniform Light
 
 // Uniforms individuais
 uniform mat4 u_Transform;
+uniform int u_EntityID;
 
 // Outputs para o fragment shader
 layout(location = 0) out vec3 v_WorldPos;
 layout(location = 1) out vec3 v_Normal;
 layout(location = 2) out vec2 v_TexCoord;
+layout(location = 3) flat out int v_EntityID;
 
 void main()
 {
@@ -42,6 +44,8 @@ void main()
     v_TexCoord = a_TexCoord;
 
     gl_Position = u_ViewProjection * worldPos;
+
+    v_EntityID = u_EntityID;
 }
 
 #type fragment
@@ -51,9 +55,11 @@ void main()
 layout(location = 0) in vec3 v_WorldPos;
 layout(location = 1) in vec3 v_Normal;
 layout(location = 2) in vec2 v_TexCoord;
+layout(location = 3) flat in int v_EntityID;
 
 // Output
 layout(location = 0) out vec4 o_Color;
+layout(location = 1) out int o_EntityID;
 
 // Uniform buffers
 layout(std140) uniform Camera
@@ -106,4 +112,5 @@ void main()
 
     // Output final color
     o_Color = vec4(finalColor,1.0f);
+    o_EntityID = v_EntityID;
 }
