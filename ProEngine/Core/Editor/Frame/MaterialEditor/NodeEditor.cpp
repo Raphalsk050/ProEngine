@@ -53,6 +53,18 @@ namespace ProEngine
         AddNode(node);
     }
 
+    void NodeEditor::AddNode(const MaterialNodeType& node_type)
+    {
+        auto mouse_pos = ImVec2(mouse_relative_position_);
+        MaterialNode node;
+        node.id = current_node_id_id_++;
+        node.name = node_type.node_name;
+        node.inputs = node_type.inputs;
+        node.outputs = node_type.outputs;
+        node.position = mouse_pos;
+        AddNode(node);
+    }
+
     void NodeEditor::AddNode(const MaterialNode& node)
     {
         graph_.nodes.push_back(node);
@@ -75,14 +87,6 @@ namespace ProEngine
             ImNodes::BeginNodeTitleBar();
             ImGui::TextUnformatted(node.name.c_str());
             ImNodes::EndNodeTitleBar();
-
-            // this is to verify if a node is being moved by the user
-            // to update the current node saved position
-            // ImVec2 newPos = ImNodes::GetNodeEditorSpacePos(node.id);
-            // if (newPos.x != node.position.x || newPos.y != node.position.y) {
-            //     PENGINE_CORE_INFO("new node position ==> ({0},{1})",newPos.x,newPos.y);
-            //     node.position = newPos;
-            // }
 
             for (const auto& input : node.inputs)
             {
@@ -113,15 +117,15 @@ namespace ProEngine
         {
             if (ImGui::MenuItem("Add Texture2D Node"))
             {
-                AddNode("Texture2D", {}, {"Color"});
+                AddNode(Texture2DNode());
             }
             if (ImGui::MenuItem("Add Multiply Node"))
             {
-                AddNode("Multiply", {"A", "B"}, {"Result"});
+                AddNode(MultiplyNode());
             }
             if (ImGui::MenuItem("Add LitMaster Node"))
             {
-                AddNode("LitMaster", {"Color"}, {});
+                AddNode(LitMasterNode());
             }
             ImGui::EndPopup();
         }
@@ -131,10 +135,9 @@ namespace ProEngine
 
     void NodeEditor::SetupDemoGraph()
     {
-        AddNode("Texture2D", {}, {"Color"});
-        AddNode("Multiply", {"A", "B"}, {"Result"});
-        AddNode("LitMaster", {"Color"}, {});
-        // You can create connections manually or via UI later
+        AddNode(Texture2DNode());
+        AddNode(MultiplyNode());
+        AddNode(LitMasterNode());
     }
 
     void NodeEditor::Open()

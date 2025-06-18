@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "imgui.h"
+#include "MaterialNodeTypes.h"
 #include "Core/Layer/Layer.h"
 
 
@@ -36,6 +37,7 @@ namespace ProEngine
         void OnEvent(Event& event) override;
         void AddNode(const std::string& name, const std::vector<std::string>& inputs, const std::vector<std::string>& outputs);
         void AddNode(const MaterialNode& node);
+        void AddNode(const MaterialNodeType& node_type);
         void RenderNodeEditor();
         void SetupDemoGraph();
         std::string GenerateShaderFromGraph(const MaterialGraph& graph);
