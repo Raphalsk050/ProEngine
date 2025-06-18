@@ -35,6 +35,7 @@ namespace ProEngine
         void OnImGuiRender() override;
         void OnEvent(Event& event) override;
         void AddNode(const std::string& name, const std::vector<std::string>& inputs, const std::vector<std::string>& outputs);
+        void AddNode(const MaterialNode& node);
         void RenderNodeEditor();
         void SetupDemoGraph();
         std::string GenerateShaderFromGraph(const MaterialGraph& graph);
@@ -48,5 +49,9 @@ namespace ProEngine
         int current_node_id_id_ = 1;
         bool is_popup_opened_ = false;
         bool request_context_menu_ = false;
+
+        ImVec2 mouse_relative_position_;
+        ImVec2 mouse_absolute_position_;
+        ImVec2 window_position_;
     };
 }

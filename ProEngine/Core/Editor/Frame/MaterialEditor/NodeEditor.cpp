@@ -43,13 +43,20 @@ namespace ProEngine
 
     void NodeEditor::AddNode(const std::string& name, const std::vector<std::string>& inputs, const std::vector<std::string>& outputs)
     {
+        ImVec2 mouse_pos = ImVec2(mouse_relative_position_);
         MaterialNode node;
         node.id = current_node_id_id_++;
         node.name = name;
         node.inputs = inputs;
         node.outputs = outputs;
-        node.position = ImVec2(100, 100 + 50 * graph_.nodes.size());
+        node.position = mouse_pos;
+        AddNode(node);
+    }
+
+    void NodeEditor::AddNode(const MaterialNode& node)
+    {
         graph_.nodes.push_back(node);
+        ImNodes::SetNodeGridSpacePos(node.id, node.position);
     }
 
     void NodeEditor::RenderNodeEditor()
@@ -57,6 +64,9 @@ namespace ProEngine
         ImGui::Begin("Material Editor");
 
         ImNodes::BeginNodeEditor();
+        window_position_ = ImGui::GetWindowPos();
+        mouse_absolute_position_ = ImGui::GetMousePos();
+        mouse_relative_position_ = ImVec2(mouse_absolute_position_.x - window_position_.x, mouse_absolute_position_.y - window_position_.y);
 
         for (auto& node : graph_.nodes)
         {
@@ -65,6 +75,14 @@ namespace ProEngine
             ImNodes::BeginNodeTitleBar();
             ImGui::TextUnformatted(node.name.c_str());
             ImNodes::EndNodeTitleBar();
+
+            // this is to verify if a node is being moved by the user
+            // to update the current node saved position
+            // ImVec2 newPos = ImNodes::GetNodeEditorSpacePos(node.id);
+            // if (newPos.x != node.position.x || newPos.y != node.position.y) {
+            //     PENGINE_CORE_INFO("new node position ==> ({0},{1})",newPos.x,newPos.y);
+            //     node.position = newPos;
+            // }
 
             for (const auto& input : node.inputs)
             {
@@ -85,7 +103,6 @@ namespace ProEngine
 
         ImNodes::EndNodeEditor();
 
-        // Executa abertura do popup fora da checagem do clique (evita interferência de foco)
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
         {
             ImGui::ClosePopupsOverWindow(ImGui::GetCurrentWindow(), true);
