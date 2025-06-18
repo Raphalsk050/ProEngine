@@ -71,12 +71,14 @@ namespace ProEngine
         fps_inspector_ = new FpsInspector();
         viewport_inspector_ = new Viewport(hierarchy_inspector_);
         console_ = new Console();
+        node_editor_ = new NodeEditor();
 
         // push layers
         Application::Get().PushLayer(hierarchy_inspector_);
         Application::Get().PushLayer(fps_inspector_);
         Application::Get().PushLayer(viewport_inspector_);
         Application::Get().PushLayer(console_);
+        Application::Get().PushLayer(node_editor_);
     }
 
     void MainEditorInterface::ConfigureDockSpace()
@@ -125,6 +127,10 @@ namespace ProEngine
                 if (ImGui::MenuItem("Viewport"))
                 {
                     ToggleViewport();
+                }
+                if (ImGui::MenuItem("Node Editor"))
+                {
+                    ToggleNodeEditor();
                 }
                 ImGui::EndMenu();
             }
@@ -176,5 +182,16 @@ namespace ProEngine
         }
 
         viewport_inspector_->ToggleWindow();
+    }
+
+    void MainEditorInterface::ToggleNodeEditor()
+    {
+        if (!node_editor_)
+        {
+            node_editor_ = new NodeEditor();
+            Application::Get().PushLayer(node_editor_);
+        }
+
+        node_editor_->ToggleWindow();
     }
 }

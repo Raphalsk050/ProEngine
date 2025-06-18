@@ -318,6 +318,8 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/Hierarchy/HierarchyInspector.cpp
             Core/Editor/Frame/Viewport/Viewport.h
             Core/Editor/Frame/Viewport/Viewport.cpp
+            Core/Editor/Frame/MaterialEditor/NodeEditor.h
+            Core/Editor/Frame/MaterialEditor/NodeEditor.cpp
             Core/Editor/AnimatedPopup.h
             Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h
