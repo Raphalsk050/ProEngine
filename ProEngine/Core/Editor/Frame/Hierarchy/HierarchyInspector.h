@@ -21,7 +21,7 @@ namespace ProEngine
     {
     public:
         HierarchyInspector();
-        ~HierarchyInspector();
+        ~HierarchyInspector() override;
 
         void OnAttach() override;
         void OnDetach() override;
@@ -45,7 +45,7 @@ namespace ProEngine
         void ProcessDeletions();
 
     private:
-        bool opened_ = false;
+        bool opened_ = true;
         entt::registry* registry_;
         Scene* active_scene_;
         entt::entity selected_entity_ = entt::null;
@@ -60,6 +60,6 @@ namespace ProEngine
             ImGuiTreeNodeFlags_SpanAvailWidth;
 
     private:
-        void CopyAllComponents(entt::registry& registry, entt::entity src, entt::entity dst);
+        static void CopyAllComponents(entt::registry& registry, entt::entity src, entt::entity dst);
     };
 }

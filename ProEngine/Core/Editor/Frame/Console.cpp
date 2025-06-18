@@ -6,7 +6,7 @@
 
 namespace ProEngine
 {
-    Console::Console(): opened_(false)
+    Console::Console()
     {
         debug_name_ = "ConsoleLayer";
     }

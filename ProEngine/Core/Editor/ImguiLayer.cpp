@@ -33,7 +33,7 @@ namespace ProEngine
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
         ImGuiIO& io = ImGui::GetIO();
-
+        io.IniFilename = "../ProEngine/Assets/Editor/editor_default_layout.ini";
         io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/PT-Root-UI/pt-root-ui_regular.ttf", 16.0f);
         io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/Inter/Inter-Regular.ttf", 16.0f);
         io.Fonts->AddFontFromFileTTF("../ProEngine/Assets/Fonts/Nunito/Nunito-Regular.ttf", 16.0f);
@@ -69,6 +69,20 @@ namespace ProEngine
         // Setup Platform/Renderer bindings
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init("#version 410");
+    }
+
+    void ImGuiLayer::SaveDefaultLayout()
+    {
+        ImGui::Begin("Layout configuration");
+
+        if (ImGui::Button("Save"))
+        {
+            ImGuiIO& io = ImGui::GetIO();
+            io.IniFilename = "../ProEngine/Assets/Editor/editor_default_layout.ini";
+            ImGui::SaveIniSettingsToDisk(io.IniFilename);
+        }
+
+        ImGui::End();
     }
 
     void ImGuiLayer::OnUpdate(Timestep ts)
@@ -167,6 +181,7 @@ namespace ProEngine
         ImGuizmo::BeginFrame();
         static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::TRANSLATE);
         static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+        // SaveDefaultLayout();
         // ImGui::ShowDemoWindow();
         // ShowMetricsWindow();
     }

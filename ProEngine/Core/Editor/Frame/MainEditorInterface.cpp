@@ -31,6 +31,8 @@ namespace ProEngine
         window_flags_ |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         window_flags_ |= ImGuiWindowFlags_NoBackground;
         window_flags_ |= ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;
+
+        InitializeFrames();
     }
 
     void MainEditorInterface::OnDetach()
@@ -58,6 +60,21 @@ namespace ProEngine
     void MainEditorInterface::OnEvent(Event& event)
     {
         Layer::OnEvent(event);
+    }
+
+    void MainEditorInterface::InitializeFrames()
+    {
+        // layers initialization
+        hierarchy_inspector_ = new HierarchyInspector();
+        fps_inspector_ = new FpsInspector();
+        viewport_inspector_ = new Viewport();
+        console_ = new Console();
+
+        // push layers
+        Application::Get().PushLayer(hierarchy_inspector_);
+        Application::Get().PushLayer(fps_inspector_);
+        Application::Get().PushLayer(viewport_inspector_);
+        Application::Get().PushLayer(console_);
     }
 
     void MainEditorInterface::ConfigureDockSpace()

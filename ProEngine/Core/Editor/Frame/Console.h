@@ -23,7 +23,7 @@ namespace ProEngine
         void ToggleWindow();
 
     private:
-        bool opened_;
+        bool opened_ = true;
         ImVec2 console_size_;
         ImFont* console_font_;
         std::shared_ptr<spdlog::sinks::ringbuffer_sink_mt> log_sink_;

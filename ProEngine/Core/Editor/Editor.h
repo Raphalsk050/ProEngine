@@ -1,7 +1,8 @@
 #pragma once
 #include <functional>
+#include <entt.hpp>
+
 #include "Core/Scene/Components.h"
-#include "entt.hpp"
 
 namespace ProEngine
 {
@@ -30,6 +31,7 @@ namespace ProEngine
                 }
             };
         }
+
         inline static void Initialize()
         {
             if (editor_ == nullptr)

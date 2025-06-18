@@ -24,6 +24,7 @@ namespace ProEngine
         void OnUpdate(Timestep ts) override;
         void OnImGuiRender() override;
         void OnEvent(Event& event) override;
+        void InitializeFrames();
 
     private:
         ImGuiWindowFlags window_flags_ = ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoDocking;

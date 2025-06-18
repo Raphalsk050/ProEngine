@@ -8,7 +8,7 @@ namespace ProEngine {
     class ImGuiLayer : public Layer {
     public:
         ImGuiLayer();
-        ~ImGuiLayer() = default;
+        ~ImGuiLayer() override = default;
 
         virtual void OnAttach() override;
         void OnUpdate(Timestep ts) override;
@@ -23,6 +23,8 @@ namespace ProEngine {
         void SetDarkThemeColors();
 
         void ShowMetricsWindow();
+
+        static void SaveDefaultLayout();
 
         uint32_t GetActiveWidgetID() const;
 

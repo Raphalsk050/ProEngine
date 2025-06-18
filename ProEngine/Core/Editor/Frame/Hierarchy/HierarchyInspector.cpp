@@ -221,23 +221,23 @@ namespace ProEngine
         {
             selected_entity_transform_.selected_entity_position = entity_handle_.GetPosition();
             selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
-            selected_entity_transform_.selected_entity_scale = entity_handle_.GetScale();
+            selected_entity_transform_.selected_entity_scale    = entity_handle_.GetScale();
 
 
             ImGui::Text("Position");
-            if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 0.2f))
+            if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 2))
             {
                 entity_handle_.SetPosition(selected_entity_transform_.selected_entity_position);
             }
 
             ImGui::Text("Rotation");
-            if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 0.2f))
+            if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 2))
             {
                 entity_handle_.SetRotation(selected_entity_transform_.selected_entity_rotation);
             }
 
             ImGui::Text("Scale");
-            if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 0.2f))
+            if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 2))
             {
                 entity_handle_.SetScale(selected_entity_transform_.selected_entity_scale);
             }
@@ -273,25 +273,7 @@ namespace ProEngine
     {
         EntityHandle new_entity = active_scene_->CreateEntity(entity.GetComponent<TagComponent>().tag + " (Copy)");
 
-        // const auto& transform = entity.GetComponent<TransformComponent>();
-
-        // if (transform.parent != entt::null)
-        // {
-        //     EntityHandle parent(transform.parent, active_scene_);
-        //     new_entity.SetParent(parent);
-        // }
-
-        // TODO(rafael): Copy the other components
-        // PENGINE_CORE_INFO("Entity name: {}", new_entity.GetComponent<TagComponent>().tag.c_str());
-
         CopyAllComponents(*registry_, entity.Raw(), new_entity.Raw());
-
-
-        // for(auto [id, storage]: registry_->storage()) {
-        //     if(storage.contains(entity.Raw())) {
-        //         std::cout << "  - Componente ID: " << id << "\n";
-        //     }
-        // }
 
         // auto children = entity.GetChildren();
         // for (auto& child : children)

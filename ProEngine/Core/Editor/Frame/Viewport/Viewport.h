@@ -21,7 +21,7 @@ namespace ProEngine
 
     private:
         float time_ = 0.0f;
-        bool opened_ = false;
+        bool opened_ = true;
         bool camera_movement_enabled_ = false;
         Ref<Framebuffer> framebuffer_;
         std::unordered_map<KeyCode, bool> last_key_state_map_;
