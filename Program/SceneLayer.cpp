@@ -16,6 +16,19 @@ namespace ProEngine
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
+        auto* scene = Application::Get().GetActiveScene();
+        plane_entity_ = scene->CreateEntity("plane");
+
+        Ref<Material> mat = CreateRef<Material>();
+        mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_texture_alpha.png"));
+        RendererComponent rc;
+        auto plane = Mesh::CreatePlane(1.0f,1.0f);
+        plane->SetMaterial(mat);
+        rc.mesh = MeshType::Model;
+        rc.mesh_ptr = plane;
+        plane_entity_.AddComponent<RendererComponent>(rc);
+        plane_entity_.SetScale(glm::vec3(10000.0f,0.0001f,10000.0f));
+
         // Create an example entity with renderer component
         // auto* scene = Application::Get().GetActiveScene();
         // sphere_entity_ = scene->CreateEntity("Sphere");
