@@ -36,7 +36,10 @@ namespace ProEngine {
         inline float GetRoughness() const { return m_Roughness; }
 
         inline void SetTilingFactor(const glm::vec2& factor) { m_TilingFactor = factor; }
-        inline const glm::vec2& GetTilingFactor() const { return m_TilingFactor; }
+    inline const glm::vec2& GetTilingFactor() const { return m_TilingFactor; }
+
+        inline void SetUseGrid(bool useGrid) { m_UseGrid = useGrid; }
+        inline bool GetUseGrid() const { return m_UseGrid; }
 
     private:
         glm::vec4 m_AlbedoColor = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -49,6 +52,7 @@ namespace ProEngine {
         float m_Metallic = 0.0f;
         float m_Roughness = 0.5f;
         glm::vec2 m_TilingFactor = {1.0f, 1.0f};
+        bool m_UseGrid = false;
     };
 
 }  // namespace ProEngine

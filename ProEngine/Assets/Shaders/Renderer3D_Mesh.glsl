@@ -89,12 +89,26 @@ uniform sampler2D u_AlbedoMap;
 uniform sampler2D u_NormalMap;
 uniform sampler2D u_MetallicMap;
 uniform sampler2D u_RoughnessMap;
+uniform int u_UseGrid;
+
+vec4 GridColor(vec2 uv)
+{
+    float thickness = 0.02;
+    vec2 grid = abs(fract(uv - 0.5) - 0.5);
+    float line = step(grid.x, thickness) + step(grid.y, thickness);
+    line = clamp(line, 0.0, 1.0);
+    vec3 bg = vec3(0.2);
+    vec3 color = mix(bg, u_MaterialAlbedoColor.rgb, line);
+    return vec4(color, 1.0);
+}
 
 void main()
 {
     // Sample material properties
     vec4 albedoSample = texture(u_AlbedoMap, v_TexCoord * u_MaterialTilingFactor);
     vec4 finalAlbedo = albedoSample * u_MaterialAlbedoColor;
+    if(u_UseGrid == 1)
+        finalAlbedo = GridColor(v_TexCoord * u_MaterialTilingFactor);
 
     // Normalize the normal
     vec3 normal = normalize(v_Normal);

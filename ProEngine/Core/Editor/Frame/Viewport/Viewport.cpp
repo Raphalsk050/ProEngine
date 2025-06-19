@@ -1,6 +1,7 @@
 #include "Viewport.h"
 #include "Core/Renderer/Renderer3D.h"
 #include "Core/Scene/EntityHandle.h"
+#include "Core/Renderer/Material.h"
 #include <glad/glad.h>
 
 namespace ProEngine
@@ -274,7 +275,7 @@ namespace ProEngine
         plane_entity_ = scene->CreateEntity("plane");
 
         Ref<Material> mat = CreateRef<Material>();
-        mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_2x2.png"));
+        mat->SetUseGrid(true);
         mat->SetTilingFactor(glm::vec2(1000.0f, 1000.0f));
 
         RendererComponent rc;
