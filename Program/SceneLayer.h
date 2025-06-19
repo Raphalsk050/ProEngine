@@ -22,6 +22,8 @@ namespace ProEngine {
         EntityHandle cube_entity_2_;
         EntityHandle cube_entity_3_;
 
+        EntityHandle plane_entity_;
+
         // line
         glm::vec3 line_p1_position_ = {0.0f, 0.0f, 0.0f};
         glm::vec3 line_p2_position_ = {1.0f, 0.0f, 0.0f};

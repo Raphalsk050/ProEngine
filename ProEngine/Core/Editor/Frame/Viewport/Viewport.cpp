@@ -93,7 +93,7 @@ namespace ProEngine
                     if (pixelData != -1)
                     {
                         EntityHandle handle(static_cast<entt::entity>(pixelData), Application::Get().GetActiveScene());
-                        if (handle.Valid())
+                        if (handle.Valid() && handle.GetComponent<InteractableComponent>().interactable)
                         {
                             hierarchy_inspector_->SetSelectedEntityHandle(&handle);
                             PENGINE_CORE_INFO("Selected entity name: {0}", handle.GetComponent<TagComponent>().tag);

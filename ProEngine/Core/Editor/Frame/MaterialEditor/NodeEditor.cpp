@@ -80,6 +80,7 @@ namespace ProEngine
         mouse_absolute_position_ = ImGui::GetMousePos();
         mouse_relative_position_ = ImVec2(mouse_absolute_position_.x - window_position_.x, mouse_absolute_position_.y - window_position_.y);
 
+        // rendering a single node
         for (auto& node : graph_.nodes)
         {
             ImNodes::BeginNode(node.id);

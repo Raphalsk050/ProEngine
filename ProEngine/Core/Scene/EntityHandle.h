@@ -25,7 +25,7 @@ namespace ProEngine
         template <typename T>
         T& GetComponent();
 
-        void SetParent(EntityHandle parent, bool keep_world_position = false);
+        void SetParent(EntityHandle parent, bool keep_world_position = true);
         std::vector<EntityHandle> GetChildren() const;
 
         void SetPosition(const glm::vec3& position);
@@ -42,7 +42,6 @@ namespace ProEngine
     private:
         entt::entity handle_{entt::null};
         Scene* scene_ = nullptr;
-
         friend class Scene;
         friend class HierarchyInspector;
     };
