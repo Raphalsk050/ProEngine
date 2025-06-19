@@ -20,7 +20,7 @@ namespace ProEngine {
         EntityHandle sphere_entity_;
         EntityHandle cube_entity_;
         EntityHandle cube_entity_2_;
-        EntityHandle cube_entity_3_;
+        EntityHandle model_entity_;
 
         EntityHandle plane_entity_;
 

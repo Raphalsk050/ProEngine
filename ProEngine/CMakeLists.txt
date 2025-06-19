@@ -66,6 +66,7 @@ set(glad_DIR ThirdParty/glad)
 set(glm_DIR ThirdParty/glm)
 set(entt_DIR ThirdParty/entt)
 set(stbimage_DIR ThirdParty/stbimage)
+set(assimp_DIR ThirdParty/assimp)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -80,6 +81,17 @@ add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
 add_subdirectory(${entt_DIR})
 add_subdirectory(${stbimage_DIR})
+
+# Prebuilt Assimp library
+add_library(assimp SHARED IMPORTED)
+if (APPLE)
+    set_target_properties(assimp PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/macos-arm64-v6.0.2/libassimp.6.dylib)
+else()
+    set_target_properties(assimp PROPERTIES
+        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/linux-x64-v6.0.2/libassimp.so.6)
+endif()
+target_include_directories(assimp INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/include)
 
 target_compile_definitions(ImGui PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLAD
@@ -169,6 +181,7 @@ target_link_libraries(PERendering
         glad
         Entt
         PEPlatform
+        assimp
 )
 target_include_directories(PERendering PUBLIC
         PECore
@@ -176,6 +189,7 @@ target_include_directories(PERendering PUBLIC
         ${glfw_DIR}/include
         ${glad_DIR}/include
         ${glm_DIR}
+        ${assimp_DIR}/include
 )
 
 # ── Core Library ──────────────────────────────────────────

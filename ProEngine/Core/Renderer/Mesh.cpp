@@ -2,6 +2,16 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <array>
+#include <glm.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <filesystem>
+
+#include "Core/Renderer/Texture.h"
 
 #include "VertexArray.h"
 
@@ -407,18 +417,137 @@ Ref<Mesh> Mesh::CreatePlane(float width, float height) {
   return mesh;
 }
 
+Ref<Mesh> Mesh::Create(const std::vector<float>& vertices,
+                       const std::vector<uint32_t>& indices) {
+  Ref<Mesh> mesh = CreateRef<Mesh>();
+
+  BufferLayout layout = {
+    { ShaderDataType::Float3, "a_Position" },
+    { ShaderDataType::Float3, "a_Normal" },
+    { ShaderDataType::Float3, "a_Tangent" },
+    { ShaderDataType::Float2, "a_TexCoord" }
+  };
+
+  Ref<VertexBuffer> vertexBuffer =
+      VertexBuffer::Create(const_cast<float*>(vertices.data()),
+                           vertices.size() * sizeof(float));
+  vertexBuffer->SetLayout(layout);
+  mesh->SetVertexBuffer(vertexBuffer);
+  mesh->m_VertexCount = vertices.size() / 11;
+
+  std::vector<uint32_t> idx = indices;
+  mesh->SetIndices(idx);
+
+  return mesh;
+}
+
 // Model implementation
 
 Ref<Model> Model::Load(const std::string& filepath) {
-  // This is a placeholder - in a real engine, this would use a model loading library
-  // like Assimp to load models from various formats (OBJ, FBX, etc.)
-
   Ref<Model> model = CreateRef<Model>();
 
-  // For now, we'll just return a simple cube model as an example
-  model->AddMesh(Mesh::CreateCube());
+  Assimp::Importer importer;
+  const aiScene* scene = importer.ReadFile(
+      filepath,
+      aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices |
+          aiProcess_CalcTangentSpace);
+
+  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+    PENGINE_CORE_ERROR("Failed to load model '{}': {}", filepath,
+                       importer.GetErrorString());
+    return model;
+  }
+
+  std::filesystem::path directory = std::filesystem::path(filepath).parent_path();
+
+  std::vector<Ref<Material>> materials(scene->mNumMaterials);
+  for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+    aiMaterial* aiMat = scene->mMaterials[i];
+    Ref<Material> mat = CreateRef<Material>();
+
+    auto loadMap = [&](aiTextureType type, auto&& setter) {
+      if (aiMat->GetTextureCount(type) > 0) {
+        aiString path;
+        if (aiMat->GetTexture(type, 0, &path) == AI_SUCCESS) {
+          std::filesystem::path fullPath = directory / path.C_Str();
+          setter(Texture2D::Create(fullPath.string()));
+        }
+      }
+    };
+
+    loadMap(aiTextureType_DIFFUSE,
+            [&](Ref<Texture2D> tex) { mat->SetAlbedoMap(tex); });
+    loadMap(aiTextureType_NORMALS,
+            [&](Ref<Texture2D> tex) { mat->SetNormalMap(tex); });
+    loadMap(aiTextureType_METALNESS,
+            [&](Ref<Texture2D> tex) { mat->SetMetallicMap(tex); });
+    loadMap(aiTextureType_DIFFUSE_ROUGHNESS,
+            [&](Ref<Texture2D> tex) { mat->SetRoughnessMap(tex); });
+
+    materials[i] = mat;
+  }
+
+  for (uint32_t m = 0; m < scene->mNumMeshes; ++m) {
+    aiMesh* aiMesh = scene->mMeshes[m];
+
+    std::vector<float> vertices;
+    std::vector<uint32_t> indices;
+    vertices.reserve(aiMesh->mNumVertices * 11);
+
+    for (uint32_t i = 0; i < aiMesh->mNumVertices; ++i) {
+      const aiVector3D& pos = aiMesh->mVertices[i];
+      aiVector3D normal{0.0f, 0.0f, 1.0f};
+      aiVector3D tangent{1.0f, 0.0f, 0.0f};
+      aiVector3D uv{0.0f, 0.0f, 0.0f};
+
+      if (aiMesh->HasNormals())
+        normal = aiMesh->mNormals[i];
+      if (aiMesh->HasTangentsAndBitangents())
+        tangent = aiMesh->mTangents[i];
+      if (aiMesh->HasTextureCoords(0))
+        uv = aiMesh->mTextureCoords[0][i];
+
+      vertices.push_back(pos.x);
+      vertices.push_back(pos.y);
+      vertices.push_back(pos.z);
+      vertices.push_back(normal.x);
+      vertices.push_back(normal.y);
+      vertices.push_back(normal.z);
+      vertices.push_back(tangent.x);
+      vertices.push_back(tangent.y);
+      vertices.push_back(tangent.z);
+      vertices.push_back(uv.x);
+      vertices.push_back(uv.y);
+    }
+
+    for (uint32_t f = 0; f < aiMesh->mNumFaces; ++f) {
+      const aiFace& face = aiMesh->mFaces[f];
+      if (face.mNumIndices == 3) {
+        indices.push_back(face.mIndices[0]);
+        indices.push_back(face.mIndices[1]);
+        indices.push_back(face.mIndices[2]);
+      } else if (face.mNumIndices > 3) {
+        for (uint32_t k = 1; k + 1 < face.mNumIndices; ++k) {
+          indices.push_back(face.mIndices[0]);
+          indices.push_back(face.mIndices[k]);
+          indices.push_back(face.mIndices[k + 1]);
+        }
+      }
+    }
+
+    if (!vertices.empty() && !indices.empty()) {
+      Ref<Mesh> mesh = Mesh::Create(vertices, indices);
+      if (aiMesh->mMaterialIndex < materials.size())
+        mesh->SetMaterial(materials[aiMesh->mMaterialIndex]);
+      model->AddMesh(mesh);
+    }
+  }
+
+  if (model->GetMeshes().empty())
+    PENGINE_CORE_WARN("Model '{}' contained no geometry", filepath);
 
   return model;
 }
 
 } // namespace BEngine
+
