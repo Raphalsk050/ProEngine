@@ -22,6 +22,11 @@ namespace ProEngine
         // Create an example entity with renderer component
         sphere_entity_ = scene->CreateEntity("Sphere");
         cube_entity_ = scene->CreateEntity("Cube");
+        model_entity_ = scene->CreateEntity("Model");
+        auto model = Model::Load("../ProEngine/Assets/Models/monkey.fbx");
+        rc = RendererComponent({.mesh = MeshType::Model, .model = model});
+        model_entity_.AddComponent<RendererComponent>(rc);
+
 
         rc = RendererComponent({.mesh = MeshType::Sphere});
         render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
