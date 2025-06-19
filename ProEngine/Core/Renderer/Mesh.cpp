@@ -9,6 +9,9 @@
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
+#include <filesystem>
+
+#include "Core/Renderer/Texture.h"
 
 #include "VertexArray.h"
 
@@ -455,6 +458,35 @@ Ref<Model> Model::Load(const std::string& filepath) {
     return model;
   }
 
+  std::filesystem::path directory = std::filesystem::path(filepath).parent_path();
+
+  std::vector<Ref<Material>> materials(scene->mNumMaterials);
+  for (uint32_t i = 0; i < scene->mNumMaterials; ++i) {
+    aiMaterial* aiMat = scene->mMaterials[i];
+    Ref<Material> mat = CreateRef<Material>();
+
+    auto loadMap = [&](aiTextureType type, auto&& setter) {
+      if (aiMat->GetTextureCount(type) > 0) {
+        aiString path;
+        if (aiMat->GetTexture(type, 0, &path) == AI_SUCCESS) {
+          std::filesystem::path fullPath = directory / path.C_Str();
+          setter(Texture2D::Create(fullPath.string()));
+        }
+      }
+    };
+
+    loadMap(aiTextureType_DIFFUSE,
+            [&](Ref<Texture2D> tex) { mat->SetAlbedoMap(tex); });
+    loadMap(aiTextureType_NORMALS,
+            [&](Ref<Texture2D> tex) { mat->SetNormalMap(tex); });
+    loadMap(aiTextureType_METALNESS,
+            [&](Ref<Texture2D> tex) { mat->SetMetallicMap(tex); });
+    loadMap(aiTextureType_DIFFUSE_ROUGHNESS,
+            [&](Ref<Texture2D> tex) { mat->SetRoughnessMap(tex); });
+
+    materials[i] = mat;
+  }
+
   for (uint32_t m = 0; m < scene->mNumMeshes; ++m) {
     aiMesh* aiMesh = scene->mMeshes[m];
 
@@ -503,8 +535,12 @@ Ref<Model> Model::Load(const std::string& filepath) {
       }
     }
 
-    if (!vertices.empty() && !indices.empty())
-      model->AddMesh(Mesh::Create(vertices, indices));
+    if (!vertices.empty() && !indices.empty()) {
+      Ref<Mesh> mesh = Mesh::Create(vertices, indices);
+      if (aiMesh->mMaterialIndex < materials.size())
+        mesh->SetMaterial(materials[aiMesh->mMaterialIndex]);
+      model->AddMesh(mesh);
+    }
   }
 
   if (model->GetMeshes().empty())
