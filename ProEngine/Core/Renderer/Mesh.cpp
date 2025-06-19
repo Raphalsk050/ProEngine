@@ -469,8 +469,14 @@ Ref<Model> Model::Load(const std::string& filepath) {
       if (aiMat->GetTextureCount(type) > 0) {
         aiString path;
         if (aiMat->GetTexture(type, 0, &path) == AI_SUCCESS) {
-          std::filesystem::path fullPath = directory / path.C_Str();
-          setter(Texture2D::Create(fullPath.string()));
+          if (path.C_Str()[0] == '*')
+            return; // Ignore embedded textures for now
+
+          std::filesystem::path texPath = path.C_Str();
+          if (texPath.is_relative())
+            texPath = directory / texPath;
+
+          setter(Texture2D::Create(texPath.string()));
         }
       }
     };
