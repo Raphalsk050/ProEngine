@@ -141,7 +141,6 @@ namespace ProEngine
 
     bool Camera3DController::OnMouseMoved(MouseMovedEvent& e)
     {
-        PENGINE_CORE_INFO("Mouse moved!");
         if (m_FirstMouse)
         {
             m_LastMousePosition.x = e.GetX();
@@ -226,7 +225,6 @@ namespace ProEngine
             break;
         }
 
-        PENGINE_CORE_INFO("Key pressed {0}", e.GetName());
         return false;
     }
 
