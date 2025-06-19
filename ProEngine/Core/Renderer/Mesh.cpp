@@ -6,6 +6,9 @@
 #include <sstream>
 #include <array>
 #include <glm.hpp>
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 #include "VertexArray.h"
 
@@ -440,106 +443,75 @@ Ref<Mesh> Mesh::Create(const std::vector<float>& vertices,
 Ref<Model> Model::Load(const std::string& filepath) {
   Ref<Model> model = CreateRef<Model>();
 
-  std::ifstream in(filepath);
-  if (!in.is_open()) {
-    PENGINE_CORE_ERROR("Failed to open model file '{}'", filepath);
+  Assimp::Importer importer;
+  const aiScene* scene = importer.ReadFile(
+      filepath,
+      aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_JoinIdenticalVertices |
+          aiProcess_CalcTangentSpace);
+
+  if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
+    PENGINE_CORE_ERROR("Failed to load model '{}': {}", filepath,
+                       importer.GetErrorString());
     return model;
   }
 
-  std::vector<glm::vec3> positions;
-  std::vector<glm::vec3> normals;
-  std::vector<glm::vec2> texCoords;
-  std::vector<float>    vertexData;
-  std::vector<uint32_t> indices;
+  for (uint32_t m = 0; m < scene->mNumMeshes; ++m) {
+    aiMesh* aiMesh = scene->mMeshes[m];
 
-  std::string line;
-  uint32_t index = 0;
-  while (std::getline(in, line)) {
-    if (line.empty() || line[0] == '#')
-      continue;
+    std::vector<float> vertices;
+    std::vector<uint32_t> indices;
+    vertices.reserve(aiMesh->mNumVertices * 11);
 
-    std::istringstream ss(line);
-    std::string prefix;
-    ss >> prefix;
+    for (uint32_t i = 0; i < aiMesh->mNumVertices; ++i) {
+      const aiVector3D& pos = aiMesh->mVertices[i];
+      aiVector3D normal{0.0f, 0.0f, 1.0f};
+      aiVector3D tangent{1.0f, 0.0f, 0.0f};
+      aiVector3D uv{0.0f, 0.0f, 0.0f};
 
-    if (prefix == "v") {
-      glm::vec3 pos;
-      ss >> pos.x >> pos.y >> pos.z;
-      positions.push_back(pos);
-    } else if (prefix == "vn") {
-      glm::vec3 n;
-      ss >> n.x >> n.y >> n.z;
-      normals.push_back(n);
-    } else if (prefix == "vt") {
-      glm::vec2 uv{0.0f};
-      ss >> uv.x >> uv.y;
-      texCoords.push_back(uv);
-    } else if (prefix == "f") {
-      std::vector<std::array<int, 3>> verts;
-      std::string vert;
-      while (ss >> vert) {
-        std::array<int, 3> idx{0, 0, 0};
-        size_t p1 = vert.find('/');
-        if (p1 == std::string::npos) {
-          idx[0] = std::stoi(vert);
-        } else {
-          idx[0] = std::stoi(vert.substr(0, p1));
-          size_t p2 = vert.find('/', p1 + 1);
-          if (p2 == std::string::npos) {
-            if (p1 + 1 < vert.size())
-              idx[1] = std::stoi(vert.substr(p1 + 1));
-          } else {
-            if (p2 > p1 + 1)
-              idx[1] = std::stoi(vert.substr(p1 + 1, p2 - p1 - 1));
-            if (p2 + 1 < vert.size())
-              idx[2] = std::stoi(vert.substr(p2 + 1));
-          }
-        }
-        verts.push_back(idx);
-      }
+      if (aiMesh->HasNormals())
+        normal = aiMesh->mNormals[i];
+      if (aiMesh->HasTangentsAndBitangents())
+        tangent = aiMesh->mTangents[i];
+      if (aiMesh->HasTextureCoords(0))
+        uv = aiMesh->mTextureCoords[0][i];
 
-      for (size_t i = 1; i + 1 < verts.size(); ++i) {
-        std::array<int, 3> f[3] = {verts[0], verts[i], verts[i + 1]};
-        for (int k = 0; k < 3; ++k) {
-          glm::vec3 pos{0.0f};
-          glm::vec3 normal{0.0f, 0.0f, 1.0f};
-          glm::vec2 uv{0.0f};
+      vertices.push_back(pos.x);
+      vertices.push_back(pos.y);
+      vertices.push_back(pos.z);
+      vertices.push_back(normal.x);
+      vertices.push_back(normal.y);
+      vertices.push_back(normal.z);
+      vertices.push_back(tangent.x);
+      vertices.push_back(tangent.y);
+      vertices.push_back(tangent.z);
+      vertices.push_back(uv.x);
+      vertices.push_back(uv.y);
+    }
 
-          if (f[k][0] > 0 && (size_t)f[k][0] <= positions.size())
-            pos = positions[f[k][0] - 1];
-          if (f[k][1] > 0 && (size_t)f[k][1] <= texCoords.size())
-            uv = texCoords[f[k][1] - 1];
-          if (f[k][2] > 0 && (size_t)f[k][2] <= normals.size())
-            normal = normals[f[k][2] - 1];
-
-          glm::vec3 tangent{1.0f, 0.0f, 0.0f};
-
-          vertexData.push_back(pos.x);
-          vertexData.push_back(pos.y);
-          vertexData.push_back(pos.z);
-          vertexData.push_back(normal.x);
-          vertexData.push_back(normal.y);
-          vertexData.push_back(normal.z);
-          vertexData.push_back(tangent.x);
-          vertexData.push_back(tangent.y);
-          vertexData.push_back(tangent.z);
-          vertexData.push_back(uv.x);
-          vertexData.push_back(uv.y);
-
-          indices.push_back(index++);
+    for (uint32_t f = 0; f < aiMesh->mNumFaces; ++f) {
+      const aiFace& face = aiMesh->mFaces[f];
+      if (face.mNumIndices == 3) {
+        indices.push_back(face.mIndices[0]);
+        indices.push_back(face.mIndices[1]);
+        indices.push_back(face.mIndices[2]);
+      } else if (face.mNumIndices > 3) {
+        for (uint32_t k = 1; k + 1 < face.mNumIndices; ++k) {
+          indices.push_back(face.mIndices[0]);
+          indices.push_back(face.mIndices[k]);
+          indices.push_back(face.mIndices[k + 1]);
         }
       }
     }
+
+    if (!vertices.empty() && !indices.empty())
+      model->AddMesh(Mesh::Create(vertices, indices));
   }
 
-  if (vertexData.empty() || indices.empty()) {
+  if (model->GetMeshes().empty())
     PENGINE_CORE_WARN("Model '{}' contained no geometry", filepath);
-    return model;
-  }
-
-  model->AddMesh(Mesh::Create(vertexData, indices));
 
   return model;
 }
 
 } // namespace BEngine
+
