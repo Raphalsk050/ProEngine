@@ -10,6 +10,7 @@ namespace ProEngine {
     public:
         OpenGLTexture2D(const TextureSpecification& specification);
         OpenGLTexture2D(const std::string& path);
+        OpenGLTexture2D(const void* data, uint32_t size);
         virtual ~OpenGLTexture2D();
 
         virtual const TextureSpecification& GetSpecification() const override { return m_Specification; }

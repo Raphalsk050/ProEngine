@@ -10,6 +10,7 @@
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <filesystem>
+#include <cstdlib>
 
 #include "Core/Renderer/Texture.h"
 
@@ -469,14 +470,34 @@ Ref<Model> Model::Load(const std::string& filepath) {
       if (aiMat->GetTextureCount(type) > 0) {
         aiString path;
         if (aiMat->GetTexture(type, 0, &path) == AI_SUCCESS) {
-          if (path.C_Str()[0] == '*')
-            return; // Ignore embedded textures for now
+          Ref<Texture2D> tex;
+          if (path.C_Str()[0] == '*') {
+            int index = std::atoi(path.C_Str() + 1);
+            if (index >= 0 && index < (int)scene->mNumTextures) {
+              aiTexture* embedded = scene->mTextures[index];
+              if (embedded->mHeight == 0) {
+                tex = Texture2D::CreateFromMemory(embedded->pcData,
+                                                  embedded->mWidth);
+              } else {
+                TextureSpecification spec;
+                spec.Width = embedded->mWidth;
+                spec.Height = embedded->mHeight;
+                spec.Format = ImageFormat::RGBA8;
+                tex = Texture2D::Create(spec);
+                tex->SetData(embedded->pcData,
+                             embedded->mWidth * embedded->mHeight * 4);
+              }
+            }
+          } else {
+            std::filesystem::path texPath = path.C_Str();
+            if (texPath.is_relative())
+              texPath = directory / texPath;
 
-          std::filesystem::path texPath = path.C_Str();
-          if (texPath.is_relative())
-            texPath = directory / texPath;
+            tex = Texture2D::Create(texPath.string());
+          }
 
-          setter(Texture2D::Create(texPath.string()));
+          if (tex)
+            setter(tex);
         }
       }
     };
