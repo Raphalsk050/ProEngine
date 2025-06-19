@@ -6,6 +6,7 @@
 #include <sstream>
 #include <array>
 #include <glm.hpp>
+#include <cfloat>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -138,6 +139,10 @@ Ref<Mesh> Mesh::CreateCube(float size) {
 
   mesh->SetIndices(indices);
 
+  mesh->m_Min = glm::vec3(-halfSize);
+  mesh->m_Max = glm::vec3(halfSize);
+  mesh->m_BoundingSphereRadius = glm::length(mesh->m_Max - mesh->m_Min) * 0.5f;
+
   return mesh;
 }
 
@@ -225,6 +230,10 @@ Ref<Mesh> Mesh::CreateSphere(float radius, uint32_t segmentsX, uint32_t segments
   mesh->m_VertexCount = (segmentsX + 1) * (segmentsY + 1);
 
   mesh->SetIndices(indices);
+
+  mesh->m_Min = glm::vec3(-radius);
+  mesh->m_Max = glm::vec3(radius);
+  mesh->m_BoundingSphereRadius = radius;
 
   return mesh;
 }
@@ -375,6 +384,10 @@ Ref<Mesh> Mesh::CreateCylinder(float radius, float height, uint32_t segments) {
 
   mesh->SetIndices(indices);
 
+  mesh->m_Min = glm::vec3(-radius, -halfHeight, -radius);
+  mesh->m_Max = glm::vec3(radius, halfHeight, radius);
+  mesh->m_BoundingSphereRadius = glm::length(glm::vec3(radius, halfHeight, radius));
+
   return mesh;
 }
 
@@ -415,6 +428,10 @@ Ref<Mesh> Mesh::CreatePlane(float width, float height) {
 
   mesh->SetIndices(indices);
 
+  mesh->m_Min = glm::vec3(-halfWidth, 0.0f, -halfHeight);
+  mesh->m_Max = glm::vec3(halfWidth, 0.0f, halfHeight);
+  mesh->m_BoundingSphereRadius = glm::length(mesh->m_Max - mesh->m_Min) * 0.5f;
+
   return mesh;
 }
 
@@ -438,6 +455,16 @@ Ref<Mesh> Mesh::Create(const std::vector<float>& vertices,
 
   std::vector<uint32_t> idx = indices;
   mesh->SetIndices(idx);
+
+  glm::vec3 min(FLT_MAX), max(-FLT_MAX);
+  for (size_t i = 0; i < vertices.size(); i += 11) {
+    glm::vec3 pos(vertices[i], vertices[i + 1], vertices[i + 2]);
+    min = glm::min(min, pos);
+    max = glm::max(max, pos);
+  }
+  mesh->m_Min = min;
+  mesh->m_Max = max;
+  mesh->m_BoundingSphereRadius = glm::length(max - min) * 0.5f;
 
   return mesh;
 }

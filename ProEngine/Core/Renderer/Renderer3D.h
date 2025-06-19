@@ -246,6 +246,7 @@ namespace ProEngine
 
         // Função helper para culling centralizado (mantida)
         friend bool PerformCulling(int entityID, const glm::mat4& transform,
+                                   float meshRadius,
                                    float* outBoundingRadius);
 
         // Função interna de renderização (modificada para usar o novo sistema)

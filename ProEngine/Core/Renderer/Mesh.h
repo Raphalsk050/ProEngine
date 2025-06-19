@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "Core/Renderer/VertexArray.h"
 #include "Core/Renderer/Material.h"
+#include <glm.hpp>
 
 namespace ProEngine
 {
@@ -21,6 +22,10 @@ namespace ProEngine
         Ref<VertexArray> GetVertexArray() const { return m_VertexArray; }
         uint32_t GetVertexCount() const { return m_VertexCount; }
         uint32_t GetIndexCount() const { return m_IndexCount; }
+
+        const glm::vec3& GetMin() const { return m_Min; }
+        const glm::vec3& GetMax() const { return m_Max; }
+        float GetBoundingSphereRadius() const { return m_BoundingSphereRadius; }
 
         void SetMaterial(const Ref<Material>& material) { m_Material = material; }
         Ref<Material> GetMaterial() const { return m_Material; }
@@ -42,6 +47,10 @@ namespace ProEngine
 
         uint32_t m_VertexCount = 0;
         uint32_t m_IndexCount = 0;
+
+        glm::vec3 m_Min{0.0f};
+        glm::vec3 m_Max{0.0f};
+        float m_BoundingSphereRadius = 0.0f;
     };
 
     // A model class to hold multiple meshes

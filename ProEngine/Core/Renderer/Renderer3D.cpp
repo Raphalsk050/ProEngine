@@ -139,6 +139,7 @@ namespace ProEngine
     // Performs frustum culling for an entity based on its transform and
     // bounding sphere
     bool PerformCulling(int entityID, const glm::mat4& transform,
+                        float meshRadius,
                         float* outBoundingRadius = nullptr)
     {
         if (!s_Data.ActiveCamera)
@@ -156,18 +157,7 @@ namespace ProEngine
         }
 
         auto& cullingData = s_Data.EntityCullingInfo[entityID];
-
-        // Calculate bounding sphere radius if not set yet
-        if (cullingData.BoundingSphereRadius == 0.0f)
-        {
-            glm::vec3 scale;
-            scale.x = glm::length(glm::vec3(transform[0]));
-            scale.y = glm::length(glm::vec3(transform[1]));
-            scale.z = glm::length(glm::vec3(transform[2]));
-            float maxScale = glm::max(glm::max(scale.x, scale.y), scale.z);
-            cullingData.BoundingSphereRadius
-                = maxScale * 0.866f; // ~sqrt(3)/2 for a cube
-        }
+        cullingData.BoundingSphereRadius = meshRadius;
 
         s_Data.TotalMeshCount++;
 
@@ -409,7 +399,7 @@ namespace ProEngine
     {
         PENGINE_PROFILE_FUNCTION();
 
-        if (!PerformCulling(entityID, transform)) { return; }
+        if (!PerformCulling(entityID, transform, mesh->GetBoundingSphereRadius())) { return; }
 
         s_Data.DefaultMaterial->SetAlbedoColor(color);
         DrawMeshInternal(transform, mesh, s_Data.DefaultMaterial, entityID);
@@ -421,7 +411,7 @@ namespace ProEngine
     {
         PENGINE_PROFILE_FUNCTION();
 
-        if (!PerformCulling(entityID, transform)) { return; }
+        if (!PerformCulling(entityID, transform, mesh->GetBoundingSphereRadius())) { return; }
 
         DrawMeshInternal(transform, mesh, material ? material : s_Data.DefaultMaterial,
                         entityID);

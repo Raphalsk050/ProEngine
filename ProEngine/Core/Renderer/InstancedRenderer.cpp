@@ -7,7 +7,7 @@
 namespace ProEngine
 {
     // Forward declaration para função de culling (definida em Renderer3D.cpp)
-    bool PerformCulling(int entityID, const glm::mat4& transform, float* outBoundingRadius);
+    bool PerformCulling(int entityID, const glm::mat4& transform, float meshRadius, float* outBoundingRadius);
 
     void InstancedRenderer::Init()
     {
@@ -78,7 +78,7 @@ namespace ProEngine
 
         m_Stats.TotalInstances += transforms.size();
 
-        PrepareInstanceData(transforms, colors, entityIDs);
+        PrepareInstanceData(transforms, colors, entityIDs, mesh->GetBoundingSphereRadius());
 
         if (m_InstanceData.empty())
         {
@@ -238,14 +238,15 @@ void main()
 
     void InstancedRenderer::PrepareInstanceData(const std::vector<glm::mat4>& transforms,
                                                 const std::vector<glm::vec4>& colors,
-                                                const std::vector<int>& entityIDs)
+                                                const std::vector<int>& entityIDs,
+                                                float meshRadius)
     {
         m_InstanceData.clear();
 
         for (size_t i = 0; i < transforms.size(); ++i)
         {
             // Use the culling function from Renderer3D
-            if (!PerformCulling(entityIDs[i], transforms[i]))
+            if (!PerformCulling(entityIDs[i], transforms[i], meshRadius))
             {
                 continue;
             }

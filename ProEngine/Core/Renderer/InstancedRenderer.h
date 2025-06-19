@@ -80,7 +80,8 @@ namespace ProEngine
         void CreateInstancedShader();
         void PrepareInstanceData(const std::vector<glm::mat4>& transforms,
                                  const std::vector<glm::vec4>& colors,
-                                 const std::vector<int>& entityIDs);
+                                 const std::vector<int>& entityIDs,
+                                 float meshRadius);
 
         Ref<VertexArray> GetOrCreateInstancedVAO(Ref<Mesh> mesh);
         void SetupInstanceAttributes(Ref<VertexArray> vao);
