@@ -67,6 +67,11 @@ namespace ProEngine
         std::shared_ptr<Mesh> mesh_ptr{nullptr};
     };
 
+    struct InteractableComponent
+    {
+        bool interactable = true;
+    };
+
     struct CameraComponent
     {
         Camera3D camera{};

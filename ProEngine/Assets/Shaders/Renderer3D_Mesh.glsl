@@ -110,7 +110,9 @@ void main()
     // Combine lighting with material
     vec3 lighting = ambient + diffuse;
     vec3 finalColor = finalAlbedo.rgb * lighting;
-
+    if(finalAlbedo.a <= 0.1){
+       discard;
+    }
     // Output final color
     o_Color = vec4(finalColor,1.0f);
     o_EntityID = v_EntityID;
