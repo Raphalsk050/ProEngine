@@ -12,6 +12,7 @@ namespace ProEngine
         EntityHandle handle{e, this};
         registry_.emplace<TransformComponent>(e);
         registry_.emplace<TagComponent>(e, TagComponent{name});
+        registry_.emplace<InteractableComponent>(e);
         return handle;
     }
 

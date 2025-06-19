@@ -20,7 +20,9 @@ namespace ProEngine
         plane_entity_ = scene->CreateEntity("plane");
 
         Ref<Material> mat = CreateRef<Material>();
-        mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_texture_alpha.png"));
+        mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_2x2.png"));
+        mat->SetTilingFactor(glm::vec2(1000.0f, 1000.0f));
+
         RendererComponent rc;
         auto plane = Mesh::CreatePlane(1.0f,1.0f);
         plane->SetMaterial(mat);
@@ -28,6 +30,8 @@ namespace ProEngine
         rc.mesh_ptr = plane;
         plane_entity_.AddComponent<RendererComponent>(rc);
         plane_entity_.SetScale(glm::vec3(10000.0f,0.0001f,10000.0f));
+
+        plane_entity_.GetComponent<InteractableComponent>().interactable = false;
 
         // Create an example entity with renderer component
         // auto* scene = Application::Get().GetActiveScene();

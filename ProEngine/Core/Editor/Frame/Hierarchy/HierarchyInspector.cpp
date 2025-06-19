@@ -63,7 +63,8 @@ namespace ProEngine
                 const auto& transform = entity->GetComponent<TransformComponent>();
                 if (transform.parent == entt::null)
                 {
-                    DrawEntity(*entity);
+                    if (entity->GetComponent<InteractableComponent>().interactable)
+                        DrawEntity(*entity);
                 }
             }
 

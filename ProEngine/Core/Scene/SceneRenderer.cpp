@@ -22,7 +22,11 @@ void SceneRenderer::RenderScene(Scene* scene)
         }
         else if (renderer.mesh_ptr)
         {
-            Renderer3D::DrawMesh(worldTransform, renderer.mesh_ptr, renderer.color, entityID);
+            auto material = renderer.mesh_ptr->GetMaterial();
+            if (material)
+                Renderer3D::DrawMesh(worldTransform, renderer.mesh_ptr, material, entityID);
+            else
+                Renderer3D::DrawMesh(worldTransform, renderer.mesh_ptr, renderer.color, entityID);
         }
         else
         {
