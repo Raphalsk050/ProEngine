@@ -2,6 +2,10 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <fstream>
+#include <sstream>
+#include <array>
+#include <glm.hpp>
 
 #include "VertexArray.h"
 
@@ -407,16 +411,133 @@ Ref<Mesh> Mesh::CreatePlane(float width, float height) {
   return mesh;
 }
 
+Ref<Mesh> Mesh::Create(const std::vector<float>& vertices,
+                       const std::vector<uint32_t>& indices) {
+  Ref<Mesh> mesh = CreateRef<Mesh>();
+
+  BufferLayout layout = {
+    { ShaderDataType::Float3, "a_Position" },
+    { ShaderDataType::Float3, "a_Normal" },
+    { ShaderDataType::Float3, "a_Tangent" },
+    { ShaderDataType::Float2, "a_TexCoord" }
+  };
+
+  Ref<VertexBuffer> vertexBuffer =
+      VertexBuffer::Create(const_cast<float*>(vertices.data()),
+                           vertices.size() * sizeof(float));
+  vertexBuffer->SetLayout(layout);
+  mesh->SetVertexBuffer(vertexBuffer);
+  mesh->m_VertexCount = vertices.size() / 11;
+
+  std::vector<uint32_t> idx = indices;
+  mesh->SetIndices(idx);
+
+  return mesh;
+}
+
 // Model implementation
 
 Ref<Model> Model::Load(const std::string& filepath) {
-  // This is a placeholder - in a real engine, this would use a model loading library
-  // like Assimp to load models from various formats (OBJ, FBX, etc.)
-
   Ref<Model> model = CreateRef<Model>();
 
-  // For now, we'll just return a simple cube model as an example
-  model->AddMesh(Mesh::CreateCube());
+  std::ifstream in(filepath);
+  if (!in.is_open()) {
+    PENGINE_CORE_ERROR("Failed to open model file '{}'", filepath);
+    return model;
+  }
+
+  std::vector<glm::vec3> positions;
+  std::vector<glm::vec3> normals;
+  std::vector<glm::vec2> texCoords;
+  std::vector<float>    vertexData;
+  std::vector<uint32_t> indices;
+
+  std::string line;
+  uint32_t index = 0;
+  while (std::getline(in, line)) {
+    if (line.empty() || line[0] == '#')
+      continue;
+
+    std::istringstream ss(line);
+    std::string prefix;
+    ss >> prefix;
+
+    if (prefix == "v") {
+      glm::vec3 pos;
+      ss >> pos.x >> pos.y >> pos.z;
+      positions.push_back(pos);
+    } else if (prefix == "vn") {
+      glm::vec3 n;
+      ss >> n.x >> n.y >> n.z;
+      normals.push_back(n);
+    } else if (prefix == "vt") {
+      glm::vec2 uv{0.0f};
+      ss >> uv.x >> uv.y;
+      texCoords.push_back(uv);
+    } else if (prefix == "f") {
+      std::vector<std::array<int, 3>> verts;
+      std::string vert;
+      while (ss >> vert) {
+        std::array<int, 3> idx{0, 0, 0};
+        size_t p1 = vert.find('/');
+        if (p1 == std::string::npos) {
+          idx[0] = std::stoi(vert);
+        } else {
+          idx[0] = std::stoi(vert.substr(0, p1));
+          size_t p2 = vert.find('/', p1 + 1);
+          if (p2 == std::string::npos) {
+            if (p1 + 1 < vert.size())
+              idx[1] = std::stoi(vert.substr(p1 + 1));
+          } else {
+            if (p2 > p1 + 1)
+              idx[1] = std::stoi(vert.substr(p1 + 1, p2 - p1 - 1));
+            if (p2 + 1 < vert.size())
+              idx[2] = std::stoi(vert.substr(p2 + 1));
+          }
+        }
+        verts.push_back(idx);
+      }
+
+      for (size_t i = 1; i + 1 < verts.size(); ++i) {
+        std::array<int, 3> f[3] = {verts[0], verts[i], verts[i + 1]};
+        for (int k = 0; k < 3; ++k) {
+          glm::vec3 pos{0.0f};
+          glm::vec3 normal{0.0f, 0.0f, 1.0f};
+          glm::vec2 uv{0.0f};
+
+          if (f[k][0] > 0 && (size_t)f[k][0] <= positions.size())
+            pos = positions[f[k][0] - 1];
+          if (f[k][1] > 0 && (size_t)f[k][1] <= texCoords.size())
+            uv = texCoords[f[k][1] - 1];
+          if (f[k][2] > 0 && (size_t)f[k][2] <= normals.size())
+            normal = normals[f[k][2] - 1];
+
+          glm::vec3 tangent{1.0f, 0.0f, 0.0f};
+
+          vertexData.push_back(pos.x);
+          vertexData.push_back(pos.y);
+          vertexData.push_back(pos.z);
+          vertexData.push_back(normal.x);
+          vertexData.push_back(normal.y);
+          vertexData.push_back(normal.z);
+          vertexData.push_back(tangent.x);
+          vertexData.push_back(tangent.y);
+          vertexData.push_back(tangent.z);
+          vertexData.push_back(uv.x);
+          vertexData.push_back(uv.y);
+
+          indices.push_back(index++);
+        }
+      }
+    }
+  }
+
+  if (vertexData.empty() || indices.empty()) {
+    PENGINE_CORE_WARN("Model '{}' contained no geometry", filepath);
+    return model;
+  }
+
+  model->AddMesh(Mesh::Create(vertexData, indices));
 
   return model;
 }
