@@ -34,9 +34,11 @@ namespace ProEngine
         std::unordered_map<KeyCode, bool> last_key_state_map_;
         glm::vec2 window_size_ = {0.0f, 0.0f};
         Camera3DController camera_controller_ = Camera3DController(1.0f);
+        EntityHandle plane_entity_;
 
     private:
         bool OnKeyPressed(KeyPressedEvent& e);
         bool OnKeyReleased(KeyReleasedEvent& e);
+        void InitializeGrid();
     };
 } // ProEngine

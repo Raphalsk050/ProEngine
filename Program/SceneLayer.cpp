@@ -17,31 +17,16 @@ namespace ProEngine
         glDepthFunc(GL_LEQUAL);
 
         auto* scene = Application::Get().GetActiveScene();
-        plane_entity_ = scene->CreateEntity("plane");
-
-        Ref<Material> mat = CreateRef<Material>();
-        mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_2x2.png"));
-        mat->SetTilingFactor(glm::vec2(1000.0f, 1000.0f));
 
         RendererComponent rc;
-        auto plane = Mesh::CreatePlane(1.0f,1.0f);
-        plane->SetMaterial(mat);
-        rc.mesh = MeshType::Model;
-        rc.mesh_ptr = plane;
-        plane_entity_.AddComponent<RendererComponent>(rc);
-        plane_entity_.SetScale(glm::vec3(10000.0f,0.0001f,10000.0f));
-
-        plane_entity_.GetComponent<InteractableComponent>().interactable = false;
-
         // Create an example entity with renderer component
-        // auto* scene = Application::Get().GetActiveScene();
-        // sphere_entity_ = scene->CreateEntity("Sphere");
-        // cube_entity_ = scene->CreateEntity("Cube");
+        sphere_entity_ = scene->CreateEntity("Sphere");
+        cube_entity_ = scene->CreateEntity("Cube");
 
-        // RendererComponent rc = RendererComponent({.mesh = MeshType::Sphere});
-        // render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
-        // rc = RendererComponent({.mesh = MeshType::Cube});
-        // render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
+        rc = RendererComponent({.mesh = MeshType::Sphere});
+        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
+        rc = RendererComponent({.mesh = MeshType::Cube});
+        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
