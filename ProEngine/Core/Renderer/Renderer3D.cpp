@@ -238,6 +238,8 @@ namespace ProEngine
                                         material->GetMetallic());
             s_Data.MeshShader->SetFloat("u_MaterialRoughness",
                                         material->GetRoughness());
+            s_Data.MeshShader->SetFloat2("u_MaterialTilingFactor",
+                                        material->GetTilingFactor());
             s_Data.MeshShader->SetInt("u_AlbedoMap", 0);
             s_Data.MeshShader->SetInt("u_NormalMap", 1);
             s_Data.MeshShader->SetInt("u_MetallicMap", 2);

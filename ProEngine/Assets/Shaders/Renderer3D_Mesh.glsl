@@ -81,6 +81,7 @@ layout(std140) uniform Light
 uniform vec4 u_MaterialAlbedoColor;
 uniform float u_MaterialMetallic;
 uniform float u_MaterialRoughness;
+uniform vec2 u_MaterialTilingFactor;
 uniform int u_EntityID;
 
 // Texture samplers
@@ -92,7 +93,7 @@ uniform sampler2D u_RoughnessMap;
 void main()
 {
     // Sample material properties
-    vec4 albedoSample = texture(u_AlbedoMap, v_TexCoord);
+    vec4 albedoSample = texture(u_AlbedoMap, v_TexCoord * u_MaterialTilingFactor);
     vec4 finalAlbedo = albedoSample * u_MaterialAlbedoColor;
 
     // Normalize the normal

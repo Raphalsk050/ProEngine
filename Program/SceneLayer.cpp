@@ -21,6 +21,7 @@ namespace ProEngine
 
         Ref<Material> mat = CreateRef<Material>();
         mat->SetAlbedoMap(Texture2D::Create("../ProEngine/Assets/Editor/Textures/grid_texture_alpha.png"));
+        mat->SetTilingFactor(glm::vec2(100.0f, 100.0f));
         RendererComponent rc;
         auto plane = Mesh::CreatePlane(1.0f,1.0f);
         plane->SetMaterial(mat);

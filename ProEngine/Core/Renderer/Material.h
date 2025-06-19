@@ -35,6 +35,9 @@ namespace ProEngine {
         inline void SetRoughness(float roughness) { m_Roughness = roughness; }
         inline float GetRoughness() const { return m_Roughness; }
 
+        inline void SetTilingFactor(const glm::vec2& factor) { m_TilingFactor = factor; }
+        inline const glm::vec2& GetTilingFactor() const { return m_TilingFactor; }
+
     private:
         glm::vec4 m_AlbedoColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 
@@ -45,6 +48,7 @@ namespace ProEngine {
 
         float m_Metallic = 0.0f;
         float m_Roughness = 0.5f;
+        glm::vec2 m_TilingFactor = {1.0f, 1.0f};
     };
 
-}  // namespace BEngine
+}  // namespace ProEngine
