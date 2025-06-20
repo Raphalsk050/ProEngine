@@ -8,6 +8,7 @@ namespace ProEngine {
     {
         uint32_t Width = 0, Height = 0;
         bool EnableEntityIDAttachment = false;
+        bool UseFilament = false; // When true create a Filament based framebuffer
     };
 
     class Framebuffer

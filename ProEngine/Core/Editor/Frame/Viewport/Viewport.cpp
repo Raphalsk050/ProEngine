@@ -23,11 +23,18 @@ namespace ProEngine
         spec.Width = Application::Get().GetWindow().GetWidth();
         spec.Height = Application::Get().GetWindow().GetHeight();
         spec.EnableEntityIDAttachment = true;
+#ifdef PROENGINE_USE_FILAMENT_FRAMEBUFFER
+        spec.UseFilament = true;
+#endif
         framebuffer_ = Framebuffer::Create(spec);
         window_size_ = {(float)spec.Width, (float)spec.Height};
+#ifndef PROENGINE_USE_FILAMENT_FRAMEBUFFER
         camera_controller_.OnResize(spec.Width, spec.Height);
+#endif
 
+#ifndef PROENGINE_USE_FILAMENT_FRAMEBUFFER
         InitializeGrid();
+#endif
     }
 
     void Viewport::OnDetach()
@@ -38,6 +45,10 @@ namespace ProEngine
     void Viewport::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
+#ifdef PROENGINE_USE_FILAMENT_FRAMEBUFFER
+        framebuffer_->Bind(); // FilamentFramebuffer renders internally
+        framebuffer_->Unbind();
+#else
         camera_controller_.OnUpdate(ts);
         time_ += ts;
         RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
@@ -53,6 +64,7 @@ namespace ProEngine
         Application::Get().GetActiveScene()->OnUpdate(ts);
         Renderer3D::EndScene();
         framebuffer_->Unbind();
+#endif
     }
 
     void Viewport::OnImGuiRender()
@@ -64,7 +76,9 @@ namespace ProEngine
             if (size.x > 0 && size.y > 0 && (size.x != window_size_.x || size.y != window_size_.y))
             {
                 framebuffer_->Resize((uint32_t)size.x, (uint32_t)size.y);
+#ifndef PROENGINE_USE_FILAMENT_FRAMEBUFFER
                 camera_controller_.OnResize(size.x, size.y);
+#endif
                 window_size_ = {size.x, size.y};
             }
             ImGui::Image((void*)(intptr_t)framebuffer_->GetColorAttachmentRendererID(), size, ImVec2{0, 1}, ImVec2{1, 0});
@@ -73,6 +87,7 @@ namespace ProEngine
             ImVec2 cursor_pos = ImGui::GetItemRectMin();
             ImVec2 panel_size = size;
 
+#ifndef PROENGINE_USE_FILAMENT_FRAMEBUFFER
             if (ImGui::IsWindowHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
             {
                 ImVec2 mousePos = ImGui::GetMousePos();
@@ -103,6 +118,7 @@ namespace ProEngine
                     }
                 }
             }
+#endif
 
             viewport_location_ = ImGui::GetWindowPos();
             viewport_size_ = ImGui::GetWindowSize();
@@ -159,10 +175,12 @@ namespace ProEngine
     void Viewport::OnEvent(Event& event)
     {
         Layer::OnEvent(event);
+#ifndef PROENGINE_USE_FILAMENT_FRAMEBUFFER
         if (camera_movement_enabled_)
         {
             camera_controller_.OnEvent(event);
         }
+#endif
 
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<KeyPressedEvent>(PENGINE_BIND_EVENT_FN(OnKeyPressed));

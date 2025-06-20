@@ -398,6 +398,8 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLRendererAPI.cpp
         Platform/OpenGL/OpenGLFramebuffer.h
         Platform/OpenGL/OpenGLFramebuffer.cpp
+        Platform/Filament/FilamentFramebuffer.h
+        Platform/Filament/FilamentFramebuffer.cpp
         Platform/OpenGL/OpenGLShader.h
         Platform/OpenGL/OpenGLShader.cpp
         Platform/OpenGL/OpenGLBuffer.h

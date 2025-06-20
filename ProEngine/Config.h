@@ -22,6 +22,9 @@
 // to debug the layers
 // #define PROENGINE_DEBUG_LAYERS
 
+// use Filament to render into framebuffers
+// #define PROENGINE_USE_FILAMENT_FRAMEBUFFER
+
 #ifdef DEBUG
 #if defined(PROENGINE_PLATFORM_WINDOWS)
     #define PENGINE_DEBUGBREAK() __debugbreak()
