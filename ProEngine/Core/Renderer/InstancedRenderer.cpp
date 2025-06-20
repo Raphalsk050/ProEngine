@@ -7,7 +7,7 @@
 namespace ProEngine
 {
     // Forward declaration para função de culling (definida em Renderer3D.cpp)
-    bool PerformCulling(int entityID, const glm::mat4& transform, float* outBoundingRadius);
+    bool PerformCulling(int entityID, const glm::mat4& transform, float* outBoundingRadius = nullptr);
 
     void InstancedRenderer::Init()
     {

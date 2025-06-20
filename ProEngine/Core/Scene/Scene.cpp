@@ -2,6 +2,7 @@
 #include "Core/Scene/EntityHandle.h"
 #include "Core/Scene/SceneRenderer.h"
 #include "Components.h"
+#include <utils/EntityManager.h>
 
 
 namespace ProEngine
@@ -13,6 +14,8 @@ namespace ProEngine
         registry_.emplace<TransformComponent>(e);
         registry_.emplace<TagComponent>(e, TagComponent{name});
         registry_.emplace<InteractableComponent>(e);
+        registry_.emplace<FilamentEntityComponent>(e,
+            FilamentEntityComponent{utils::EntityManager::get().create()});
         return handle;
     }
 

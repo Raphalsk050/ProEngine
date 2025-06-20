@@ -1,5 +1,5 @@
 #pragma once
-#include "Core/Camera/Camera3DController.h"
+#include "Core/Camera/FilamentCameraController.h"
 #include "Core/Editor/SimpleAnimatedPopup.h"
 #include "Core/Layer/Layer.h"
 #include "Core/Renderer/Mesh.h"
@@ -24,6 +24,6 @@ namespace ProEngine
         Ref<Framebuffer> framebuffer_;
         glm::vec2 viewport_size_ = {0.0f, 0.0f};
         float time_ = 0.0f;
-        Camera3DController camera_controller_ = Camera3DController(1);
+        FilamentCameraController camera_controller_{};
     };
 } // ProEngine

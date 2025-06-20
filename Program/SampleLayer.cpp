@@ -6,6 +6,7 @@
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Renderer/Renderer3D.h"
 #include "Core/Scene/EntityHandle.h"
+#include "Core/Camera/FilamentCameraController.h"
 
 namespace ProEngine
 {
@@ -13,7 +14,8 @@ namespace ProEngine
     {
         auto height = Application::Get().GetWindow().GetHeight();
         auto width = Application::Get().GetWindow().GetWidth();
-        camera_controller_ = Camera3DController(width / height);
+        Renderer3D::Init(width, height);
+        camera_controller_ = FilamentCameraController(Renderer3D::GetEngine(), width / height);
     }
 
     void SampleLayer::OnAttach()
@@ -21,14 +23,12 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
-
-        camera_controller_.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-        camera_controller_.SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
     void SampleLayer::OnDetach()
     {
         Layer::OnDetach();
+        Renderer3D::Shutdown();
     }
 
     void SampleLayer::OnUpdate(Timestep ts)

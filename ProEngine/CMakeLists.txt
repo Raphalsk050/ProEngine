@@ -404,6 +404,12 @@ engine_add_library(PEPlatform
         Platform/OpenGL/OpenGLFramebuffer.cpp
         Platform/Filament/FilamentFramebuffer.h
         Platform/Filament/FilamentFramebuffer.cpp
+        Platform/Filament/FilamentEngine.h
+        Platform/Filament/FilamentEngine.cpp
+        Platform/Filament/ModelLoader.h
+        Platform/Filament/ModelLoader.cpp
+        Platform/Filament/TextureLoader.h
+        Platform/Filament/TextureLoader.cpp
         Platform/OpenGL/OpenGLShader.h
         Platform/OpenGL/OpenGLShader.cpp
         Platform/OpenGL/OpenGLBuffer.h
@@ -425,6 +431,7 @@ target_link_libraries(PEPlatform
 target_include_directories(PEPlatform PUBLIC
         ${glm_DIR}
         ${filament_DIR}/include
+        ${stbimage_DIR}
 )
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
