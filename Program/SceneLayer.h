@@ -53,6 +53,8 @@ private:
     filament::gltfio::ResourceLoader* resource_loader_ = nullptr;
     filament::gltfio::FilamentAsset* asset_ = nullptr;
 
+    void CopyFilamentToOpenGL();
+
     // Render target dimensions
     int render_width_ = 800;
     int render_height_ = 600;
@@ -69,6 +71,9 @@ private:
     // Control flags
     bool show_test_pattern_ = false;
     bool model_loaded_ = false;
+
+    uint8_t* pixel_buffer_ = nullptr;
+    glm::vec3 model_center_ = {0.0f, 0.0f, 0.0f};
 
     // Your existing framebuffer
     Ref<Framebuffer> framebuffer_;

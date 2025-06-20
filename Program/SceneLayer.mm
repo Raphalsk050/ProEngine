@@ -16,11 +16,14 @@
 #include <filament/Viewport.h>
 #include <filament/Texture.h>
 #include <filament/RenderTarget.h>
+#include <filament/RenderableManager.h>
+#include <backend/PixelBufferDescriptor.h>
 
 #include <gltfio/AssetLoader.h>
 #include <gltfio/ResourceLoader.h>
 #include <gltfio/MaterialProvider.h>
 #include <gltfio/FilamentAsset.h>
+#include <gltfio/TextureProvider.h>
 
 #include <utils/Entity.h>
 #include <utils/EntityManager.h>
@@ -51,7 +54,9 @@ void SceneLayer::OnAttach() {
                   .build();
     renderer_ = engine_->createRenderer();
 
-    swap_chain_ = engine_->createSwapChain(render_width_, render_height_);
+    // Criar SwapChain dummy (necessário para beginFrame/endFrame)
+    swap_chain_ = engine_->createSwapChain(1, 1);
+
     CreateOpenGLFramebuffer();
 
     // Criar texturas para render target do Filament
@@ -93,6 +98,9 @@ void SceneLayer::OnAttach() {
     view_->setRenderTarget(render_target_);
     view_->setPostProcessingEnabled(false);
 
+    // Alocar buffer para cópia de pixels
+    pixel_buffer_ = new uint8_t[render_width_ * render_height_ * 4];
+
     // PRIMEIRO: Criar uma geometria simples para testar
     CreateTestGeometry();
 
@@ -107,11 +115,6 @@ void SceneLayer::OnAttach() {
 
 void SceneLayer::CreateTestGeometry() {
     printf("=== CREATING TEST GEOMETRY ===\n");
-
-    // Criar uma geometria simples usando Filament diretamente
-    // Isso garante que pelo menos algo apareça na tela
-
-    // TODO: Implementar cubo simples usando Filament
     // Por enquanto, vamos focar no modelo GLTF
     printf("Test geometry creation skipped for now\n");
 }
@@ -122,10 +125,13 @@ void SceneLayer::LoadGLTFModel() {
     auto* matProvider = filament::gltfio::createJitShaderProvider(engine_);
     asset_loader_ = filament::gltfio::AssetLoader::create({engine_, matProvider});
     resource_loader_ = new filament::gltfio::ResourceLoader({engine_, "../ProEngine/Assets/Models", true});
+    auto stb_decoder = filament::gltfio::createStbProvider(engine_);
+    resource_loader_->addTextureProvider("image/png", stb_decoder);
+    resource_loader_->addTextureProvider("image/jpeg", stb_decoder);
 
     // Tentar múltiplos caminhos para o modelo
     std::vector<std::string> modelPaths = {
-        "../ProEngine/Assets/Models/BoomBox.glb",
+        "../ProEngine/Assets/Models/DragonAttenuation.glb",
     };
 
     std::vector<uint8_t> buffer;
@@ -165,13 +171,7 @@ void SceneLayer::LoadGLTFModel() {
 
     // Carregar recursos de forma simples
     bool resourcesLoaded = resource_loader_->asyncBeginLoad(asset_);
-    printf("  Resources initiated: %s\n", resourcesLoaded ? "Yes" : "No");
-
-    if (!resource_loader_->loadResources(asset_)) {
-        printf("✗ loadResources() returned false — no external resources loaded\n");
-    } else {
-        printf("✓ loadResources() manually triggered\n");
-    }
+    PENGINE_CORE_INFO("  Resources initiated: {}", resourcesLoaded ? "Yes" : "No");
 
     asset_->releaseSourceData();
 
@@ -198,11 +198,15 @@ void SceneLayer::LoadGLTFModel() {
     scene_->addEntities(entities, asset_->getEntityCount());
     printf("✓ Added %zu entities to scene\n", asset_->getEntityCount());
 
+    // Debug de componentes renderizáveis
+    auto& rcm = engine_->getRenderableManager();
+
     // Ajustar câmera para enquadrar o modelo perfeitamente
     if (maxSize > 0.001f) {
         // Posicionar câmera para ver o modelo
         float distance = maxSize * 3.0f;  // Distância baseada no tamanho
         camera_distance_ = distance;
+        model_center_ = center;
 
         // Olhar para o centro do modelo
         camera_->lookAt(
@@ -218,9 +222,6 @@ void SceneLayer::LoadGLTFModel() {
 
 void SceneLayer::CreateFallbackCube() {
     printf("=== CREATING FALLBACK CUBE ===\n");
-
-    // Se o modelo GLTF falhar, criar um cubo simples
-    // TODO: Implementar cubo usando Material e Renderable do Filament
     printf("Fallback cube creation not implemented yet\n");
 }
 
@@ -255,7 +256,17 @@ void SceneLayer::SetupLighting() {
         .build(*engine_, light3);
     scene_->addEntity(light3);
 
-    printf("✓ Added 3 powerful directional lights\n");
+    // Adicionar luz ambiente global
+    auto light4 = utils::EntityManager::get().create();
+    filament::LightManager::Builder(filament::LightManager::Type::SUN)
+        .color({1.0f, 1.0f, 1.0f})
+        .intensity(50000.0f)
+        .direction({0, -1, 0})
+        .castShadows(false)
+        .build(*engine_, light4);
+    scene_->addEntity(light4);
+
+    printf("✓ Added 4 powerful lights (3 directional + 1 sun)\n");
 }
 
 void SceneLayer::CreateOpenGLFramebuffer() {
@@ -287,6 +298,36 @@ void SceneLayer::CreateOpenGLFramebuffer() {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void SceneLayer::CopyFilamentToOpenGL() {
+    // Criar descriptor para ler pixels
+    filament::backend::PixelBufferDescriptor buffer(
+        pixel_buffer_,
+        render_width_ * render_height_ * 4,
+        filament::backend::PixelDataFormat::RGBA,
+        filament::backend::PixelDataType::UBYTE
+    );
+
+    // Ler pixels do RenderTarget
+    renderer_->readPixels(
+        render_target_,
+        0, 0, render_width_, render_height_,
+        std::move(buffer)
+    );
+
+    // Aguardar a leitura completar
+    engine_->flushAndWait();
+
+    // Atualizar a textura OpenGL
+    glBindTexture(GL_TEXTURE_2D, opengl_texture_id_);
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0,
+        render_width_, render_height_,
+        GL_RGBA, GL_UNSIGNED_BYTE,
+        pixel_buffer_
+    );
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void SceneLayer::OnUpdate(Timestep ts) {
     Layer::OnUpdate(ts);
 
@@ -294,61 +335,47 @@ void SceneLayer::OnUpdate(Timestep ts) {
         return;
     }
 
-    // Salvar estados OpenGL
-    GLint currentFramebuffer;
-    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
-    GLint viewport[4];
-    glGetIntegerv(GL_VIEWPORT, viewport);
-
-    GLboolean depthTest = glIsEnabled(GL_DEPTH_TEST);
-    GLboolean cullFace = glIsEnabled(GL_CULL_FACE);
-    GLboolean blend = glIsEnabled(GL_BLEND);
-
-    // Configurar para Filament
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glDisable(GL_BLEND);
-
-    // Renderizar no nosso framebuffer
-    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer_gl_id_);
-    glViewport(0, 0, render_width_, render_height_);
-
-    // Cor de fundo diferente para debug
-    if (model_loaded_) {
-        glClearColor(0.1f, 0.1f, 0.2f, 1.0f);  // Azul escuro se modelo carregou
-    } else {
-        glClearColor(0.2f, 0.1f, 0.1f, 1.0f);  // Vermelho escuro se não carregou
-    }
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Renderizar Filament
-    if (renderer_->beginFrame(swap_chain_)) {
-        renderer_->render(view_);
-        renderer_->endFrame();
-    }
-
-    // Restaurar estados
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
-    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-
-    if (!depthTest) glDisable(GL_DEPTH_TEST);
-    if (!cullFace) glDisable(GL_CULL_FACE);
-    if (blend) glEnable(GL_BLEND);
-
+    // Atualizar recursos se necessário
     if (asset_ && resource_loader_) {
         resource_loader_->asyncUpdateLoad();
-
         float progress = resource_loader_->asyncGetLoadProgress();
-
-        PENGINE_CORE_INFO("Loading model");
-        PENGINE_CORE_INFO("Loading progress: {0}", progress);
         if (progress >= 1.0f && !model_loaded_) {
             model_loaded_ = true;
             printf("✓ Model finished loading!\n");
         }
     }
+
+    // Salvar estado atual do OpenGL
+    GLint currentFramebuffer;
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &currentFramebuffer);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+
+    // Renderizar com Filament para o render target
+    if (renderer_->beginFrame(swap_chain_)) {
+        // Definir cor de fundo diferente para debug
+        if (model_loaded_) {
+            renderer_->setClearOptions({
+                .clearColor = {0.1f, 0.1f, 0.2f, 1.0f},
+                .clear = true
+            });
+        } else {
+            renderer_->setClearOptions({
+                .clearColor = {0.2f, 0.1f, 0.1f, 1.0f},
+                .clear = true
+            });
+        }
+
+        renderer_->render(view_);
+        renderer_->endFrame();
+    }
+
+    // Copiar resultado do Filament para textura OpenGL
+    CopyFilamentToOpenGL();
+
+    // Restaurar estado OpenGL
+    glBindFramebuffer(GL_FRAMEBUFFER, currentFramebuffer);
+    glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 }
 
 void SceneLayer::OnImGuiRender() {
@@ -390,9 +417,10 @@ void SceneLayer::OnImGuiRender() {
     // Test pattern
     ImGui::Checkbox("Show Test Pattern", &show_test_pattern_);
 
-    // Imagem
+    // Imagem - renderizada apenas na janela ImGui
     if (opengl_texture_id_ != 0) {
         ImVec2 imageSize(400, 300);
+        // Inverter Y para corrigir orientação
         ImGui::Image((void*)(intptr_t)opengl_texture_id_, imageSize, ImVec2(0, 1), ImVec2(1, 0));
 
         // Mostrar cor de fundo para debug
@@ -453,6 +481,14 @@ void SceneLayer::OnImGuiRender() {
         UpdateCamera(camera_distance_, camera_angle_, camera_height_);
     }
 
+    // Botões para resetar câmera
+    if (ImGui::Button("Reset Camera")) {
+        camera_distance_ = 5.0f;
+        camera_angle_ = 0.0f;
+        camera_height_ = 0.0f;
+        UpdateCamera(camera_distance_, camera_angle_, camera_height_);
+    }
+
     // Botão para tentar recarregar modelo
     if (ImGui::Button("Reload Model")) {
         if (asset_) {
@@ -468,21 +504,32 @@ void SceneLayer::OnImGuiRender() {
     ImGui::Separator();
     ImGui::Text("=== CAMERA DEBUG ===");
     float radians = camera_angle_ * 3.14159f / 180.0f;
-    float x = camera_distance_ * sin(radians);
-    float z = camera_distance_ * cos(radians);
-    ImGui::Text("Position: (%.3f, %.3f, %.3f)", x, camera_height_, z);
-    ImGui::Text("Looking at: (0, 0, 0)");
+    float x = model_center_.x + camera_distance_ * sin(radians);
+    float z = model_center_.z + camera_distance_ * cos(radians);
+    ImGui::Text("Position: (%.3f, %.3f, %.3f)", x, model_center_.y + camera_height_, z);
+    ImGui::Text("Looking at: (%.3f, %.3f, %.3f)", model_center_.x, model_center_.y, model_center_.z);
     ImGui::Text("Distance: %.3f", camera_distance_);
+
+    // Debug de renderização
+    ImGui::Separator();
+    ImGui::Text("=== RENDER DEBUG ===");
+    ImGui::Text("Render size: %dx%d", render_width_, render_height_);
+    ImGui::Text("OpenGL Texture ID: %u", opengl_texture_id_);
+    ImGui::Text("Framebuffer ID: %u", framebuffer_gl_id_);
 
     ImGui::End();
 }
 
 void SceneLayer::UpdateCamera(float distance, float angle, float height) {
     float radians = angle * 3.14159f / 180.0f;
-    float x = distance * sin(radians);
-    float z = distance * cos(radians);
+    float x = model_center_.x + distance * sin(radians);
+    float z = model_center_.z + distance * cos(radians);
 
-    camera_->lookAt({x, height, z}, {0,0,0}, {0,1,0});
+    camera_->lookAt(
+        {x, model_center_.y + height, z},
+        {model_center_.x, model_center_.y, model_center_.z},
+        {0, 1, 0}
+    );
 }
 
 void SceneLayer::FillTestPattern() {
@@ -541,6 +588,12 @@ void SceneLayer::OnDetach() {
     }
     if (depth_buffer_id_) {
         glDeleteRenderbuffers(1, &depth_buffer_id_);
+    }
+
+    // Limpar buffer de pixels
+    if (pixel_buffer_) {
+        delete[] pixel_buffer_;
+        pixel_buffer_ = nullptr;
     }
 
     filament::Engine::destroy(&engine_);
