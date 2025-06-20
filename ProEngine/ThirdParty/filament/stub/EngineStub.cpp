@@ -15,6 +15,14 @@ Engine::Builder& Engine::Builder::backend(Backend) noexcept { return *this; }
 Engine::Builder& Engine::Builder::platform(Platform*) noexcept { return *this; }
 Engine::Builder& Engine::Builder::config(const Config*) noexcept { return *this; }
 Engine::Builder& Engine::Builder::sharedContext(void*) noexcept { return *this; }
-Engine* Engine::Builder::build() const { return nullptr; }
+Engine* Engine::Builder::build() const {
+    static Engine engine;
+    return &engine;
+}
+
+void Engine::destroy(Engine* /*engine*/) {}
+void Engine::destroy(Engine** engine) {
+    if (engine) *engine = nullptr;
+}
 
 } // namespace filament

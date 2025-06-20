@@ -6,6 +6,8 @@
 #include "Core/Renderer/RenderCommand.h"
 #include "Core/Scene/EntityHandle.h"
 #include "Core/Scene/Components.h"
+#include <filament/Engine.h>
+#include <vector>
 
 namespace ProEngine {
     class SceneLayer : public Layer {
@@ -31,5 +33,9 @@ namespace ProEngine {
 
         RendererComponent render_component_0_;
         RendererComponent render_component_1_;
+
+        Ref<Framebuffer> framebuffer_;
+        filament::Engine* filament_engine_ = nullptr;
+        std::vector<uint32_t> filament_pixels_;
     };
 } // namespace ProEngine
