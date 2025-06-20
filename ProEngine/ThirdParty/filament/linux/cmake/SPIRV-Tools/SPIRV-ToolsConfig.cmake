@@ -1,0 +1,5 @@
+include(SPIRV-ToolsTarget.cmake)
+if(TARGET SPIRV-Tools)
+    set(SPIRV-Tools_LIBRARIES SPIRV-Tools)
+    get_target_property(SPIRV-Tools_INCLUDE_DIRS SPIRV-Tools INTERFACE_INCLUDE_DIRECTORIES)
+endif()

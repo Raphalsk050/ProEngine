@@ -67,6 +67,7 @@ set(glm_DIR ThirdParty/glm)
 set(entt_DIR ThirdParty/entt)
 set(stbimage_DIR ThirdParty/stbimage)
 set(assimp_DIR ThirdParty/assimp)
+set(filament_DIR ThirdParty/filament)
 
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -81,6 +82,7 @@ add_subdirectory(${glad_DIR})
 add_subdirectory(${glm_DIR})
 add_subdirectory(${entt_DIR})
 add_subdirectory(${stbimage_DIR})
+add_subdirectory(${filament_DIR})
 
 # Prebuilt Assimp library
 add_library(assimp SHARED IMPORTED)
@@ -182,6 +184,7 @@ target_link_libraries(PERendering
         Entt
         PEPlatform
         assimp
+        filament
 )
 target_include_directories(PERendering PUBLIC
         PECore
@@ -190,6 +193,7 @@ target_include_directories(PERendering PUBLIC
         ${glad_DIR}/include
         ${glm_DIR}
         ${assimp_DIR}/include
+        ${filament_DIR}/include
 )
 
 # ── Core Library ──────────────────────────────────────────
