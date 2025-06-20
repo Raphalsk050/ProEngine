@@ -1,29 +1,34 @@
 cmake_minimum_required(VERSION 3.13)
 project(filament LANGUAGES CXX)
 
+# Only the headers are usable on non-Android platforms since the provided
+# libraries were built with the Android NDK and are incompatible with Linux or
+# macOS toolchains.  We therefore expose Filament as a header-only interface
+# library.  On Apple platforms we additionally try to import the prebuilt
+# archives if available.
+
 set(FILAMENT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 if (APPLE)
-    file(GLOB FILAMENT_PLATFORM_LIBS
-            "${CMAKE_CURRENT_SOURCE_DIR}/macos/*.a")
-    # Common macOS frameworks required by Filament
-    set(FILAMENT_PLATFORM_DEPS
+    # Prebuilt macOS archives may not be present.  Attempt to gather them and
+    # link if found, otherwise fall back to header-only usage.
+    file(GLOB FILAMENT_MAC_LIBS "${CMAKE_CURRENT_SOURCE_DIR}/macos/*.a")
+    if (FILAMENT_MAC_LIBS)
+        add_library(filament STATIC IMPORTED GLOBAL)
+        set_target_properties(filament PROPERTIES
+            IMPORTED_LOCATION "${FILAMENT_MAC_LIBS}"
+            INTERFACE_INCLUDE_DIRECTORIES "${FILAMENT_INCLUDE_DIR}"
+            LINKER_LANGUAGE CXX
+        )
+        target_link_options(filament INTERFACE
             "-framework Metal" "-framework CoreVideo" "-framework Cocoa")
-elseif (UNIX)
-    if (CMAKE_SYSTEM_PROCESSOR MATCHES "arm64" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
-        file(GLOB FILAMENT_PLATFORM_LIBS
-                "${CMAKE_CURRENT_SOURCE_DIR}/linux/arm64-v8a/*.a")
     else()
-        file(GLOB FILAMENT_PLATFORM_LIBS
-                "${CMAKE_CURRENT_SOURCE_DIR}/linux/x86_64/*.a")
+        add_library(filament INTERFACE)
+        target_include_directories(filament INTERFACE "${FILAMENT_INCLUDE_DIR}")
     endif()
-    file(GLOB FILAMENT_EXTRA_LIBS
-            "${CMAKE_CURRENT_SOURCE_DIR}/linux/lib*.a")
-    list(APPEND FILAMENT_PLATFORM_LIBS ${FILAMENT_EXTRA_LIBS})
-    set(FILAMENT_PLATFORM_DEPS dl pthread c++)
+else()
+    # Non-Apple platforms only use the headers.
+    add_library(filament INTERFACE)
+    target_include_directories(filament INTERFACE "${FILAMENT_INCLUDE_DIR}")
 endif()
-
-add_library(filament INTERFACE)
-target_include_directories(filament INTERFACE "${FILAMENT_INCLUDE_DIR}")
-target_link_libraries(filament INTERFACE ${FILAMENT_PLATFORM_LIBS} ${FILAMENT_PLATFORM_DEPS})
 
