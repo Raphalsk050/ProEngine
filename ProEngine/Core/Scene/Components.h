@@ -4,6 +4,8 @@
 #include <gtc/matrix_transform.hpp>
 #include <entt.hpp>
 #include "glad/glad.h"
+#include <utils/Entity.h>
+#include <filament/LightManager.h>
 #include <memory>
 
 #include "Core/Types.h"
@@ -85,20 +87,15 @@ namespace ProEngine
         bool primary{true};
     };
 
-    enum class LightType {
-        Directional = 0,
-        Point = 1,
-        Spot = 2
-    };
-
     struct LightComponent {
-        LightType type{LightType::Point};
+        filament::LightManager::Type type{filament::LightManager::Type::POINT};
         glm::vec3 color{1.0f};
         float intensity{1.0f};
-        glm::vec3 direction{0.0f, -1.0f, 0.0f};
-        float range{10.0f};
-        float inner_cutoff{12.5f};
-        float outer_cutoff{17.5f};
+        utils::Entity entity{};
+    };
+
+    struct FilamentEntityComponent {
+        utils::Entity entity{};
     };
 
     struct CameraBoomComponent {
