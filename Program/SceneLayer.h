@@ -1,35 +1,87 @@
 #pragma once
-#include "Core/Camera/Camera3DController.h"
+
 #include "Core/Layer/Layer.h"
 #include "Core/Renderer/Framebuffer.h"
-#include "Core/Renderer/Mesh.h"
-#include "Core/Renderer/RenderCommand.h"
-#include "Core/Scene/EntityHandle.h"
-#include "Core/Scene/Components.h"
+#include "Core/Window/Window.h"
+#include "imgui.h"
+
+#include <filament/Engine.h>
+#include <filament/Renderer.h>
+#include <filament/Scene.h>
+#include <filament/SwapChain.h>
+#include <filament/View.h>
+#include <filament/Camera.h>
+#include <filament/Skybox.h>
+#include <filament/RenderTarget.h>
+#include <filament/Texture.h>
+
+#include <gltfio/AssetLoader.h>
+#include <gltfio/ResourceLoader.h>
+#include <gltfio/FilamentAsset.h>
+
+#include <utils/Entity.h>
 
 namespace ProEngine {
-    class SceneLayer : public Layer {
-    public:
-        SceneLayer();
-        void OnAttach() override;
-        void OnUpdate(Timestep ts) override;
-        void OnDetach() override;
-        void OnEvent(Event& e) override;
-        void OnImGuiRender() override;
-    private:
-        EntityHandle sphere_entity_;
-        EntityHandle cube_entity_;
-        EntityHandle cube_entity_2_;
-        EntityHandle model_entity_;
 
-        EntityHandle plane_entity_;
+class SceneLayer : public Layer {
+public:
+    SceneLayer();
+    virtual ~SceneLayer() = default;
 
-        // line
-        glm::vec3 line_p1_position_ = {0.0f, 0.0f, 0.0f};
-        glm::vec3 line_p2_position_ = {1.0f, 0.0f, 0.0f};
-        glm::vec4 line_color_ = {0.0f, 0.0f, 1.0f, 1.0f};
+    virtual void OnAttach() override;
+    virtual void OnDetach() override;
+    virtual void OnUpdate(Timestep ts) override;
+    virtual void OnImGuiRender() override;
+    virtual void OnEvent(Event& e) override;
 
-        RendererComponent render_component_0_;
-        RendererComponent render_component_1_;
-    };
+private:
+    // Filament objects
+    filament::Engine* engine_ = nullptr;
+    filament::Renderer* renderer_ = nullptr;
+    filament::SwapChain* swap_chain_ = nullptr;
+    filament::Scene* scene_ = nullptr;
+    filament::View* view_ = nullptr;
+    filament::Camera* camera_ = nullptr;
+    filament::Skybox* skybox_ = nullptr;
+    filament::RenderTarget* render_target_ = nullptr;
+    filament::Texture* color_texture_ = nullptr;
+
+    utils::Entity camera_entity_;
+
+    // GLTF loading
+    filament::gltfio::AssetLoader* asset_loader_ = nullptr;
+    filament::gltfio::ResourceLoader* resource_loader_ = nullptr;
+    filament::gltfio::FilamentAsset* asset_ = nullptr;
+
+    // Render target dimensions
+    int render_width_ = 800;
+    int render_height_ = 600;
+    float camera_fov_ = 45.0f;
+    float camera_distance_ = 10.0f;
+    float camera_angle_ = 0.0f;
+    float camera_height_ = 0.0f;
+
+    // OpenGL objects for ImGui integration
+    GLuint opengl_texture_id_ = 0;
+    GLuint framebuffer_gl_id_ = 0;
+    GLuint depth_buffer_id_ = 0;
+
+    // Control flags
+    bool show_test_pattern_ = false;
+    bool model_loaded_ = false;
+
+    // Your existing framebuffer
+    Ref<Framebuffer> framebuffer_;
+    glm::vec2 window_size_;
+
+private:
+    void CreateOpenGLFramebuffer();
+    void CreateTestGeometry();
+    void LoadGLTFModel();
+    void CreateFallbackCube();
+    void SetupLighting();
+    void FillTestPattern();
+    void UpdateCamera(float distance, float angle, float height);
+};
+
 } // namespace ProEngine

@@ -20,7 +20,7 @@
 #if defined(__ANDROID__)
 #include <utils/linux/Mutex.h>
 #else
-#include <utils/generic/Mutex.h>
+#include <utils/linux/Mutex.h>
 #endif
 
 #endif // TNT_UTILS_MUTEX_H

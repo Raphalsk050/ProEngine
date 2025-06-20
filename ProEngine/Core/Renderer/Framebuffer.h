@@ -21,6 +21,8 @@ namespace ProEngine {
 
         virtual uint32_t GetColorAttachmentRendererID() const = 0;
         virtual uint32_t GetEntityIDAttachmentRendererID() const = 0;
+        virtual uint32_t GetDepthAttachmentRendererID() const = 0;
+        virtual uint32_t GetRendererID() const = 0;
 
         const FramebufferSpecification& GetSpecification() const { return specification_; }
 
