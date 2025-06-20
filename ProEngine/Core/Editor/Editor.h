@@ -41,6 +41,7 @@ namespace ProEngine
 
             register_cloner<TransformComponent>();
             register_cloner<CameraComponent>();
+            register_cloner<FilamentCameraComponent>();
             register_cloner<LightComponent>();
             register_cloner<TagComponent>();
             register_cloner<CharacterControllerComponent>();

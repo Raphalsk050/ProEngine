@@ -317,6 +317,10 @@ engine_add_library(PECamera
         Core/Camera/Camera3D.cpp
         Core/Camera/Camera3DController.h
         Core/Camera/Camera3DController.cpp
+        Core/Camera/FilamentCamera.h
+        Core/Camera/FilamentCamera.cpp
+        Core/Camera/FilamentCameraController.h
+        Core/Camera/FilamentCameraController.cpp
 )
 target_link_libraries(PECamera
         PERendering

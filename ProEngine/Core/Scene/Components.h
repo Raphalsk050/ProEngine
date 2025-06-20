@@ -8,6 +8,7 @@
 
 #include "Core/Types.h"
 #include "Core/Camera/Camera3D.h"
+#include "Core/Camera/FilamentCamera.h"
 #include "Core/Renderer/Material.h"
 #include "Core/Renderer/Mesh.h"
 
@@ -75,6 +76,12 @@ namespace ProEngine
     struct CameraComponent
     {
         Camera3D camera{};
+        bool primary{true};
+    };
+
+    struct FilamentCameraComponent
+    {
+        FilamentCamera camera{};
         bool primary{true};
     };
 
