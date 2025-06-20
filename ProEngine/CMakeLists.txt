@@ -420,9 +420,11 @@ target_link_libraries(PEPlatform
         glfw
         glad
         stbimage
+        filament
 )
 target_include_directories(PEPlatform PUBLIC
         ${glm_DIR}
+        ${filament_DIR}/include
 )
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓

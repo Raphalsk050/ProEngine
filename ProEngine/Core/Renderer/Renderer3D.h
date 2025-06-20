@@ -9,6 +9,8 @@
 #include "Core/Scene/Components.h"
 #include "glad/glad.h"
 #include <glm.hpp>
+#include <filament/Engine.h>
+#include <filament/FilamentAPI.h>
 
 namespace ProEngine
 {

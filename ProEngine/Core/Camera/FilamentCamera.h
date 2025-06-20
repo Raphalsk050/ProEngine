@@ -18,6 +18,7 @@ public:
 
     void SetPerspective(float fov, float aspectRatio,
                         float nearClip, float farClip);
+    void SetFov(float fov);
     void SetPosition(const glm::vec3& position);
     const glm::vec3& GetPosition() const { return position_; }
     void SetForwardDirection(const glm::vec3& direction);
@@ -32,6 +33,10 @@ private:
     utils::Entity entity_{};
     glm::vec3 position_{0.0f, 0.0f, 3.0f};
     glm::vec3 forward_{0.0f, 0.0f, -1.0f};
+    float fov_ = 45.0f;
+    float aspectRatio_ = 800.0f/600.0f;
+    float nearClip_ = 0.1f;
+    float farClip_ = 1000.0f;
 };
 
 } // namespace ProEngine

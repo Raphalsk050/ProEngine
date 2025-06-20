@@ -21,6 +21,9 @@
 
 #include <utils/Entity.h>
 
+#include "Core/Camera/FilamentCamera.h"
+#include "Core/Camera/FilamentCameraController.h"
+
 namespace ProEngine {
 
 class SceneLayer : public Layer {
@@ -64,9 +67,9 @@ private:
     float camera_height_ = 0.0f;
 
     // OpenGL objects for ImGui integration
-    GLuint opengl_texture_id_ = 0;
-    GLuint framebuffer_gl_id_ = 0;
-    GLuint depth_buffer_id_ = 0;
+    uint opengl_texture_id_ = 0;
+    uint framebuffer_gl_id_ = 0;
+    uint depth_buffer_id_ = 0;
 
     // Control flags
     bool show_test_pattern_ = false;
@@ -78,6 +81,9 @@ private:
     // Your existing framebuffer
     Ref<Framebuffer> framebuffer_;
     glm::vec2 window_size_;
+
+    // camera
+    FilamentCameraController camera_controller_ = FilamentCameraController();
 
 private:
     void CreateOpenGLFramebuffer();

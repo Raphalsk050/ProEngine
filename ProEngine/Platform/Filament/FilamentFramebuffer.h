@@ -13,6 +13,9 @@
 #include <glm.hpp>
 #include <backend/PixelBufferDescriptor.h>
 
+#include "gltfio/AssetLoader.h"
+#include "gltfio/ResourceLoader.h"
+
 namespace ProEngine {
 
 class FilamentFramebuffer : public Framebuffer {

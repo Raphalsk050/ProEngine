@@ -23,7 +23,7 @@
 // #define PROENGINE_DEBUG_LAYERS
 
 // use Filament to render into framebuffers
-// #define PROENGINE_USE_FILAMENT_FRAMEBUFFER
+ #define PROENGINE_USE_FILAMENT_FRAMEBUFFER
 
 #ifdef DEBUG
 #if defined(PROENGINE_PLATFORM_WINDOWS)

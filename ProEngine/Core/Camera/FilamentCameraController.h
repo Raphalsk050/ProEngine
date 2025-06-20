@@ -11,20 +11,21 @@ namespace ProEngine {
 
 class FilamentCameraController {
 public:
+    FilamentCameraController() = default;
     FilamentCameraController(filament::Engine* engine, float aspectRatio);
 
     void OnUpdate(Timestep ts);
     void OnEvent(Event& e);
     void OnResize(float width, float height);
 
-    FilamentCamera& GetCamera() { return m_Camera; }
-    const FilamentCamera& GetCamera() const { return m_Camera; }
+    FilamentCamera& GetCamera() { return *m_Camera; }
+    const FilamentCamera& GetCamera() const { return *m_Camera; }
 
 private:
     bool OnKeyPressed(KeyPressedEvent& e);
     bool OnKeyReleased(KeyReleasedEvent& e);
 
-    FilamentCamera m_Camera;
+    FilamentCamera* m_Camera = nullptr;
     float movementSpeed_ = 5.0f;
     bool forward_ = false;
     bool backward_ = false;

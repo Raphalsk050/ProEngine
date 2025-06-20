@@ -5,12 +5,12 @@ namespace ProEngine {
 
 FilamentCameraController::FilamentCameraController(filament::Engine* engine,
                                                    float aspectRatio)
-    : m_Camera(engine, 45.0f, aspectRatio, 0.1f, 1000.0f) {}
+    : m_Camera( new FilamentCamera(engine, 45.0f, aspectRatio, 0.1f, 1000.0f)) {}
 
 void FilamentCameraController::OnUpdate(Timestep ts) {
-    glm::vec3 forward = m_Camera.GetForwardDirection();
+    glm::vec3 forward = m_Camera->GetForwardDirection();
     glm::vec3 right = glm::cross(forward, glm::vec3(0.0f, 1.0f, 0.0f));
-    glm::vec3 position = m_Camera.GetPosition();
+    glm::vec3 position = m_Camera->GetPosition();
     float velocity = movementSpeed_ * ts;
 
     if (forward_) position += forward * velocity;
@@ -20,7 +20,7 @@ void FilamentCameraController::OnUpdate(Timestep ts) {
     if (up_) position.y += velocity;
     if (down_) position.y -= velocity;
 
-    m_Camera.SetPosition(position);
+    m_Camera->SetPosition(position);
 }
 
 void FilamentCameraController::OnEvent(Event& e) {
@@ -54,7 +54,7 @@ bool FilamentCameraController::OnKeyReleased(KeyReleasedEvent& e) {
 }
 
 void FilamentCameraController::OnResize(float width, float height) {
-    m_Camera.SetPerspective(45.0f, width/height, 0.1f, 1000.0f);
+    m_Camera->SetPerspective(45.0f, width/height, 0.1f, 1000.0f);
 }
 
 } // namespace ProEngine

@@ -11,6 +11,9 @@
 #include <fstream>
 #include <vector>
 
+#include "filament/LightManager.h"
+#include "filament/Viewport.h"
+
 namespace ProEngine {
 
 FilamentFramebuffer::FilamentFramebuffer(const FramebufferSpecification& spec) {
@@ -198,7 +201,7 @@ void FilamentFramebuffer::SetupLighting() {
     auto light = utils::EntityManager::get().create();
     filament::LightManager::Builder(filament::LightManager::Type::SUN)
         .color({1.0f,1.0f,1.0f})
-        .intensity(50000.0f)
+        .intensity(500000.0f)
         .direction({0,-1,0})
         .castShadows(false)
         .build(*engine_, light);

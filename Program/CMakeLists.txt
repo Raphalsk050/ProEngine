@@ -13,7 +13,7 @@ if (POLICY CMP0179)
 endif ()
 
 
-add_executable(SampleApp Program.cpp SampleLayer.cpp SampleLayer.h SceneLayer.mm SceneLayer.h)
+add_executable(SampleApp Program.cpp SampleLayer.cpp SampleLayer.h SceneLayer.cpp SceneLayer.h)
 target_link_libraries(SampleApp PUBLIC ProEngine ImGui filament)
 target_include_directories(SampleApp PUBLIC
         ${PROJECT_SOURCE_DIR}/ProEngine
