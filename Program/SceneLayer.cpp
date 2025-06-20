@@ -2,6 +2,7 @@
 #include "imgui.h"
 #include "Core/Application/Application.h"
 #include "Core/Renderer/Renderer3D.h"
+#include <filament/Engine.h>
 
 namespace ProEngine
 {
@@ -12,6 +13,8 @@ namespace ProEngine
     void SceneLayer::OnAttach()
     {
         Layer::OnAttach();
+        filament::Engine* engine = filament::Engine::create();
+        (void)engine;
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
 
