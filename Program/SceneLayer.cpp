@@ -2,6 +2,8 @@
 #include "imgui.h"
 #include "Core/Application/Application.h"
 #include "Core/Renderer/Renderer3D.h"
+#include <filament/FilamentAPI.h>
+#include <filament/Engine.h>
 
 namespace ProEngine
 {
@@ -14,6 +16,9 @@ namespace ProEngine
         Layer::OnAttach();
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
+
+        // Simple check that Filament links correctly
+        filament::Engine* engine = filament::Engine::create();
 
         auto* scene = Application::Get().GetActiveScene();
 

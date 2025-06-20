@@ -10,3 +10,7 @@ set(FILAMENT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_library(filament INTERFACE)
 target_include_directories(filament INTERFACE "${FILAMENT_INCLUDE_DIR}")
 
+add_library(filament_stub STATIC stub/EngineStub.cpp)
+target_include_directories(filament_stub PUBLIC "${FILAMENT_INCLUDE_DIR}")
+target_link_libraries(filament INTERFACE filament_stub)
+
