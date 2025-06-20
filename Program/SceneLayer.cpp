@@ -2,6 +2,9 @@
 #include "imgui.h"
 #include "Core/Application/Application.h"
 #include "Core/Renderer/Renderer3D.h"
+#include <filament/FilamentAPI.h>
+#include <filament/Engine.h>
+#include <utils/Entity.h>
 
 namespace ProEngine
 {
@@ -18,6 +21,10 @@ namespace ProEngine
         auto* scene = Application::Get().GetActiveScene();
 
         RendererComponent rc;
+        filament::Engine* engine = filament::Engine::create();
+        utils::Entity entity;
+        engine->createCamera(entity);
+
         // Create an example entity with renderer component
         sphere_entity_ = scene->CreateEntity("Sphere");
         cube_entity_ = scene->CreateEntity("Cube");

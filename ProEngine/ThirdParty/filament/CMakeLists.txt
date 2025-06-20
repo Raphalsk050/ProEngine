@@ -1,17 +1,22 @@
 cmake_minimum_required(VERSION 3.13)
 project(filament LANGUAGES CXX)
 
-file(GLOB_RECURSE FILAMENT_SRC
-        macos/arm64/**/*.a
+# 1) coleta todos os .a numa lista
+file(GLOB_RECURSE FILAMENT_LIBS
+        "${CMAKE_CURRENT_SOURCE_DIR}/macos/arm64/*.a"
 )
 
-set(FILAMENT_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include")
-set(FILAMENT_LIB ${FILAMENT_SRC})
+# 2) cria um target de INTERFACE (não precisa ter um .a único)
+add_library(filament INTERFACE)
 
-add_library(filament STATIC IMPORTED GLOBAL)
+# 3) diz onde estão os includes
+target_include_directories(filament
+        INTERFACE
+        "${CMAKE_CURRENT_SOURCE_DIR}/include"
+)
 
-set_target_properties(filament PROPERTIES
-        IMPORTED_LOCATION "${FILAMENT_LIB}"
-        INTERFACE_INCLUDE_DIRECTORIES "${FILAMENT_INCLUDE_DIR}"
-        LINKER_LANGUAGE CXX
+# 4) adiciona cada .a à lista de link
+target_link_libraries(filament
+        INTERFACE
+        ${FILAMENT_LIBS}
 )

@@ -185,7 +185,16 @@ target_link_libraries(PERendering
         PEPlatform
         assimp
         filament
+        "-framework Cocoa"
+        "-framework CoreFoundation"
+        "-framework CoreVideo"
+        "-framework CoreMedia"
+        "-framework QuartzCore"
+        "-framework Metal"
+        "-framework MetalKit"
+        "-framework IOSurface"
 )
+
 target_include_directories(PERendering PUBLIC
         PECore
         ${spdlog_DIR}/include
