@@ -20,4 +20,4 @@ You can enable or disable debugging tools and engine features via `#define` dire
 ![Architecture.png](Images/Architecture.png)
 
 ### Engine Preview
-![EngineScreenshot.png](Images/EngineScreenshot.png)
+![EnginePreview.png](Images/EnginePreview.png)
