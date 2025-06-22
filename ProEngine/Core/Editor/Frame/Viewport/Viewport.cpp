@@ -40,7 +40,7 @@ namespace ProEngine
         Layer::OnUpdate(ts);
         camera_controller_.OnUpdate(ts);
         time_ += ts;
-        RenderCommand::SetClearColor({0.1f, 0.2f, 0.2f, 1.0f});
+        RenderCommand::SetClearColor({0.1f, 0.1f, 0.1f, 1.0f});
 
         framebuffer_->Bind();
         int idClear = -1;
