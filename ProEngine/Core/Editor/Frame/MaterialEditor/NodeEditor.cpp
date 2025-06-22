@@ -106,7 +106,41 @@ namespace ProEngine
             ImNodes::EndNode();
         }
 
+        RenderConnections();
+
         ImNodes::EndNodeEditor();
+
+        // logo após o EndNodeEditor, cheque:
+        int start_attr = 0, end_attr = 0;
+        bool from_snap = false;
+        if (ImNodes::IsLinkCreated(&start_attr, &end_attr, &from_snap))
+        {
+            // start_attr → end_attr was connected right now
+            int link_id = next_link_id_++;
+            graph_.connections.push_back({link_id, start_attr, end_attr});
+
+            PrintAllConnectionValues(attrToNodeAttr,graph_.connections);
+        }
+
+        int destroyed_link_id;
+        if (ImNodes::IsLinkDestroyed(&destroyed_link_id))
+        {
+            // remova da sua lista de conexões
+            graph_.connections.erase(
+                std::remove_if(graph_.connections.begin(), graph_.connections.end(),
+                               [&](auto& c) { return c.id == destroyed_link_id; }),
+                graph_.connections.end()
+            );
+        }
+        for (auto& conn : graph_.connections)
+        {
+            // find the output node
+            auto [srcNode, srcIdx] = attrToNodeAttr[conn.start_attr];
+            // find the input node
+            auto [dstNode, dstIdx] = attrToNodeAttr[conn.end_attr];
+            // propagates the value
+            dstNode->inputs[dstIdx] = srcNode->outputs[srcIdx];
+        }
 
         if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
         {
@@ -134,11 +168,51 @@ namespace ProEngine
         ImGui::End();
     }
 
+    void NodeEditor::PrintAllConnectionValues(
+        const AttrMap& attrToNodeAttr,
+        const std::vector<Connection>& connections
+    )
+    {
+        for (const auto& conn : connections)
+        {
+            // localiza nó de saída e índice
+            auto it_src = attrToNodeAttr.find(conn.start_attr);
+            // localiza nó de entrada e índice
+            auto it_dst = attrToNodeAttr.find(conn.end_attr);
+            if (it_src == attrToNodeAttr.end() || it_dst == attrToNodeAttr.end())
+            {
+                std::cerr << "Atributo não encontrado para conexão " << conn.id << "\n";
+                continue;
+            }
+            MaterialNode* srcNode = it_src->second.first;
+            int srcIdx = it_src->second.second;
+            MaterialNode* dstNode = it_dst->second.first;
+            int dstIdx = it_dst->second.second;
+
+            string outVal = srcNode->outputs[srcIdx];
+            string inVal = dstNode->inputs[dstIdx];
+
+            std::cout
+                << "Link " << conn.id
+                << ": Node[" << srcNode->id << "].outputs[" << srcIdx << "] = " << outVal
+                << "  →  Node[" << dstNode->id << "].inputs[" << dstIdx << "] = " << inVal
+                << "\n";
+        }
+    }
+
     void NodeEditor::SetupDemoGraph()
     {
         AddNode(Texture2DNode());
         AddNode(MultiplyNode());
         AddNode(LitMasterNode());
+    }
+
+    void NodeEditor::RenderConnections()
+    {
+        for (auto& conn : graph_.connections)
+        {
+            ImNodes::Link(conn.id, conn.start_attr, conn.end_attr);
+        }
     }
 
     void NodeEditor::Open()

@@ -114,6 +114,6 @@ void main()
        discard;
     }
     // Output final color
-    o_Color = vec4(finalColor,1.0f);
+    o_Color = vec4(albedoSample);
     o_EntityID = v_EntityID;
 }

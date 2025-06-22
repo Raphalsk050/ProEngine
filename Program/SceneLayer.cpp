@@ -25,7 +25,7 @@ namespace ProEngine
         sphere_entity_ = scene->CreateEntity("Sphere");
         cube_entity_ = scene->CreateEntity("Cube");
         model_entity_ = scene->CreateEntity("Model");
-        auto model = Model::Load("../ProEngine/Assets/Models/monkey.fbx");
+        auto model = Model::Load("../ProEngine/Assets/Models/balls.glb");
         rc.model = model;
         rc.mesh = MeshType::Model;
         model_entity_.AddComponent<RendererComponent>(rc);

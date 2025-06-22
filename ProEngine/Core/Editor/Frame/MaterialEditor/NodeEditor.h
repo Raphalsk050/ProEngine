@@ -7,14 +7,15 @@
 
 namespace ProEngine
 {
-    struct Connection {
-        int inputNodeId;
-        int outputNodeId;
-        std::string inputSlot;
-        std::string outputSlot;
+    struct Connection
+    {
+        int id;
+        int start_attr;
+        int end_attr;
     };
 
-    struct MaterialNode {
+    struct MaterialNode
+    {
         int id;
         std::string name;
         std::vector<std::string> inputs;
@@ -22,11 +23,16 @@ namespace ProEngine
         ImVec2 position;
     };
 
-    struct MaterialGraph {
+    struct MaterialGraph
+    {
         std::vector<MaterialNode> nodes;
         std::vector<Connection> connections;
     };
-    class NodeEditor : public Layer{
+
+    using AttrMap = std::unordered_map<int, std::pair<MaterialNode*, int>>;
+
+    class NodeEditor : public Layer
+    {
     public:
         NodeEditor();
         ~NodeEditor() override;
@@ -40,6 +46,7 @@ namespace ProEngine
         void AddNode(const MaterialNodeType& node_type);
         void RenderNodeEditor();
         void SetupDemoGraph();
+        void RenderConnections();
         std::string GenerateShaderFromGraph(const MaterialGraph& graph);
         void Open();
         void Close();
@@ -51,6 +58,9 @@ namespace ProEngine
         int current_node_id_id_ = 1;
         bool is_popup_opened_ = false;
         bool request_context_menu_ = false;
+        int next_link_id_ = 0;
+        std::unordered_map<int, std::pair<MaterialNode*, int>> attrToNodeAttr;
+        static void PrintAllConnectionValues( const AttrMap& attrToNodeAttr, const std::vector<Connection>& connections );
 
         ImVec2 mouse_relative_position_;
         ImVec2 mouse_absolute_position_;
