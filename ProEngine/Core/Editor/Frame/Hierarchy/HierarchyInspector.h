@@ -58,6 +58,7 @@ namespace ProEngine
         EntityHandle entity_handle_;
         EntityHandle* selected_entity_handle_ = nullptr;
         SelectedEntityValues selected_entity_transform_;
+        Editor* editor_ = nullptr;
 
         std::vector<EntityHandle> entities_to_delete_;
 

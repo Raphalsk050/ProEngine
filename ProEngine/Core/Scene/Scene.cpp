@@ -10,7 +10,8 @@ namespace ProEngine
     {
         entt::entity e = registry_.create();
         EntityHandle handle{e, this};
-        registry_.emplace<TransformComponent>(e);
+        auto* tc = &registry_.emplace<TransformComponent>(e);
+        tc->id = static_cast<uint>(e);
         registry_.emplace<TagComponent>(e, TagComponent{name});
         registry_.emplace<InteractableComponent>(e);
         return handle;

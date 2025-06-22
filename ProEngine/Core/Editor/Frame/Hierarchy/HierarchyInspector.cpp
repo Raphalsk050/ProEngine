@@ -3,6 +3,8 @@
 #include "Core/Scene/EntityHandle.h"
 #include "Core/Application/Application.h"
 #include <imgui.h>
+
+#include "EntityProperties/EditorVectorProperties.h"
 #include "gtc/type_ptr.hpp"
 
 
@@ -20,6 +22,7 @@ namespace ProEngine
         registry_ = &Application::Get().GetActiveScene()->GetRegistry();
         active_scene_ = Application::Get().GetActiveScene();
         entity_handle_ = EntityHandle();
+        editor_ = Editor::Get();
     }
 
     void HierarchyInspector::OnDetach()
@@ -36,8 +39,7 @@ namespace ProEngine
     {
         Layer::OnImGuiRender();
         if (!opened_) return;
-        DrawEntityPropertiesWindow();
-
+        auto entities = active_scene_->GetAllEntities();
 
         if (ImGui::Begin("Hierarchy", &opened_))
         {
@@ -56,13 +58,12 @@ namespace ProEngine
 
             ImGui::Separator();
 
-            auto entities = active_scene_->GetAllEntities();
-
             for (auto& entity : entities)
             {
                 const auto& transform = entity->GetComponent<TransformComponent>();
                 if (transform.parent == entt::null)
                 {
+                    // only draws the entity if it has a interactable marked as true
                     if (entity->GetComponent<InteractableComponent>().interactable)
                         DrawEntity(*entity);
                 }
@@ -76,8 +77,11 @@ namespace ProEngine
                 }
                 ImGui::EndPopup();
             }
+
+            ImGui::End();
+
+            DrawEntityPropertiesWindow();
         }
-        ImGui::End();
     }
 
     void HierarchyInspector::OnEvent(Event& event)
@@ -217,33 +221,28 @@ namespace ProEngine
 
     void HierarchyInspector::DrawEntityPropertiesWindow()
     {
-        ImGui::Begin("Properties");
-        if (entity_handle_)
+        if (ImGui::Begin("Properties"))
         {
-            selected_entity_transform_.selected_entity_position = entity_handle_.GetPosition();
-            selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
-            selected_entity_transform_.selected_entity_scale    = entity_handle_.GetScale();
-
-
-            ImGui::Text("Position");
-            if (ImGui::InputFloat3("##Position", &selected_entity_transform_.selected_entity_position.x, 2))
+            if (ImGui::Button("Add Component"))
             {
-                entity_handle_.SetPosition(selected_entity_transform_.selected_entity_position);
+                PENGINE_CORE_INFO("Open popup window");
             }
 
-            ImGui::Text("Rotation");
-            if (ImGui::InputFloat3("##Rotation", &selected_entity_transform_.selected_entity_rotation.x, 2))
+            if (entity_handle_)
             {
-                entity_handle_.SetRotation(selected_entity_transform_.selected_entity_rotation);
-            }
+                selected_entity_transform_.selected_entity_position = entity_handle_.GetPosition();
+                selected_entity_transform_.selected_entity_rotation = entity_handle_.GetRotation();
+                selected_entity_transform_.selected_entity_scale = entity_handle_.GetScale();
 
-            ImGui::Text("Scale");
-            if (ImGui::InputFloat3("##Scale", &selected_entity_transform_.selected_entity_scale.x, 2))
-            {
-                entity_handle_.SetScale(selected_entity_transform_.selected_entity_scale);
+                // draws the property ui for the selected entity
+                EditorPropertiesFactory& factory = editor_->properties_factory;
+                if (registry_->valid(entity_handle_.Raw()))
+                {
+                    factory.drawFor(*registry_, entity_handle_.Raw());
+                }
             }
+            ImGui::End();
         }
-        ImGui::End();
     }
 
     void HierarchyInspector::DeleteEntity(EntityHandle& entity)
@@ -311,9 +310,12 @@ namespace ProEngine
             return;
         }
 
-        for (auto&& [type_id, storage] : registry.storage()) {
-            if (storage.contains(src)) {
-                if (auto it = Editor::clone_functions.find(type_id); it != Editor::clone_functions.end()) {
+        for (auto&& [type_id, storage] : registry.storage())
+        {
+            if (storage.contains(src))
+            {
+                if (auto it = Editor::clone_functions.find(type_id); it != Editor::clone_functions.end())
+                {
                     it->second(registry, src, dst);
                 }
             }

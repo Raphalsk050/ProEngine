@@ -5,6 +5,7 @@
 #include <entt.hpp>
 #include "glad/glad.h"
 #include <memory>
+#include <utility>
 
 #include "Core/Types.h"
 #include "Core/Camera/Camera3D.h"
@@ -13,13 +14,29 @@
 
 namespace ProEngine
 {
-    struct TagComponent
+    struct ComponentBase
     {
-        std::string tag{"Entity"};
+        std::string name = "Component";
+        uint id = 0;
+
+        explicit ComponentBase(std::string name = "Component", const uint id = 0) : name(std::move(name)), id(id)
+        {
+        }
     };
 
-    struct TransformComponent
+    struct TagComponent : public ComponentBase
     {
+        std::string tag{"Entity"};
+
+        explicit TagComponent(std::string tag) : ComponentBase("Tag"), tag(std::move(tag))
+        {
+        }
+    };
+
+    struct TransformComponent : public ComponentBase
+    {
+        TransformComponent() : ComponentBase("Transform") {}
+
         glm::vec3 position{0.0f};
         glm::vec3 rotation{0.0f};
         glm::vec3 scale{1.0f};
@@ -29,7 +46,7 @@ namespace ProEngine
         entt::entity next_sibling{entt::null};
         entt::entity prev_sibling{entt::null};
 
-        glm::mat4 LocalMatrix() const
+        [[nodiscard]] glm::mat4 LocalMatrix() const
         {
             glm::mat4 mat(1.0f);
             mat = glm::translate(mat, position);
@@ -41,22 +58,23 @@ namespace ProEngine
         }
     };
 
-    struct ModelRendererComponent
+    struct ModelRendererComponent : public ComponentBase
     {
         Ref<Model> model;
         Ref<Material> OverrideMaterial;
 
-        ModelRendererComponent() = default;
+        ModelRendererComponent() : ComponentBase("ModelRenderer") {}
         ModelRendererComponent(const ModelRendererComponent&) = default;
 
-        ModelRendererComponent(const Ref<Model>& m)
+        explicit ModelRendererComponent(const Ref<Model>& m)
         {
             model = m;
         }
     };
 
-    struct RendererComponent
+    struct RendererComponent : public ComponentBase
     {
+        RendererComponent() : ComponentBase("Renderer") {}
         MeshType mesh{MeshType::Triangle};
         glm::vec4 color{1.0f};
         bool depth_test{false};
@@ -67,24 +85,29 @@ namespace ProEngine
         std::shared_ptr<Mesh> mesh_ptr{nullptr};
     };
 
-    struct InteractableComponent
+    struct InteractableComponent : public ComponentBase
     {
+        InteractableComponent() : ComponentBase("Interactable") {}
         bool interactable = true;
     };
 
-    struct CameraComponent
+    struct CameraComponent : public ComponentBase
     {
+        CameraComponent() : ComponentBase("Camera") {}
         Camera3D camera{};
         bool primary{true};
     };
 
-    enum class LightType {
+    enum class LightType
+    {
         Directional = 0,
         Point = 1,
         Spot = 2
     };
 
-    struct LightComponent {
+    struct LightComponent : public ComponentBase
+    {
+        LightComponent () : ComponentBase("Light") {}
         LightType type{LightType::Point};
         glm::vec3 color{1.0f};
         float intensity{1.0f};
@@ -94,18 +117,23 @@ namespace ProEngine
         float outer_cutoff{17.5f};
     };
 
-    struct CameraBoomComponent {
+    struct CameraBoomComponent : public ComponentBase
+    {
+        CameraBoomComponent () : ComponentBase("CameraBoom") {}
         float arm_length{5.0f};
         bool collision_test{true};
         entt::entity target{entt::null};
     };
 
-    enum class CameraType {
+    enum class CameraType
+    {
         FirstPerson = 0,
         ThirdPerson = 1
     };
 
-    struct CharacterControllerComponent {
+    struct CharacterControllerComponent : public ComponentBase
+    {
+        CharacterControllerComponent() : ComponentBase("CharacterController") {}
         CameraType camera_type{CameraType::FirstPerson};
         float move_speed{5.0f};
         float jump_force{1.0f};

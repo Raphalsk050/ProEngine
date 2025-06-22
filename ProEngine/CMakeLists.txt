@@ -308,6 +308,7 @@ engine_add_library(PECamera
 target_link_libraries(PECamera
         PERendering
         spdlog
+        ImGui
         glfw
         glad
         glm
@@ -315,6 +316,7 @@ target_link_libraries(PECamera
 )
 target_include_directories(PECamera PUBLIC
         ${glm_DIR}
+        ${imgui_DIR}
 )
 
 # ── Editor ──────────────────────────────────────────────────
@@ -330,6 +332,10 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/MainEditorInterface.cpp
             Core/Editor/Frame/Hierarchy/HierarchyInspector.h
             Core/Editor/Frame/Hierarchy/HierarchyInspector.cpp
+            Core/Editor/Frame/Hierarchy/EntityProperties/EntityBasePropertyEditor.h
+            Core/Editor/Frame/Hierarchy/EntityProperties/EditorPropertiesFactory.h
+            Core/Editor/Frame/Hierarchy/EntityProperties/EditorPropertiesFactory.cpp
+            Core/Editor/Frame/Hierarchy/EntityProperties/EntityBasePropertyEditor.cpp
             Core/Editor/Frame/Viewport/Viewport.h
             Core/Editor/Frame/Viewport/Viewport.cpp
             Core/Editor/Frame/MaterialEditor/NodeEditor.h

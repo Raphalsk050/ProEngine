@@ -18,19 +18,21 @@ namespace ProEngine
 
         auto* scene = Application::Get().GetActiveScene();
 
-        RendererComponent rc;
+        RendererComponent rc = RendererComponent();
+        RendererComponent rc_1 = RendererComponent();
+        RendererComponent rc_2 = RendererComponent();
         // Create an example entity with renderer component
         sphere_entity_ = scene->CreateEntity("Sphere");
         cube_entity_ = scene->CreateEntity("Cube");
         model_entity_ = scene->CreateEntity("Model");
         auto model = Model::Load("../ProEngine/Assets/Models/monkey.fbx");
         rc.model = model;
-        rc = RendererComponent({.mesh = MeshType::Model, .model = model});
+        rc.mesh = MeshType::Model;
         model_entity_.AddComponent<RendererComponent>(rc);
-        rc = RendererComponent({.mesh = MeshType::Sphere});
-        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc);
-        rc = RendererComponent({.mesh = MeshType::Cube});
-        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc);
+        rc_1.mesh = MeshType::Sphere;
+        render_component_0_ = sphere_entity_.AddComponent<RendererComponent>(rc_1);
+        rc_2.mesh = MeshType::Cube;
+        render_component_1_ = cube_entity_.AddComponent<RendererComponent>(rc_2);
     }
 
     void SceneLayer::OnUpdate(Timestep ts)
