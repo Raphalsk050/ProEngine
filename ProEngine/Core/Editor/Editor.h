@@ -51,11 +51,40 @@ namespace ProEngine
                 editor_ = new Editor();
             }
 
-            properties_factory.registerDrawer<TransformComponent>([](void* ptr){
+            properties_factory.registerDrawer<TransformComponent>("Transform", [](void* ptr){
                 auto& tc = *static_cast<TransformComponent*>(ptr);
                 Vector3Field::RenderField(&tc.position, tc.id);
                 Vector3Field::RenderField(&tc.rotation, tc.id + 3);
                 Vector3Field::RenderField(&tc.scale, tc.id + 6);
+                ImGui::Separator();
+            });
+
+            properties_factory.registerDrawer<TagComponent>("Tag", [](void* ptr){
+                auto& tc = *static_cast<TagComponent*>(ptr);
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Tag: ");
+                ImGui::SameLine();
+                ImGui::Text(tc.tag.c_str());
+            });
+
+            properties_factory.registerDrawer<RendererComponent>("Renderer Component", [](void* ptr){
+                auto& rc = *static_cast<RendererComponent*>(ptr);
+
+
+                ImGui::Checkbox("##depth_test",&rc.depth_test);
+                ImGui::AlignTextToFramePadding();
+                ImGui::SameLine();
+                ImGui::Text("Depth Test");
+
+                ImGui::Checkbox("##culling",&rc.culling);
+                ImGui::AlignTextToFramePadding();
+                ImGui::SameLine();
+                ImGui::Text("Culling");
+
+                ImGui::Checkbox("##double_sided",&rc.double_sided);
+                ImGui::AlignTextToFramePadding();
+                ImGui::SameLine();
+                ImGui::Text("Double Sided");
             });
 
             // this serves as the duplicate hierarchy function

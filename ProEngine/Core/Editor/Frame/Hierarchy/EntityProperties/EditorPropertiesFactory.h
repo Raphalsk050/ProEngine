@@ -15,7 +15,7 @@ namespace ProEngine
 
         // Registers the drawer for component T
         template <typename T>
-        void registerDrawer(DrawerFn drawer)
+        void registerDrawer(const std::string& displayName, DrawerFn drawer)
         {
             auto id = entt::type_hash<T>::value();
 
@@ -34,13 +34,14 @@ namespace ProEngine
             // 3) _names
             _names.insert_or_assign(
                 id,
-                entt::type_name<T>() // constrói std::string diretamente
+                displayName
             );
         }
 
         // Draws all registered components for a single entity
         void drawFor(entt::registry& reg, entt::entity e) const
         {
+            int ui_id = rand();
             for (auto const& [id, drawer] : _drawers)
             {
                 // does this entity actually have T?
@@ -52,7 +53,6 @@ namespace ProEngine
                     ImGui::Separator();
                     ImGui::Text("%s", _names.at(id).c_str());
                     drawer(ptr);
-                    ImGui::Separator();
                 }
             }
         }
