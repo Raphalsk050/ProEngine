@@ -3,12 +3,24 @@
 #include <entt.hpp>
 
 #include "Core/Scene/Components.h"
+#include "Core/Editor/Frame/Hierarchy/EntityProperties/EditorPropertiesFactory.h"
+#include "Frame/Hierarchy/EntityProperties/EditorVectorProperties.h"
 
 namespace ProEngine
 {
     class Editor
     {
     public:
+        static EditorPropertiesFactory properties_factory;
+
+        // singletone to prevent other editor instances
+        static Editor* Get()
+        {
+            if (editor_ == nullptr)
+                editor_ = new Editor();
+            return editor_;
+        }
+
         using CloneFn = std::function<void(entt::registry&, entt::entity, entt::entity)>;
         inline static std::unordered_map<entt::id_type, CloneFn> clone_functions;
 
@@ -39,6 +51,14 @@ namespace ProEngine
                 editor_ = new Editor();
             }
 
+            properties_factory.registerDrawer<TransformComponent>([](void* ptr){
+                auto& tc = *static_cast<TransformComponent*>(ptr);
+                Vector3Field::RenderField(&tc.position, tc.id);
+                Vector3Field::RenderField(&tc.rotation, tc.id + 3);
+                Vector3Field::RenderField(&tc.scale, tc.id + 6);
+            });
+
+            // this serves as the duplicate hierarchy function
             register_cloner<TransformComponent>();
             register_cloner<CameraComponent>();
             register_cloner<LightComponent>();

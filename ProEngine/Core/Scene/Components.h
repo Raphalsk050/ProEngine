@@ -17,8 +17,9 @@ namespace ProEngine
     struct ComponentBase
     {
         std::string name = "Component";
+        uint id = 0;
 
-        explicit ComponentBase(std::string name = "Component") : name(std::move(name))
+        explicit ComponentBase(std::string name = "Component", const uint id = 0) : name(std::move(name)), id(id)
         {
         }
     };
@@ -27,7 +28,7 @@ namespace ProEngine
     {
         std::string tag{"Entity"};
 
-        TagComponent(std::string tag) : ComponentBase("Tag"), tag(tag)
+        explicit TagComponent(std::string tag) : ComponentBase("Tag"), tag(std::move(tag))
         {
         }
     };
@@ -45,7 +46,7 @@ namespace ProEngine
         entt::entity next_sibling{entt::null};
         entt::entity prev_sibling{entt::null};
 
-        glm::mat4 LocalMatrix() const
+        [[nodiscard]] glm::mat4 LocalMatrix() const
         {
             glm::mat4 mat(1.0f);
             mat = glm::translate(mat, position);
@@ -65,7 +66,7 @@ namespace ProEngine
         ModelRendererComponent() : ComponentBase("ModelRenderer") {}
         ModelRendererComponent(const ModelRendererComponent&) = default;
 
-        ModelRendererComponent(const Ref<Model>& m)
+        explicit ModelRendererComponent(const Ref<Model>& m)
         {
             model = m;
         }

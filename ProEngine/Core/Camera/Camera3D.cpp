@@ -5,7 +5,6 @@
 
 // The header needs to be included here after defining GLM_ENABLE_EXPERIMENTAL
 #include <gtx/quaternion.hpp>
-
 #include "Core/Application/Application.h"
 #include "gtc/type_ptr.hpp"
 
