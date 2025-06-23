@@ -1,35 +1,79 @@
 #pragma once
 #include <vector>
 #include "imgui.h"
+#include "imgui_internal.h"
+#include "imnodes.h"
 #include "MaterialNodeTypes.h"
 #include "Core/Layer/Layer.h"
 
 
 namespace ProEngine
 {
-    struct Connection
+    enum class NodeType
     {
+        add,
+        multiply,
+        output,
+        sine,
+        time,
+        value
+    };
+
+    struct Node
+    {
+        NodeType type;
+        float value;
+
+        explicit Node(const NodeType t) : type(t), value(0.f)
+        {
+        }
+
+        Node(const NodeType t, const float v) : type(t), value(v)
+        {
+        }
+    };
+
+    enum class UiNodeType
+    {
+        add,
+        multiply,
+        output,
+        sine,
+        time,
+    };
+
+    struct UiNode
+    {
+        UiNodeType type;
+        // The identifying id of the ui node. For add, multiply, sine, and time
+        // this is the "operation" node id. The additional input nodes are
+        // stored in the structs.
         int id;
-        int start_attr;
-        int end_attr;
+
+        union
+        {
+            struct
+            {
+                int lhs, rhs;
+            } add;
+
+            struct
+            {
+                int lhs, rhs;
+            } multiply;
+
+            struct
+            {
+                int r, g, b;
+            } output;
+
+            struct
+            {
+                int input;
+            } sine;
+        } ui;
     };
 
-    struct MaterialNode
-    {
-        int id;
-        std::string name;
-        std::vector<std::string> inputs;
-        std::vector<std::string> outputs;
-        ImVec2 position;
-    };
-
-    struct MaterialGraph
-    {
-        std::vector<MaterialNode> nodes;
-        std::vector<Connection> connections;
-    };
-
-    using AttrMap = std::unordered_map<int, std::pair<MaterialNode*, int>>;
 
     class NodeEditor : public Layer
     {
@@ -41,29 +85,24 @@ namespace ProEngine
         void OnUpdate(Timestep ts) override;
         void OnImGuiRender() override;
         void OnEvent(Event& event) override;
-        void AddNode(const std::string& name, const std::vector<std::string>& inputs, const std::vector<std::string>& outputs);
-        void AddNode(const MaterialNode& node);
-        void AddNode(const MaterialNodeType& node_type);
-        void RenderNodeEditor();
-        void SetupDemoGraph();
-        void RenderConnections();
-        std::string GenerateShaderFromGraph(const MaterialGraph& graph);
         void Open();
         void Close();
         void ToggleWindow();
 
     private:
-        MaterialGraph graph_;
-        bool opened_ = true;
-        int current_node_id_id_ = 1;
-        bool is_popup_opened_ = false;
-        bool request_context_menu_ = false;
-        int next_link_id_ = 0;
-        std::unordered_map<int, std::pair<MaterialNode*, int>> attrToNodeAttr;
-        static void PrintAllConnectionValues( const AttrMap& attrToNodeAttr, const std::vector<Connection>& connections );
+        bool opened_ = false;
+        std::unordered_map<KeyCode, bool> key_states_;
+        ImVec2 default_window_size_ = {400.0, 400.0};
+        Graph<Node>            graph_;
+        std::vector<UiNode>    nodes_;
+        int                    root_node_id_;
+        ImNodesMiniMapLocation minimap_location_;
 
-        ImVec2 mouse_relative_position_;
-        ImVec2 mouse_absolute_position_;
-        ImVec2 window_position_;
+    private:
+        void RenderNodeEditor();
+        void SetupWindow();
+        void SetupPopup();
+        bool OnKeyPressed(KeyPressedEvent& e);
+        bool OnKeyReleased(KeyReleasedEvent& e);
     };
 }

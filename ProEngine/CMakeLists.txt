@@ -375,6 +375,7 @@ target_link_libraries(PEApplication PUBLIC
         PELayer
         PEWindow
         PEScene
+        imnodes
 )
 target_include_directories(PEApplication PUBLIC
         ${imgui_DIR}
