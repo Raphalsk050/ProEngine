@@ -1,5 +1,6 @@
 #include "NodeEditor.h"
 
+#include "imgui_internal.h"
 #include "imnodes.h"
 
 namespace ProEngine
@@ -18,6 +19,8 @@ namespace ProEngine
         Layer::OnAttach();
         ImNodes::CreateContext();
         SetupDemoGraph();
+        graph_.connections.reserve(100);
+        graph_.nodes.reserve(100);
     }
 
     void NodeEditor::OnDetach()
@@ -67,7 +70,7 @@ namespace ProEngine
 
     void NodeEditor::AddNode(const MaterialNode& node)
     {
-        graph_.nodes.push_back(node);
+        graph_.nodes.emplace_back(node);
         ImNodes::SetNodeGridSpacePos(node.id, node.position);
     }
 
@@ -89,17 +92,21 @@ namespace ProEngine
             ImGui::TextUnformatted(node.name.c_str());
             ImNodes::EndNodeTitleBar();
 
-            for (const auto& input : node.inputs)
+            for (size_t i = 0; i < node.inputs.size(); ++i)
             {
-                ImNodes::BeginInputAttribute(std::hash<std::string>{}(input + std::to_string(node.id)));
-                ImGui::Text("%s", input.c_str());
+                int attrId = std::hash<std::string>{}(node.inputs[i] + std::to_string(node.id));
+                ImNodes::BeginInputAttribute(attrId);
+                attrToNodeAttr[attrId] = {&node, static_cast<int>(i)};
+                ImGui::Text("%s", node.inputs[i].c_str());
                 ImNodes::EndInputAttribute();
             }
 
-            for (const auto& output : node.outputs)
+            for (size_t i = 0; i < node.outputs.size(); ++i)
             {
-                ImNodes::BeginOutputAttribute(std::hash<std::string>{}(output + std::to_string(node.id)));
-                ImGui::Text("%s", output.c_str());
+                int attrId = std::hash<std::string>{}(node.outputs[i] + std::to_string(node.id));
+                ImNodes::BeginOutputAttribute(attrId);
+                attrToNodeAttr[attrId] = {&node, static_cast<int>(i)};
+                ImGui::Text("%s", node.outputs[i].c_str());
                 ImNodes::EndOutputAttribute();
             }
 
@@ -116,10 +123,17 @@ namespace ProEngine
         if (ImNodes::IsLinkCreated(&start_attr, &end_attr, &from_snap))
         {
             // start_attr → end_attr was connected right now
-            int link_id = next_link_id_++;
-            graph_.connections.push_back({link_id, start_attr, end_attr});
+            int link_id = next_link_id_;
+            auto connection = Connection({link_id, start_attr, end_attr});
+            graph_.connections.emplace_back(connection);
 
-            PrintAllConnectionValues(attrToNodeAttr,graph_.connections);
+            next_link_id_++;
+
+            PENGINE_CORE_INFO("######## Connection made ########");
+            PENGINE_CORE_INFO("|        Link ID: {}      ", link_id);
+            PENGINE_CORE_INFO("|        StartAttr: {}    ", start_attr);
+            PENGINE_CORE_INFO("|        EndAttr: {}      ", end_attr);
+            PENGINE_CORE_INFO("#################################");
         }
 
         int destroyed_link_id;
@@ -136,8 +150,13 @@ namespace ProEngine
         {
             // find the output node
             auto [srcNode, srcIdx] = attrToNodeAttr[conn.start_attr];
+            PENGINE_CORE_INFO("SrcIndex: {0}", srcIdx);
+            PENGINE_CORE_INFO("Connection start attr: {0}", conn.start_attr);
+            PENGINE_CORE_INFO("Connection end attr: {0}", conn.end_attr);
+            PENGINE_CORE_INFO("Amount of connections: {0}", attrToNodeAttr.size());
             // find the input node
             auto [dstNode, dstIdx] = attrToNodeAttr[conn.end_attr];
+            PENGINE_CORE_INFO("DstIndex: {0}", dstIdx);
             // propagates the value
             dstNode->inputs[dstIdx] = srcNode->outputs[srcIdx];
         }
@@ -166,6 +185,8 @@ namespace ProEngine
         }
 
         ImGui::End();
+
+        PrintAllConnectionValues(attrToNodeAttr, graph_.connections);
     }
 
     void NodeEditor::PrintAllConnectionValues(

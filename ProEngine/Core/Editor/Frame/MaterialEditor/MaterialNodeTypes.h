@@ -17,7 +17,7 @@ namespace ProEngine
 
     struct Texture2DNode : public MaterialNodeType
     {
-        Texture2DNode(): MaterialNodeType("Texture2D", {}, {"Color"})
+        Texture2DNode(): MaterialNodeType("Texture2D", {}, {"UV","Color"})
         {
         }
     };
@@ -32,7 +32,7 @@ namespace ProEngine
     struct LitMasterNode : public MaterialNodeType
     {
         LitMasterNode()
-            : MaterialNodeType("LitMaster", {"BaseColor"}, {})
+            : MaterialNodeType("LitMaster", {"Color"}, {})
         {
         }
     };
