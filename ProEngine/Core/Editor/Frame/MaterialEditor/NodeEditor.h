@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include "imgui.h"
-#include "imgui_internal.h"
 #include "imnodes.h"
 #include "MaterialNodeTypes.h"
 #include "Core/Layer/Layer.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h"
 
 
 namespace ProEngine
@@ -14,7 +14,9 @@ namespace ProEngine
         add,
         multiply,
         output,
+        input_float,
         sine,
+        cos,
         time,
         value
     };
@@ -37,8 +39,10 @@ namespace ProEngine
     {
         add,
         multiply,
+        input_float,
         output,
         sine,
+        cos,
         time,
     };
 
@@ -69,8 +73,23 @@ namespace ProEngine
 
             struct
             {
+                int a;
+            } input_float;
+
+            struct
+            {
                 int input;
             } sine;
+
+            struct
+            {
+                int input;
+            } cos;
+
+            struct
+            {
+                int lhs, rhs;
+            } time;
         } ui;
     };
 
@@ -78,6 +97,78 @@ namespace ProEngine
     class NodeEditor : public Layer
     {
     public:
+        inline ImU32 Evaluate(const Graph<Node>& graph, const int root_node) const
+        {
+            std::stack<int> postorder;
+            dfs_traverse(
+                graph, root_node, [&postorder](const int node_id) -> void { postorder.push(node_id); });
+
+            std::stack<float> value_stack;
+            while (!postorder.empty())
+            {
+                const int id = postorder.top();
+                postorder.pop();
+                const Node node = graph.node(id);
+
+                switch (node.type)
+                {
+                case NodeType::add:
+                    {
+                        const float rhs = value_stack.top();
+                        value_stack.pop();
+                        const float lhs = value_stack.top();
+                        value_stack.pop();
+                        value_stack.push(lhs + rhs);
+                    }
+                    break;
+                case NodeType::multiply:
+                    {
+                        const float rhs = value_stack.top();
+                        value_stack.pop();
+                        const float lhs = value_stack.top();
+                        value_stack.pop();
+                        value_stack.push(rhs * lhs);
+                    }
+                    break;
+                case NodeType::sine:
+                    {
+                        SineNode::Evaluate(value_stack);
+                    }
+                    break;
+                case NodeType::time:
+                    {
+                        value_stack.push(current_time_seconds_);
+                    }
+                    break;
+                case NodeType::value:
+                    {
+                        // If the edge does not have an edge connecting to another node, then just use the value
+                        // at this node. It means the node's input pin has not been connected to anything and
+                        // the value comes from the node's UI.
+                        if (graph.num_edges_from_node(id) == 0ull)
+                        {
+                            value_stack.push(node.value);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            // The final output node isn't evaluated in the loop -- instead we just pop
+            // the three values which should be in the stack.
+            assert(value_stack.size() == 3ull);
+            const int b = static_cast<int>(255.f * clamp(value_stack.top(), 0.f, 1.f) + 0.5f);
+            value_stack.pop();
+            const int g = static_cast<int>(255.f * clamp(value_stack.top(), 0.f, 1.f) + 0.5f);
+            value_stack.pop();
+            const int r = static_cast<int>(255.f * clamp(value_stack.top(), 0.f, 1.f) + 0.5f);
+            value_stack.pop();
+
+            return IM_COL32(r, g, b, 255);
+        }
+
         NodeEditor();
         ~NodeEditor() override;
         void OnAttach() override;
@@ -93,10 +184,11 @@ namespace ProEngine
         bool opened_ = false;
         std::unordered_map<KeyCode, bool> key_states_;
         ImVec2 default_window_size_ = {400.0, 400.0};
-        Graph<Node>            graph_;
-        std::vector<UiNode>    nodes_;
-        int                    root_node_id_;
+        Graph<Node> graph_;
+        std::vector<UiNode> nodes_;
+        int root_node_id_;
         ImNodesMiniMapLocation minimap_location_;
+        float current_time_seconds_;
 
     private:
         void RenderNodeEditor();

@@ -1,15 +1,21 @@
 #include "NodeEditor.h"
 #include "Core/Input/Input.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/AddNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/MultiplyNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/TimeNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/CosNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/InputFloat.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/OutputNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h"
+#include "spdlog/fmt/bundled/args.h"
 
 namespace ProEngine
 {
-    NodeEditor::NodeEditor()
+    NodeEditor::NodeEditor(): root_node_id_(0), minimap_location_(0), current_time_seconds_(0)
     {
     }
 
-    NodeEditor::~NodeEditor()
-    {
-    }
+    NodeEditor::~NodeEditor() = default;
 
     void NodeEditor::OnAttach()
     {
@@ -17,6 +23,8 @@ namespace ProEngine
         ImNodes::CreateContext();
         ImNodesIO& io = ImNodes::GetIO();
         io.LinkDetachWithModifierClick.Modifier = &ImGui::GetIO().KeyCtrl;
+        ImNodes::GetIO().EmulateThreeButtonMouse.Modifier = &ImGui::GetIO().KeyAlt;
+        root_node_id_ = Output::CreateNode(graph_, nodes_, ImVec2(0, 0));
     }
 
     void NodeEditor::OnDetach()
@@ -27,6 +35,7 @@ namespace ProEngine
     void NodeEditor::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
+        current_time_seconds_ = Time::GetTime();
     }
 
     void NodeEditor::OnImGuiRender()
@@ -41,6 +50,15 @@ namespace ProEngine
 
             ImGui::End();
         }
+
+        const ImU32 color = root_node_id_ != -1 ? Evaluate(graph_, root_node_id_) : IM_COL32(255, 20, 147, 255);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, color);
+        ImGui::SetNextWindowSize(ImVec2(100, 100));
+        if (ImGui::Begin("output color"))
+        {
+            ImGui::End();
+        }
+        ImGui::PopStyleColor();
     }
 
     void NodeEditor::OnEvent(Event& event)
@@ -98,7 +116,7 @@ namespace ProEngine
     {
         ImNodes::BeginNodeEditor();
         const bool open_popup = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows) &&
-                                    ImNodes::IsEditorHovered() && key_states_[Key::A];
+            ImNodes::IsEditorHovered() && key_states_[Key::A];
 
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.f, 8.f));
         if (!ImGui::IsAnyItemHovered() && open_popup)
@@ -116,229 +134,40 @@ namespace ProEngine
             switch (node.type)
             {
             case UiNodeType::add:
-            {
-                const float node_width = 100.f;
-                ImNodes::BeginNode(node.id);
-
-                ImNodes::BeginNodeTitleBar();
-                ImGui::TextUnformatted("add");
-                ImNodes::EndNodeTitleBar();
                 {
-                    ImNodes::BeginInputAttribute(node.ui.add.lhs);
-                    const float label_width = ImGui::CalcTextSize("left").x;
-                    ImGui::TextUnformatted("left");
-                    if (graph_.num_edges_from_node(node.ui.add.lhs) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat("##hidelabel", &graph_.node(node.ui.add.lhs).value, 0.01f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
+                    Add::RenderNode(node, graph_);
                 }
-
-                {
-                    ImNodes::BeginInputAttribute(node.ui.add.rhs);
-                    const float label_width = ImGui::CalcTextSize("right").x;
-                    ImGui::TextUnformatted("right");
-                    if (graph_.num_edges_from_node(node.ui.add.rhs) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat("##hidelabel", &graph_.node(node.ui.add.rhs).value, 0.01f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
-                }
-
-                ImGui::Spacing();
-
-                {
-                    ImNodes::BeginOutputAttribute(node.id);
-                    const float label_width = ImGui::CalcTextSize("result").x;
-                    ImGui::Indent(node_width - label_width);
-                    ImGui::TextUnformatted("result");
-                    ImNodes::EndOutputAttribute();
-                }
-
-                ImNodes::EndNode();
-            }
-            break;
+                break;
             case UiNodeType::multiply:
-            {
-                const float node_width = 100.0f;
-                ImNodes::BeginNode(node.id);
-
-                ImNodes::BeginNodeTitleBar();
-                ImGui::TextUnformatted("multiply");
-                ImNodes::EndNodeTitleBar();
-
                 {
-                    ImNodes::BeginInputAttribute(node.ui.multiply.lhs);
-                    const float label_width = ImGui::CalcTextSize("left").x;
-                    ImGui::TextUnformatted("left");
-                    if (graph_.num_edges_from_node(node.ui.multiply.lhs) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.multiply.lhs).value, 0.01f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
+                    Multiply::RenderNode(node, graph_);
                 }
-
-                {
-                    ImNodes::BeginInputAttribute(node.ui.multiply.rhs);
-                    const float label_width = ImGui::CalcTextSize("right").x;
-                    ImGui::TextUnformatted("right");
-                    if (graph_.num_edges_from_node(node.ui.multiply.rhs) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.multiply.rhs).value, 0.01f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
-                }
-
-                ImGui::Spacing();
-
-                {
-                    ImNodes::BeginOutputAttribute(node.id);
-                    const float label_width = ImGui::CalcTextSize("result").x;
-                    ImGui::Indent(node_width - label_width);
-                    ImGui::TextUnformatted("result");
-                    ImNodes::EndOutputAttribute();
-                }
-
-                ImNodes::EndNode();
-            }
-            break;
+                break;
             case UiNodeType::output:
-            {
-                const float node_width = 100.0f;
-                ImNodes::PushColorStyle(ImNodesCol_TitleBar, IM_COL32(11, 109, 191, 255));
-                ImNodes::PushColorStyle(ImNodesCol_TitleBarHovered, IM_COL32(45, 126, 194, 255));
-                ImNodes::PushColorStyle(ImNodesCol_TitleBarSelected, IM_COL32(81, 148, 204, 255));
-                ImNodes::BeginNode(node.id);
-
-                ImNodes::BeginNodeTitleBar();
-                ImGui::TextUnformatted("output");
-                ImNodes::EndNodeTitleBar();
-
-                ImGui::Dummy(ImVec2(node_width, 0.f));
                 {
-                    ImNodes::BeginInputAttribute(node.ui.output.r);
-                    const float label_width = ImGui::CalcTextSize("r").x;
-                    ImGui::TextUnformatted("r");
-                    if (graph_.num_edges_from_node(node.ui.output.r) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.output.r).value, 0.01f, 0.f, 1.0f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
+                    Output::RenderNode(node, graph_);
                 }
-
-                ImGui::Spacing();
-
+                break;
+            case UiNodeType::input_float:
                 {
-                    ImNodes::BeginInputAttribute(node.ui.output.g);
-                    const float label_width = ImGui::CalcTextSize("g").x;
-                    ImGui::TextUnformatted("g");
-                    if (graph_.num_edges_from_node(node.ui.output.g) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.output.g).value, 0.01f, 0.f, 1.f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
+                    InputFloat::RenderNode(node, graph_);
                 }
-
-                ImGui::Spacing();
-
-                {
-                    ImNodes::BeginInputAttribute(node.ui.output.b);
-                    const float label_width = ImGui::CalcTextSize("b").x;
-                    ImGui::TextUnformatted("b");
-                    if (graph_.num_edges_from_node(node.ui.output.b) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel", &graph_.node(node.ui.output.b).value, 0.01f, 0.f, 1.0f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
-                }
-                ImNodes::EndNode();
-                ImNodes::PopColorStyle();
-                ImNodes::PopColorStyle();
-                ImNodes::PopColorStyle();
-            }
-            break;
+                break;
             case UiNodeType::sine:
-            {
-                const float node_width = 100.0f;
-                ImNodes::BeginNode(node.id);
-
-                ImNodes::BeginNodeTitleBar();
-                ImGui::TextUnformatted("sine");
-                ImNodes::EndNodeTitleBar();
-
                 {
-                    ImNodes::BeginInputAttribute(node.ui.sine.input);
-                    const float label_width = ImGui::CalcTextSize("number").x;
-                    ImGui::TextUnformatted("number");
-                    if (graph_.num_edges_from_node(node.ui.sine.input) == 0ull)
-                    {
-                        ImGui::SameLine();
-                        ImGui::PushItemWidth(node_width - label_width);
-                        ImGui::DragFloat(
-                            "##hidelabel",
-                            &graph_.node(node.ui.sine.input).value,
-                            0.01f,
-                            0.f,
-                            1.0f);
-                        ImGui::PopItemWidth();
-                    }
-                    ImNodes::EndInputAttribute();
+                    SineNode::RenderNode(node, graph_);
                 }
-
-                ImGui::Spacing();
-
+                break;
+            case UiNodeType::cos:
                 {
-                    ImNodes::BeginOutputAttribute(node.id);
-                    const float label_width = ImGui::CalcTextSize("output").x;
-                    ImGui::Indent(node_width - label_width);
-                    ImGui::TextUnformatted("output");
-                    ImNodes::EndOutputAttribute();
+                    CosNode::RenderNode(node, graph_);
                 }
-
-                ImNodes::EndNode();
-            }
-            break;
+                break;
             case UiNodeType::time:
-            {
-                ImNodes::BeginNode(node.id);
-
-                ImNodes::BeginNodeTitleBar();
-                ImGui::TextUnformatted("time");
-                ImNodes::EndNodeTitleBar();
-
-                ImNodes::BeginOutputAttribute(node.id);
-                ImGui::Text("output");
-                ImNodes::EndOutputAttribute();
-
-                ImNodes::EndNode();
-            }
-            break;
+                {
+                    TimeNode::RenderNode(node, graph_);
+                }
+                break;
             }
         }
 
@@ -376,6 +205,8 @@ namespace ProEngine
                     }
                     graph_.insert_edge(start_attr, end_attr);
                 }
+
+                PENGINE_CORE_INFO("{0}", valid_link ? "Link created" : "Link removed");
             }
         }
 
@@ -412,7 +243,8 @@ namespace ProEngine
                 {
                     graph_.erase_node(node_id);
                     auto iter = std::find_if(
-                        nodes_.begin(), nodes_.end(), [node_id](const UiNode& node) -> bool {
+                        nodes_.begin(), nodes_.end(), [node_id](const UiNode& node) -> bool
+                        {
                             return node.id == node_id;
                         });
                     // Erase any additional internal nodes
@@ -433,7 +265,7 @@ namespace ProEngine
                         root_node_id_ = -1;
                         break;
                     case UiNodeType::sine:
-                        graph_.erase_node(iter->ui.sine.input);
+                        SineNode::DeleteNode(graph_, iter);
                         break;
                     default:
                         break;
@@ -460,38 +292,37 @@ namespace ProEngine
 
             if (ImGui::MenuItem("Add"))
             {
-                const Node value(NodeType::value, 0.f);
-                const Node op(NodeType::add);
+                Add::CreateNode(graph_, nodes_, click_pos);
+            }
 
-                UiNode ui_node;
-                ui_node.type = UiNodeType::add;
-                ui_node.ui.add.lhs = graph_.insert_node(value);
-                ui_node.ui.add.rhs = graph_.insert_node(value);
-                ui_node.id = graph_.insert_node(op);
+            if (ImGui::MenuItem("Sine"))
+            {
+                SineNode::CreateNode(graph_, nodes_, click_pos);
+            }
 
-                graph_.insert_edge(ui_node.id, ui_node.ui.add.lhs);
-                graph_.insert_edge(ui_node.id, ui_node.ui.add.rhs);
-
-                nodes_.push_back(ui_node);
-                ImNodes::SetNodeScreenSpacePos(ui_node.id, click_pos);
+            if (ImGui::MenuItem("Cos"))
+            {
+                CosNode::CreateNode(graph_, nodes_, click_pos);
             }
 
             if (ImGui::MenuItem("Multiply"))
             {
-                const Node value(NodeType::value, 0.f);
-                const Node op(NodeType::multiply);
+                Multiply::CreateNode(graph_, nodes_, click_pos);
+            }
 
-                UiNode ui_node;
-                ui_node.type = UiNodeType::multiply;
-                ui_node.ui.add.lhs = graph_.insert_node(value);
-                ui_node.ui.add.rhs = graph_.insert_node(value);
-                ui_node.id = graph_.insert_node(op);
+            if (ImGui::MenuItem("Time"))
+            {
+                TimeNode::CreateNode(graph_, nodes_, click_pos);
+            }
 
-                graph_.insert_edge(ui_node.id, ui_node.ui.add.lhs);
-                graph_.insert_edge(ui_node.id, ui_node.ui.add.rhs);
+            if (ImGui::MenuItem("InputFloat"))
+            {
+                InputFloat::CreateNode(graph_, nodes_, click_pos);
+            }
 
-                nodes_.push_back(ui_node);
-                ImNodes::SetNodeScreenSpacePos(ui_node.id, click_pos);
+            if (ImGui::MenuItem("Output"))
+            {
+                Output::CreateNode(graph_, nodes_, click_pos);
             }
             ImGui::EndPopup();
         }
