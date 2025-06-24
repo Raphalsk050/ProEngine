@@ -343,6 +343,17 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/AnimatedPopup.h
             Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h
+            Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/SineNode.cpp
+            Core/Editor/Frame/MaterialEditor/Nodes/AddNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/AddNode.cpp
+            Core/Editor/Frame/MaterialEditor/Nodes/CosNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/CosNode.cpp
+            Core/Editor/Frame/MaterialEditor/Nodes/InputFloat.h
+            Core/Editor/Frame/MaterialEditor/Nodes/OutputNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/TimeNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/MultiplyNode.h
+            Core/Editor/Frame/MaterialEditor/Nodes/MultiplyNode.cpp
             Core/Editor/Editor.h
     )
     target_link_libraries(PEEditor PUBLIC
@@ -375,6 +386,7 @@ target_link_libraries(PEApplication PUBLIC
         PELayer
         PEWindow
         PEScene
+        imnodes
 )
 target_include_directories(PEApplication PUBLIC
         ${imgui_DIR}

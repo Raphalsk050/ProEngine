@@ -1,23 +1,34 @@
 #include "NodeEditor.h"
-
-#include "imnodes.h"
+#include "Core/Input/Input.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/AddNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/MultiplyNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/TimeNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/CosNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/InputFloat.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/OutputNode.h"
+#include "Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h"
+#include <spdlog/fmt/bundled/args.h>
 
 namespace ProEngine
 {
     NodeEditor::NodeEditor()
+        : root_node_id_(0), minimap_location_(0), current_time_seconds_(0), opened_(false)
     {
-        debug_name_ = "Node Editor";
     }
 
-    NodeEditor::~NodeEditor()
-    {
-    }
+    NodeEditor::~NodeEditor() = default;
 
     void NodeEditor::OnAttach()
     {
         Layer::OnAttach();
         ImNodes::CreateContext();
-        SetupDemoGraph();
+        ImNodesIO& imnodes_io = ImNodes::GetIO();
+        ImGuiIO& imgui_io = ImGui::GetIO();
+        imnodes_io.LinkDetachWithModifierClick.Modifier     = &imgui_io.KeyCtrl;
+        imnodes_io.MultipleSelectModifier.Modifier          = &imgui_io.KeyShift;
+        imnodes_io.EmulateThreeButtonMouse.Modifier        = &imgui_io.KeyAlt;
+        // Cria nó de saída raiz
+        root_node_id_ = Output::CreateNode(graph_, nodes_, ImVec2(0, 0));
     }
 
     void NodeEditor::OnDetach()
@@ -28,151 +39,201 @@ namespace ProEngine
     void NodeEditor::OnUpdate(Timestep ts)
     {
         Layer::OnUpdate(ts);
+        current_time_seconds_ = Time::GetTime();
     }
 
     void NodeEditor::OnImGuiRender()
     {
         Layer::OnImGuiRender();
-        RenderNodeEditor();
+        if (!opened_)
+            return;
+
+        SetupWindow();
+        if (ImGui::Begin("Node Editor", &opened_))
+        {
+            RenderNodeEditor();
+            ImGui::End();
+        }
+
+        // Janela de saída de cor
+        const ImU32 color = (root_node_id_ != -1)
+            ? Evaluate(graph_, root_node_id_)
+            : IM_COL32(255, 20, 147, 255);
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, color);
+        ImGui::SetNextWindowSize(ImVec2(100, 100));
+        if (ImGui::Begin("output color"))
+        {
+            ImGui::End();
+        }
+        ImGui::PopStyleColor();
     }
 
     void NodeEditor::OnEvent(Event& event)
     {
         Layer::OnEvent(event);
+        EventDispatcher dispatcher(event);
+        dispatcher.Dispatch<KeyPressedEvent>(PENGINE_BIND_EVENT_FN(NodeEditor::OnKeyPressed));
+        dispatcher.Dispatch<KeyReleasedEvent>(PENGINE_BIND_EVENT_FN(NodeEditor::OnKeyReleased));
     }
 
-    void NodeEditor::AddNode(const std::string& name, const std::vector<std::string>& inputs, const std::vector<std::string>& outputs)
+    void NodeEditor::Open()  { opened_ = true; }
+    void NodeEditor::Close() { opened_ = false; }
+    void NodeEditor::ToggleWindow() { opened_ = !opened_; }
+
+    bool NodeEditor::OnKeyPressed(KeyPressedEvent& e)
     {
-        ImVec2 mouse_pos = ImVec2(mouse_relative_position_);
-        MaterialNode node;
-        node.id = current_node_id_id_++;
-        node.name = name;
-        node.inputs = inputs;
-        node.outputs = outputs;
-        node.position = mouse_pos;
-        AddNode(node);
+        if (!e.IsRepeat())
+            key_states_[e.GetKeyCode()] = true;
+        return false;
     }
 
-    void NodeEditor::AddNode(const MaterialNodeType& node_type)
+    bool NodeEditor::OnKeyReleased(KeyReleasedEvent& e)
     {
-        auto mouse_pos = ImVec2(mouse_relative_position_);
-        MaterialNode node;
-        node.id = current_node_id_id_++;
-        node.name = node_type.node_name;
-        node.inputs = node_type.inputs;
-        node.outputs = node_type.outputs;
-        node.position = mouse_pos;
-        AddNode(node);
-    }
-
-    void NodeEditor::AddNode(const MaterialNode& node)
-    {
-        graph_.nodes.push_back(node);
-        ImNodes::SetNodeGridSpacePos(node.id, node.position);
+        key_states_[e.GetKeyCode()] = false;
+        return false;
     }
 
     void NodeEditor::RenderNodeEditor()
     {
-        ImGui::Begin("Material Editor");
-
         ImNodes::BeginNodeEditor();
-        window_position_ = ImGui::GetWindowPos();
-        mouse_absolute_position_ = ImGui::GetMousePos();
-        mouse_relative_position_ = ImVec2(mouse_absolute_position_.x - window_position_.x, mouse_absolute_position_.y - window_position_.y);
 
-        // rendering a single node
-        for (auto& node : graph_.nodes)
+        // Pop-up de contexto
+        const bool open_popup = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)
+            && ImNodes::IsEditorHovered()
+            && key_states_[Key::A];
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8.f, 8.f));
+        if (!ImGui::IsAnyItemHovered() && open_popup)
+            ImGui::OpenPopup("EditorOptions");
+        SetupPopup();
+        ImGui::PopStyleVar();
+
+        // Renderiza cada nó
+        for (const UiNode& node : nodes_)
         {
-            ImNodes::BeginNode(node.id);
-
-            ImNodes::BeginNodeTitleBar();
-            ImGui::TextUnformatted(node.name.c_str());
-            ImNodes::EndNodeTitleBar();
-
-            for (const auto& input : node.inputs)
+            switch (node.type)
             {
-                ImNodes::BeginInputAttribute(std::hash<std::string>{}(input + std::to_string(node.id)));
-                ImGui::Text("%s", input.c_str());
-                ImNodes::EndInputAttribute();
+                case UiNodeType::add:         Add::RenderNode(node, graph_); break;
+                case UiNodeType::multiply:    Multiply::RenderNode(node, graph_); break;
+                case UiNodeType::output:      Output::RenderNode(node, graph_); break;
+                case UiNodeType::input_float: InputFloat::RenderNode(node, graph_); break;
+                case UiNodeType::sine:        SineNode::RenderNode(node, graph_); break;
+                case UiNodeType::cos:         CosNode::RenderNode(node, graph_); break;
+                case UiNodeType::time:        TimeNode::RenderNode(node, graph_); break;
             }
-
-            for (const auto& output : node.outputs)
-            {
-                ImNodes::BeginOutputAttribute(std::hash<std::string>{}(output + std::to_string(node.id)));
-                ImGui::Text("%s", output.c_str());
-                ImNodes::EndOutputAttribute();
-            }
-
-            ImNodes::EndNode();
         }
 
+        // Renderiza links visíveis
+        for (const auto& edge : graph_.edges())
+        {
+            if (graph_.node(edge.from).type != NodeType::value)
+                continue;
+            ImNodes::Link(edge.id, edge.from, edge.to);
+        }
+
+        ImNodes::MiniMap(0.2f, minimap_location_);
         ImNodes::EndNodeEditor();
 
-        if (ImGui::IsItemHovered() && ImGui::IsMouseReleased(ImGuiMouseButton_Right))
-        {
-            ImGui::ClosePopupsOverWindow(ImGui::GetCurrentWindow(), true);
-            ImGui::OpenPopup("NodeEditorContextMenu");
-        }
+        CreateNodeLinks();
+        DeleteNodes();
+    }
 
-        if (ImGui::BeginPopup("NodeEditorContextMenu"))
+    void NodeEditor::SetupWindow()
+    {
+        ImGui::SetNextWindowSizeConstraints(
+            default_window_size_,
+            ImVec2(FLT_MAX, FLT_MAX)
+        );
+    }
+
+    void NodeEditor::SetupPopup()
+    {
+        if (!ImGui::BeginPopup("EditorOptions"))
+            return;
+        const ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
+
+        if (ImGui::MenuItem("Add"))      Add::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Sine"))     SineNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Cos"))      CosNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Multiply")) Multiply::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Time"))     TimeNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("InputFloat"))InputFloat::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Output"))   Output::CreateNode(graph_, nodes_, click_pos);
+        ImGui::EndPopup();
+    }
+
+    void NodeEditor::CreateNodeLinks()
+    {
+        int start_attr, end_attr;
+        if (ImNodes::IsLinkCreated(&start_attr, &end_attr))
         {
-            if (ImGui::MenuItem("Add Texture2D Node"))
+            auto start_type = graph_.node(start_attr).type;
+            auto end_type   = graph_.node(end_attr).type;
+            bool valid_link = (start_type != end_type);
+            if (valid_link)
             {
-                AddNode(Texture2DNode());
+                if (start_type != NodeType::value)
+                    std::swap(start_attr, end_attr);
+                graph_.insert_edge(start_attr, end_attr);
             }
-            if (ImGui::MenuItem("Add Multiply Node"))
-            {
-                AddNode(MultiplyNode());
-            }
-            if (ImGui::MenuItem("Add LitMaster Node"))
-            {
-                AddNode(LitMasterNode());
-            }
-            ImGui::EndPopup();
+            PENGINE_CORE_INFO("{0}", valid_link ? "Link created" : "Invalid link");
         }
-
-        ImGui::End();
     }
 
-    void NodeEditor::SetupDemoGraph()
+    void NodeEditor::DeleteNodes()
     {
-        AddNode(Texture2DNode());
-        AddNode(MultiplyNode());
-        AddNode(LitMasterNode());
-    }
-
-    void NodeEditor::Open()
-    {
-        opened_ = true;
-    }
-
-    void NodeEditor::Close()
-    {
-        opened_ = false;
-    }
-
-    void NodeEditor::ToggleWindow()
-    {
-        if (opened_)
+        // 1) Remoção por seleção de links
+        int num_selected_links = ImNodes::NumSelectedLinks();
+        if (num_selected_links > 0 && key_states_[Key::X])
         {
-            Close();
+            std::vector<int> selected_links(num_selected_links);
+            ImNodes::GetSelectedLinks(selected_links.data());
+            for (int edge_id : selected_links)
+            {
+                if (HasEdge(edge_id))
+                    graph_.erase_edge(edge_id);
+            }
         }
-        else
+        // 2) Remoção por desconexão padrão
+        int destroyed_link_id;
+        if (ImNodes::IsLinkDestroyed(&destroyed_link_id))
         {
-            Open();
+            if (HasEdge(destroyed_link_id))
+                graph_.erase_edge(destroyed_link_id);
         }
-    }
 
-    // Shader generation (simplified):
-    std::string NodeEditor::GenerateShaderFromGraph(const MaterialGraph& graph)
-    {
-        // This function would resolve connections and topologically sort nodes,
-        // then output GLSL code per node
-        std::string shader = "#version 410 core\n";
-        shader += "out vec4 FragColor;\nvoid main() {\n";
-        shader += "    vec3 baseColor = vec3(1.0);\n"; // Placeholder
-        shader += "    FragColor = vec4(baseColor, 1.0);\n";
-        shader += "}";
-        return shader;
+        // 3) Remoção de nós selecionados
+        int num_selected_nodes = ImNodes::NumSelectedNodes();
+        if (num_selected_nodes > 0 && key_states_[Key::X])
+        {
+            std::vector<int> selected_nodes(num_selected_nodes);
+            ImNodes::GetSelectedNodes(selected_nodes.data());
+            for (int node_id : selected_nodes)
+            {
+                auto iter = std::find_if(
+                    nodes_.begin(), nodes_.end(),
+                    [node_id](const UiNode& n) { return n.id == node_id; }
+                );
+                if (iter == nodes_.end())
+                {
+                    PENGINE_CORE_WARN("Trying to delete a node that doesn't exist: {}", node_id);
+                    continue;
+                }
+                // Deleção específica por tipo
+                switch (iter->type)
+                {
+                    case UiNodeType::add:         Add::DeleteNode(graph_, iter); break;
+                    case UiNodeType::multiply:    Multiply::DeleteNode(graph_, iter); break;
+                    case UiNodeType::sine:        SineNode::DeleteNode(graph_, iter); break;
+                    case UiNodeType::cos:         CosNode::DeleteNode(graph_, iter); break;
+                    case UiNodeType::time:        TimeNode::DeleteNode(graph_, iter); break;
+                    case UiNodeType::input_float: InputFloat::DeleteNode(graph_, iter); break;
+                    case UiNodeType::output:      Output::DeleteNode(graph_, iter);
+                                                  root_node_id_ = -1; break;
+                    default: break;
+                }
+                graph_.erase_node(node_id);
+                nodes_.erase(iter);
+            }
+        }
     }
 }

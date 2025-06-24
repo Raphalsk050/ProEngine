@@ -16,7 +16,6 @@ Camera3D::Camera3D(float fov, float aspectRatio, float nearClip, float farClip)
 {
     RecalculateViewMatrix();
     RecalculateFrustum();
-
     SetViewport(Application::Get().GetWindow().GetWidth(),Application::Get().GetWindow().GetHeight());
 }
 

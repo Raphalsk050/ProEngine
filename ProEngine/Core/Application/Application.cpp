@@ -119,8 +119,8 @@ namespace ProEngine
 #ifdef PROENGINE_ENABLE_EDITOR
         imgui_layer_ = new ImGuiLayer();
 
-        main_editor_interface_ = new MainEditorInterface();
         PushLayer(imgui_layer_);
+        main_editor_interface_ = new MainEditorInterface();
         PushLayer(main_editor_interface_);
 
         RegisterEngineCommands();
