@@ -32,5 +32,10 @@ namespace ProEngine
 
             ImNodes::EndNode();
         }
+
+        static void inline DeleteNode(const Graph<Node>& graph, __wrap_iter<UiNode*> iter)
+        {
+
+        }
     };
 }

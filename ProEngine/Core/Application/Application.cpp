@@ -120,15 +120,8 @@ namespace ProEngine
         imgui_layer_ = new ImGuiLayer();
 
         PushLayer(imgui_layer_);
-        //main_editor_interface_ = new MainEditorInterface();
-        //PushLayer(main_editor_interface_);
-
-
-        //TODO: just for test
-        NodeEditor* editor = new NodeEditor();
-        PushLayer(editor);
-        editor->ToggleWindow();
-
+        main_editor_interface_ = new MainEditorInterface();
+        PushLayer(main_editor_interface_);
 
         RegisterEngineCommands();
 #endif

@@ -97,5 +97,10 @@ namespace ProEngine
             ImNodes::PopColorStyle();
             ImNodes::PopColorStyle();
         }
+
+        static void inline DeleteNode(const Graph<Node>& graph, __wrap_iter<UiNode*> iter)
+        {
+
+        }
     };
 }

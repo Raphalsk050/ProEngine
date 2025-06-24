@@ -5,6 +5,9 @@
 #include "MaterialNodeTypes.h"
 #include "Core/Layer/Layer.h"
 #include "Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h"
+#include "Nodes/AddNode.h"
+#include "Nodes/CosNode.h"
+#include "Nodes/MultiplyNode.h"
 
 
 namespace ProEngine
@@ -97,6 +100,13 @@ namespace ProEngine
     class NodeEditor : public Layer
     {
     public:
+        inline bool HasEdge(int id) const
+        {
+            for (auto& e : graph_.edges())
+                if (e.id == id) return true;
+            return false;
+        }
+
         inline ImU32 Evaluate(const Graph<Node>& graph, const int root_node) const
         {
             std::stack<int> postorder;
@@ -114,25 +124,22 @@ namespace ProEngine
                 {
                 case NodeType::add:
                     {
-                        const float rhs = value_stack.top();
-                        value_stack.pop();
-                        const float lhs = value_stack.top();
-                        value_stack.pop();
-                        value_stack.push(lhs + rhs);
+                        Add::Evaluate(value_stack);
                     }
                     break;
                 case NodeType::multiply:
                     {
-                        const float rhs = value_stack.top();
-                        value_stack.pop();
-                        const float lhs = value_stack.top();
-                        value_stack.pop();
-                        value_stack.push(rhs * lhs);
+                        Multiply::Evaluate(value_stack);
                     }
                     break;
                 case NodeType::sine:
                     {
                         SineNode::Evaluate(value_stack);
+                    }
+                    break;
+                case NodeType::cos:
+                    {
+                        CosNode::Evaluate(value_stack);
                     }
                     break;
                 case NodeType::time:
@@ -194,6 +201,8 @@ namespace ProEngine
         void RenderNodeEditor();
         void SetupWindow();
         void SetupPopup();
+        void CreateNodeLinks();
+        void DeleteNodes();
         bool OnKeyPressed(KeyPressedEvent& e);
         bool OnKeyReleased(KeyReleasedEvent& e);
     };
