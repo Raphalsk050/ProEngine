@@ -106,6 +106,10 @@ namespace ProEngine
 
     void HierarchyInspector::DrawEntity(EntityHandle& entity)
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 7));
+        ImGuiStyle& style = ImGui::GetStyle();
+        // ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing,  ImVec2( style.ItemSpacing.x, 6 ));
+
         std::string name = "Entity";
         const auto& tag_component = entity.GetComponent<TagComponent>();
         name = tag_component.tag;
@@ -116,6 +120,7 @@ namespace ProEngine
         bool has_children = transform.first_child != entt::null;
 
         ImGuiTreeNodeFlags node_flags = flags_;
+        node_flags |= ImGuiTreeNodeFlags_FramePadding;
 
         bool is_selected = (selected_entity_ == entity.Raw());
         if (is_selected)
@@ -217,6 +222,7 @@ namespace ProEngine
 
             ImGui::TreePop();
         }
+        ImGui::PopStyleVar(1);
     }
 
     void HierarchyInspector::DrawEntityPropertiesWindow()

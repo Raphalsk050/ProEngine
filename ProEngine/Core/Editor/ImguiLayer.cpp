@@ -54,6 +54,7 @@ namespace ProEngine
         // Setup Dear ImGui style
         // ImGui::StyleColorsDark();
         ImGui::StyleColorsClassic();
+        SetEngineColors();
 
         ImGuiStyle& style = ImGui::GetStyle();
 
@@ -203,10 +204,12 @@ namespace ProEngine
         }
     }
 
-    void ImGuiLayer::SetDarkThemeColors()
+    void ImGuiLayer::SetEngineColors()
     {
         auto& colors = ImGui::GetStyle().Colors;
-        colors[ImGuiCol_WindowBg] = ImVec4{0.1f, 0.105f, 0.11f, 1.0f};
+        colors[ImGuiCol_WindowBg] = ImVec4{0.157, 0.157, 0.161, 1.0f};
+
+        colors[ImGuiCol_MenuBarBg] = ImVec4{0.02f, 0.02f, 0.02f, 1.0f};
 
         // Headers
         colors[ImGuiCol_Header] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
@@ -214,8 +217,8 @@ namespace ProEngine
         colors[ImGuiCol_HeaderActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
         // Buttons
-        colors[ImGuiCol_Button] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
-        colors[ImGuiCol_ButtonHovered] = ImVec4{0.3f, 0.305f, 0.31f, 1.0f};
+        colors[ImGuiCol_Button] = ImVec4{0, 0.404, 0.635, 1.0f};
+        colors[ImGuiCol_ButtonHovered] = ImVec4{0, 0.52, 0.6, 1.0f};
         colors[ImGuiCol_ButtonActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
 
         // Frame BG
@@ -231,9 +234,19 @@ namespace ProEngine
         colors[ImGuiCol_TabUnfocusedActive] = ImVec4{0.2f, 0.205f, 0.21f, 1.0f};
 
         // Title
-        colors[ImGuiCol_TitleBg] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
-        colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+        colors[ImGuiCol_TitleBg] = ImVec4{0.1f, 0.1f, 0.1f, 1.0f};
+        colors[ImGuiCol_TitleBgActive] = ImVec4{0.15f, 0.15f, 0.15f, 1.0f};
         colors[ImGuiCol_TitleBgCollapsed] = ImVec4{0.15f, 0.1505f, 0.151f, 1.0f};
+
+        //buttons
+        ImGuiStyle& style = ImGui::GetStyle();
+        style.FrameRounding = 5.0f;
+        style.FrameBorderSize = 0.0f;
+        style.FramePadding = ImVec2(7, 7);
+        style.PopupRounding = 4.0f;
+        style.ButtonTextAlign = ImVec2(0.5, 0.5);
+        style.WindowTitleAlign = ImVec2(0.5, 0.5);
+        style.ItemSpacing.y = 2.0f;
     }
 
     uint32_t ImGuiLayer::GetActiveWidgetID() const { return GImGui->ActiveId; }

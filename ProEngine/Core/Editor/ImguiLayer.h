@@ -20,7 +20,7 @@ namespace ProEngine {
 
         void BlockEvents(bool block) { block_events_ = block; }
 
-        void SetDarkThemeColors();
+        void SetEngineColors();
 
         void ShowMetricsWindow();
 
