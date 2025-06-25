@@ -4,16 +4,19 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-24.04 [Beta]
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y ninja-build
+          sudo brew update
+          sudo brew install -y ninja-build
           chmod +x setup.sh
           ./setup.sh
       - name: Build
