@@ -31,12 +31,12 @@ The `setup.sh` script installs OpenGL development packages and other system depe
    ```bash
    ./build.sh
    ```
-   The script creates the `build` directory, generates files with CMake (using Ninja) and compiles with `clang++`. The default build is `Debug` and enables the editor (`PROENGINE_ENABLE_EDITOR=ON`).
+   The script creates the `build` directory, generates files with CMake (using Ninja) and chooses the compiler automatically. On Linux (including GitHub Actions) it uses `g++`, while on macOS it falls back to `clang++`. The default build is `Debug` and enables the editor (`PROENGINE_ENABLE_EDITOR=ON`).
 3. The resulting binaries will be placed under `build/`.
 
 If you wish to configure manually, run the equivalent commands:
 ```bash
-cmake -G Ninja -S . -B build -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Debug -DPROENGINE_ENABLE_EDITOR=ON
+cmake -G Ninja -S . -B build -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Debug -DPROENGINE_ENABLE_EDITOR=ON
 cmake --build build
 ```
 
