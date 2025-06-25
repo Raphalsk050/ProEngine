@@ -68,7 +68,7 @@ namespace ProEngine
         value_stack.push(res);
     }
 
-    void SineNode::DeleteNode(Graph<Node>& graph, __wrap_iter<UiNode*> ui_node_iter)
+    void SineNode::DeleteNode(Graph<Node>& graph, std::vector<UiNode>::iterator ui_node_iter)
     {
         graph.erase_node(ui_node_iter->ui.sine.input);
     }

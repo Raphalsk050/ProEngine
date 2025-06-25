@@ -83,7 +83,7 @@ namespace ProEngine
         value_stack.push(lhs + rhs);
     }
 
-    void Add::DeleteNode(Graph<Node>& graph, __wrap_iter<UiNode*> ui_node_iter)
+    void Add::DeleteNode(Graph<Node>& graph, std::vector<UiNode>::iterator ui_node_iter)
     {
         graph.erase_node(ui_node_iter->ui.add.lhs);
         graph.erase_node(ui_node_iter->ui.add.rhs);

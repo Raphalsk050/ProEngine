@@ -1,6 +1,6 @@
 #pragma once
-#include <stdio.h>
-#include <iterator>
+#include <cstdio>
+
 #include "imnodes.h"
 #include "Core/Editor/Frame/MaterialEditor/MaterialNodeTypes.h"
 #include "Core/Editor/Frame/MaterialEditor/NodeEditor.h"
@@ -63,7 +63,7 @@ namespace ProEngine
             ImNodes::EndNode();
         }
 
-        static void inline DeleteNode(const Graph<Node>& graph, __wrap_iter<UiNode*> iter)
+        static void inline DeleteNode(const Graph<Node>& graph, std::vector<UiNode>::iterator iter)
         {
 
         }
