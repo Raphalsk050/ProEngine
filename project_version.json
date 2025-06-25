@@ -1,13 +1,13 @@
 {
   "projectName": "ProEngine",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "git": {
-    "commit": "a29b5882b",
-    "tag": "v0.0.1",
+    "commit": "0726e8444",
+    "tag": "v0.0.2",
     "dirty": false
   },
   "build": {
-    "timestamp": "2025-06-25T14:42:36-0300",
+    "timestamp": "2025-06-25T14:48:07-0300",
     "platform": "Darwin-arm64"
   }
 }
