@@ -24,11 +24,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ninja-build
-          chmod +x setup.sh
-          ./setup.sh
+          chmod +x ./Scripts/setup.sh
+          ./Scripts/setup.sh
 
       - name: Compile
-        run: ./build.sh
+        run: ./Scripts/build.sh
 
       - name: Package artifact
         run: |
