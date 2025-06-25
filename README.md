@@ -21,3 +21,10 @@ You can enable or disable debugging tools and engine features via `#define` dire
 
 ### Engine Preview
 ![EnginePreview.png](Images/EnginePreview.png)
+
+## 📚 Wiki
+The wiki pages are located in `docs/wiki`:
+- [Getting Started](docs/wiki/Getting-Started.md)
+- [Dependencies and Build](docs/wiki/Dependencies-and-Build.md)
+- [Engine Modules](docs/wiki/Engine-Modules.md)
+- [Customization](docs/wiki/Customization.md)
