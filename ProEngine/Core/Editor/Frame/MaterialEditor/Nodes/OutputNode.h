@@ -1,7 +1,7 @@
 #pragma once
-#include <_stdio.h>
-
+#include <stdio.h>
 #include "imnodes.h"
+#include <iterator>
 #include "Core/Editor/Frame/MaterialEditor/MaterialNodeTypes.h"
 #include "Core/Editor/Frame/MaterialEditor/NodeEditor.h"
 

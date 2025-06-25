@@ -1,5 +1,6 @@
 #pragma once
 #include "imnodes.h"
+#include <iterator>
 #include "Core/Editor/Frame/MaterialEditor/MaterialNodeTypes.h"
 
 class NodeEditor;
