@@ -24,9 +24,9 @@ namespace ProEngine
         ImNodes::CreateContext();
         ImNodesIO& imnodes_io = ImNodes::GetIO();
         ImGuiIO& imgui_io = ImGui::GetIO();
-        imnodes_io.LinkDetachWithModifierClick.Modifier     = &imgui_io.KeyCtrl;
-        imnodes_io.MultipleSelectModifier.Modifier          = &imgui_io.KeyShift;
-        imnodes_io.EmulateThreeButtonMouse.Modifier        = &imgui_io.KeyAlt;
+        imnodes_io.LinkDetachWithModifierClick.Modifier = &imgui_io.KeyCtrl;
+        imnodes_io.MultipleSelectModifier.Modifier = &imgui_io.KeyShift;
+        imnodes_io.EmulateThreeButtonMouse.Modifier = &imgui_io.KeyAlt;
         // Cria nó de saída raiz
         root_node_id_ = Output::CreateNode(graph_, nodes_, ImVec2(0, 0));
     }
@@ -54,18 +54,6 @@ namespace ProEngine
             RenderNodeEditor();
             ImGui::End();
         }
-
-        // Janela de saída de cor
-        const ImU32 color = (root_node_id_ != -1)
-            ? Evaluate(graph_, root_node_id_)
-            : IM_COL32(255, 20, 147, 255);
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, color);
-        ImGui::SetNextWindowSize(ImVec2(100, 100));
-        if (ImGui::Begin("output color"))
-        {
-            ImGui::End();
-        }
-        ImGui::PopStyleColor();
     }
 
     void NodeEditor::OnEvent(Event& event)
@@ -76,7 +64,7 @@ namespace ProEngine
         dispatcher.Dispatch<KeyReleasedEvent>(PENGINE_BIND_EVENT_FN(NodeEditor::OnKeyReleased));
     }
 
-    void NodeEditor::Open()  { opened_ = true; }
+    void NodeEditor::Open() { opened_ = true; }
     void NodeEditor::Close() { opened_ = false; }
     void NodeEditor::ToggleWindow() { opened_ = !opened_; }
 
@@ -96,6 +84,22 @@ namespace ProEngine
     void NodeEditor::RenderNodeEditor()
     {
         ImNodes::BeginNodeEditor();
+        int margin = 100;
+        const ImU32 color = (root_node_id_ != -1)
+                                ? Evaluate(graph_, root_node_id_)
+                                : IM_COL32(255, 20, 147, 255);
+        ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowSize().x - margin * 0.85, ImGui::GetWindowSize().y - margin));
+        ImGui::BeginChild("Preview", ImVec2(300, 300), true,
+                          ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse
+                          | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus |
+                          ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoMouseInputs);
+
+        ImGui::SameLine(20);
+        ImGui::Text("Preview");
+
+        ImGui::EndChild();
+        ImGui::PopStyleColor();
 
         // Pop-up de contexto
         const bool open_popup = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)
@@ -112,13 +116,20 @@ namespace ProEngine
         {
             switch (node.type)
             {
-                case UiNodeType::add:         Add::RenderNode(node, graph_); break;
-                case UiNodeType::multiply:    Multiply::RenderNode(node, graph_); break;
-                case UiNodeType::output:      Output::RenderNode(node, graph_); break;
-                case UiNodeType::input_float: InputFloat::RenderNode(node, graph_); break;
-                case UiNodeType::sine:        SineNode::RenderNode(node, graph_); break;
-                case UiNodeType::cos:         CosNode::RenderNode(node, graph_); break;
-                case UiNodeType::time:        TimeNode::RenderNode(node, graph_); break;
+            case UiNodeType::add: Add::RenderNode(node, graph_);
+                break;
+            case UiNodeType::multiply: Multiply::RenderNode(node, graph_);
+                break;
+            case UiNodeType::output: Output::RenderNode(node, graph_);
+                break;
+            case UiNodeType::input_float: InputFloat::RenderNode(node, graph_);
+                break;
+            case UiNodeType::sine: SineNode::RenderNode(node, graph_);
+                break;
+            case UiNodeType::cos: CosNode::RenderNode(node, graph_);
+                break;
+            case UiNodeType::time: TimeNode::RenderNode(node, graph_);
+                break;
             }
         }
 
@@ -151,13 +162,13 @@ namespace ProEngine
             return;
         const ImVec2 click_pos = ImGui::GetMousePosOnOpeningCurrentPopup();
 
-        if (ImGui::MenuItem("Add"))      Add::CreateNode(graph_, nodes_, click_pos);
-        if (ImGui::MenuItem("Sine"))     SineNode::CreateNode(graph_, nodes_, click_pos);
-        if (ImGui::MenuItem("Cos"))      CosNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Add")) Add::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Sine")) SineNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Cos")) CosNode::CreateNode(graph_, nodes_, click_pos);
         if (ImGui::MenuItem("Multiply")) Multiply::CreateNode(graph_, nodes_, click_pos);
-        if (ImGui::MenuItem("Time"))     TimeNode::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Time")) TimeNode::CreateNode(graph_, nodes_, click_pos);
         if (ImGui::MenuItem("InputFloat"))InputFloat::CreateNode(graph_, nodes_, click_pos);
-        if (ImGui::MenuItem("Output"))   Output::CreateNode(graph_, nodes_, click_pos);
+        if (ImGui::MenuItem("Output")) Output::CreateNode(graph_, nodes_, click_pos);
         ImGui::EndPopup();
     }
 
@@ -167,7 +178,7 @@ namespace ProEngine
         if (ImNodes::IsLinkCreated(&start_attr, &end_attr))
         {
             auto start_type = graph_.node(start_attr).type;
-            auto end_type   = graph_.node(end_attr).type;
+            auto end_type = graph_.node(end_attr).type;
             bool valid_link = (start_type != end_type);
             if (valid_link)
             {
@@ -221,15 +232,22 @@ namespace ProEngine
                 // Deleção específica por tipo
                 switch (iter->type)
                 {
-                    case UiNodeType::add:         Add::DeleteNode(graph_, iter); break;
-                    case UiNodeType::multiply:    Multiply::DeleteNode(graph_, iter); break;
-                    case UiNodeType::sine:        SineNode::DeleteNode(graph_, iter); break;
-                    case UiNodeType::cos:         CosNode::DeleteNode(graph_, iter); break;
-                    case UiNodeType::time:        TimeNode::DeleteNode(graph_, iter); break;
-                    case UiNodeType::input_float: InputFloat::DeleteNode(graph_, iter); break;
-                    case UiNodeType::output:      Output::DeleteNode(graph_, iter);
-                                                  root_node_id_ = -1; break;
-                    default: break;
+                case UiNodeType::add: Add::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::multiply: Multiply::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::sine: SineNode::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::cos: CosNode::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::time: TimeNode::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::input_float: InputFloat::DeleteNode(graph_, iter);
+                    break;
+                case UiNodeType::output: Output::DeleteNode(graph_, iter);
+                    root_node_id_ = -1;
+                    break;
+                default: break;
                 }
                 graph_.erase_node(node_id);
                 nodes_.erase(iter);
