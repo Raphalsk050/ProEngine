@@ -1,7 +1,6 @@
 #pragma once
-#include <stdio.h>
+#include <cstdio>
 #include <imnodes.h>
-#include <iterator>
 
 namespace ProEngine
 {
@@ -17,6 +16,6 @@ namespace ProEngine
 
         static void Evaluate(std::stack<float>& value_stack);
 
-        static void DeleteNode(Graph<Node>& graph, __wrap_iter<UiNode*> ui_node_iter);
+        static void DeleteNode(Graph<Node>& graph, std::vector<UiNode>::iterator ui_node_iter);
     };
 }

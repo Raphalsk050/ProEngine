@@ -1,7 +1,7 @@
 #pragma once
-#include <stdio.h>
+#include <cstdio>
+
 #include "imnodes.h"
-#include <iterator>
 #include "Core/Editor/Frame/MaterialEditor/MaterialNodeTypes.h"
 #include "Core/Editor/Frame/MaterialEditor/NodeEditor.h"
 
@@ -98,7 +98,7 @@ namespace ProEngine
             ImNodes::PopColorStyle();
         }
 
-        static void inline DeleteNode(const Graph<Node>& graph, __wrap_iter<UiNode*> iter)
+        static void inline DeleteNode(const Graph<Node>& graph, std::vector<UiNode>::iterator iter)
         {
 
         }

@@ -2,22 +2,42 @@ name: Build Engine
 
 on:
   push:
+    # Trigger on pushes to the main branch
     branches: [main]
   pull_request:
+  # Trigger on any pull request
   workflow_dispatch:
+  # Allow manual workflow runs with branch selector
 
 jobs:
   build:
-    runs-on: ubuntu-24.04 [Beta]
+    name: Build
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
+          # Make sure the selected ref/branch is checked out
           ref: ${{ github.ref }}
+
       - name: Install dependencies
         run: |
-          sudo brew update
-          sudo brew install -y ninja-build
+          sudo apt-get update
+          sudo apt-get install -y ninja-build
           chmod +x setup.sh
           ./setup.sh
-      - name: Build
+
+      - name: Compile
         run: ./build.sh
+
+      - name: Package artifact
+        run: |
+          mkdir -p artifacts
+          # Replace ./build/ with the directory where your build outputs go
+          tar -czvf artifacts/engine-${{ github.run_number }}.tar.gz ./build/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-artifacts
+          path: artifacts/

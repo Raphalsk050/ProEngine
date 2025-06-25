@@ -85,7 +85,7 @@ namespace ProEngine
         value_stack.push(rhs * lhs);
     }
 
-    void Multiply::DeleteNode(Graph<Node>& graph, __wrap_iter<UiNode*> ui_node_iter)
+    void Multiply::DeleteNode(Graph<Node>& graph, std::vector<UiNode>::iterator ui_node_iter)
     {
         graph.erase_node(ui_node_iter->ui.multiply.lhs);
         graph.erase_node(ui_node_iter->ui.multiply.rhs);
