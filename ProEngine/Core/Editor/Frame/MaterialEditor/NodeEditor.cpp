@@ -7,6 +7,7 @@
 #include "Core/Editor/Frame/MaterialEditor/Nodes/InputFloat.h"
 #include "Core/Editor/Frame/MaterialEditor/Nodes/OutputNode.h"
 #include "Core/Editor/Frame/MaterialEditor/Nodes/SineNode.h"
+#include <glm.hpp>
 #include <spdlog/fmt/bundled/args.h>
 
 namespace ProEngine
@@ -14,6 +15,7 @@ namespace ProEngine
     NodeEditor::NodeEditor()
         : root_node_id_(0), minimap_location_(0), current_time_seconds_(0), opened_(false)
     {
+        preview_ = CreateRef<MaterialPreview>(preview_size_);
     }
 
     NodeEditor::~NodeEditor() = default;
@@ -21,6 +23,7 @@ namespace ProEngine
     void NodeEditor::OnAttach()
     {
         Layer::OnAttach();
+        preview_->OnAttach();
         ImNodes::CreateContext();
         ImNodesIO& imnodes_io = ImNodes::GetIO();
         ImGuiIO& imgui_io = ImGui::GetIO();
@@ -40,6 +43,7 @@ namespace ProEngine
     {
         Layer::OnUpdate(ts);
         current_time_seconds_ = Time::GetTime();
+        preview_->OnUpdate(ts);
     }
 
     void NodeEditor::OnImGuiRender()
@@ -59,6 +63,7 @@ namespace ProEngine
     void NodeEditor::OnEvent(Event& event)
     {
         Layer::OnEvent(event);
+        preview_->OnEvent(event);
         EventDispatcher dispatcher(event);
         dispatcher.Dispatch<KeyPressedEvent>(PENGINE_BIND_EVENT_FN(NodeEditor::OnKeyPressed));
         dispatcher.Dispatch<KeyReleasedEvent>(PENGINE_BIND_EVENT_FN(NodeEditor::OnKeyReleased));
@@ -84,22 +89,21 @@ namespace ProEngine
     void NodeEditor::RenderNodeEditor()
     {
         ImNodes::BeginNodeEditor();
-        int margin = 100;
+        int margin = 30;
         const ImU32 color = (root_node_id_ != -1)
                                 ? Evaluate(graph_, root_node_id_)
                                 : IM_COL32(255, 20, 147, 255);
+
+        ImVec4 color_f = ImGui::ColorConvertU32ToFloat4(color);
+        preview_->GetMaterial()->SetAlbedoColor(glm::vec4(color_f.x, color_f.y, color_f.z, color_f.w));
+
         ImGui::PushStyleColor(ImGuiCol_ChildBg, color);
-        ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowSize().x - margin * 0.85, ImGui::GetWindowSize().y - margin));
-        ImGui::BeginChild("Preview", ImVec2(300, 300), true,
-                          ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse
-                          | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoBringToFrontOnFocus |
-                          ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoMouseInputs);
-
-        ImGui::SameLine(20);
-        ImGui::Text("Preview");
-
-        ImGui::EndChild();
+        ImGui::SetNextWindowPos(ImVec2(ImGui::GetWindowSize().x + ImGui::GetWindowPos().x - preview_size_.x - margin,
+                                       ImGui::GetWindowSize().y + ImGui::GetWindowPos().y - preview_size_.y - margin));
+        ImGui::PushStyleVar(ImGuiStyleVar_ChildBorderSize, 5.0f);
+        preview_->OnImGuiRender();
         ImGui::PopStyleColor();
+        ImGui::PopStyleVar();
 
         // Pop-up de contexto
         const bool open_popup = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows)

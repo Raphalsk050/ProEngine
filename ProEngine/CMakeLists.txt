@@ -340,6 +340,8 @@ if (PROENGINE_ENABLE_EDITOR)
             Core/Editor/Frame/Viewport/Viewport.cpp
             Core/Editor/Frame/MaterialEditor/NodeEditor.h
             Core/Editor/Frame/MaterialEditor/NodeEditor.cpp
+            Core/Editor/Frame/MaterialEditor/Preview/MaterialPreview.h
+            Core/Editor/Frame/MaterialEditor/Preview/MaterialPreview.cpp
             Core/Editor/AnimatedPopup.h
             Core/Editor/SimpleAnimatedPopup.h
             Core/Editor/CommandSystem.h

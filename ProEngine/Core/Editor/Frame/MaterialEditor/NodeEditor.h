@@ -8,6 +8,7 @@
 #include "Nodes/AddNode.h"
 #include "Nodes/CosNode.h"
 #include "Nodes/MultiplyNode.h"
+#include "Preview/MaterialPreview.h"
 
 
 namespace ProEngine
@@ -191,11 +192,14 @@ namespace ProEngine
         bool opened_ = false;
         std::unordered_map<KeyCode, bool> key_states_;
         ImVec2 default_window_size_ = {400.0, 400.0};
+        ImVec2 preview_size_ = {256.0f, 256.0f};
         Graph<Node> graph_;
         std::vector<UiNode> nodes_;
         int root_node_id_;
         ImNodesMiniMapLocation minimap_location_;
         float current_time_seconds_;
+
+        Ref<class MaterialPreview> preview_;
 
     private:
         void RenderNodeEditor();
