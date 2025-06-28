@@ -154,7 +154,6 @@ Ref<Mesh> Mesh::CreateSphere(float radius, uint32_t segmentsX, uint32_t segments
   std::vector<float> vertices;
   std::vector<uint32_t> indices;
 
-  const float PI = static_cast<float>(M_PI);
 
   // Calculate vertices
   for (uint32_t y = 0; y <= segmentsY; ++y) {
@@ -241,8 +240,7 @@ Ref<Mesh> Mesh::CreateCylinder(float radius, float height, uint32_t segments) {
 
   std::vector<float> vertices;
   std::vector<uint32_t> indices;
-
-  const float PI = static_cast<float>(M_PI);
+  
   float halfHeight = height * 0.5f;
 
   // Create top and bottom center vertices

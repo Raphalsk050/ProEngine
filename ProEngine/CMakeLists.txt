@@ -8,8 +8,18 @@ if (POLICY CMP0179)
     cmake_policy(SET CMP0179 NEW)
 endif ()
 
-project(ProEngine LANGUAGES CXX)
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃               DETECÇÃO DE SISTEMA OPERACIONAL           ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+if (WIN32)
+    message(STATUS "Configuring for Windows")
+elseif (APPLE)
+    message(STATUS "Configuring for MacOS")
+elseif (UNIX)
+    message(STATUS "Configuring for Linux")
+endif()
 
+project(ProEngine LANGUAGES CXX)
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     GLOBAL CONFIGURATION                ┃
@@ -36,7 +46,6 @@ proengine_define_option(PROENGINE_ENABLE_EDITOR "Enable runtime editor module" O
 proengine_define_option(PROENGINE_DEBUG_LAYERS "Enable debug rendering for layers" OFF)
 proengine_define_option(PROENGINE_ENABLE_ASSERTS "Enable engine asserts" OFF)
 
-
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                  THIRD-PARTY CONFIGURATION              ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -53,7 +62,6 @@ set(GLFW_INSTALL OFF CACHE BOOL "" FORCE)
 # imnodes
 set(IMNODES_IMGUI_TARGET_NAME ImGui)
 
-
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                 DEPENDENCY DIRECTORY SETUP              ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -68,7 +76,6 @@ set(entt_DIR ThirdParty/entt)
 set(stbimage_DIR ThirdParty/stbimage)
 set(assimp_DIR ThirdParty/assimp)
 
-
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                 IMPORT EXTERNAL PROJECTS                ┃
 # ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
@@ -82,21 +89,9 @@ add_subdirectory(${glm_DIR})
 add_subdirectory(${entt_DIR})
 add_subdirectory(${stbimage_DIR})
 
-# Prebuilt Assimp library
-add_library(assimp SHARED IMPORTED)
-if (APPLE)
-    set_target_properties(assimp PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/macos-arm64-v6.0.2/libassimp.6.dylib)
-else()
-    set_target_properties(assimp PROPERTIES
-        IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/linux-x64-v6.0.2/libassimp.so.6)
-endif()
-target_include_directories(assimp INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/include)
-
 target_compile_definitions(ImGui PUBLIC
         IMGUI_IMPL_OPENGL_LOADER_GLAD
 )
-
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                   PLATFORM DETECTION                    ┃
@@ -109,6 +104,32 @@ elseif (UNIX)
     set(PROENGINE_PLATFORM_DEFINE PROENGINE_PLATFORM_LINUX)
 endif ()
 
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃                    SYSTEM DEPENDENCIES                   ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+find_package(OpenGL REQUIRED)
+
+# Assimp: Configuração cross-platform
+if (WIN32)
+    # No Windows, usa o Assimp do vcpkg
+    find_package(assimp CONFIG REQUIRED)
+    set(ASSIMP_TARGET assimp::assimp)
+    message(STATUS "Using vcpkg Assimp for Windows")
+else()
+    # No Linux/macOS, usa bibliotecas prebuilts
+    add_library(assimp SHARED IMPORTED)
+    if (APPLE)
+        set_target_properties(assimp PROPERTIES
+                IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/macos-arm64-v6.0.2/libassimp.6.dylib)
+        message(STATUS "Using prebuilt Assimp for macOS")
+    else()
+        set_target_properties(assimp PROPERTIES
+                IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/linux-x64-v6.0.2/libassimp.so.6)
+        message(STATUS "Using prebuilt Assimp for Linux")
+    endif()
+    target_include_directories(assimp INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/${assimp_DIR}/include)
+    set(ASSIMP_TARGET assimp)
+endif()
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃           ENGINE LIBRARY CREATOR HELPER FUNCTION        ┃
@@ -134,12 +155,6 @@ function(engine_add_library target_name)
             UNITY_BUILD_BATCH_SIZE 16
     )
 endfunction()
-
-
-# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-# ┃                  SYSTEM DEPENDENCIES                    ┃
-# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-find_package(OpenGL REQUIRED)
 
 # ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 # ┃                     ENGINE MODULES                      ┃
@@ -181,7 +196,7 @@ target_link_libraries(PERendering
         glad
         Entt
         PEPlatform
-        assimp
+        ${ASSIMP_TARGET}
 )
 target_include_directories(PERendering PUBLIC
         PECore
@@ -189,7 +204,6 @@ target_include_directories(PERendering PUBLIC
         ${glfw_DIR}/include
         ${glad_DIR}/include
         ${glm_DIR}
-        ${assimp_DIR}/include
 )
 
 # ── Core Library ──────────────────────────────────────────

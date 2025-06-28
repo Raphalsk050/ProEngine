@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 #include <memory>
 #include <utility>
-
+#include <cstdint>
 #include "Core/Types.h"
 #include "Core/Camera/Camera3D.h"
 #include "Core/Renderer/Material.h"
@@ -17,9 +17,9 @@ namespace ProEngine
     struct ComponentBase
     {
         std::string name = "Component";
-        uint id = 0;
+        uint32_t id = 0;
 
-        explicit ComponentBase(std::string name = "Component", const uint id = 0) : name(std::move(name)), id(id)
+        explicit ComponentBase(std::string name = "Component", const uint32_t id = 0) : name(std::move(name)), id(id)
         {
         }
     };

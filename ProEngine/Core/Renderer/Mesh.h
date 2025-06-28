@@ -42,6 +42,7 @@ namespace ProEngine
 
         uint32_t m_VertexCount = 0;
         uint32_t m_IndexCount = 0;
+        static constexpr int PI = 3.14159265359f;
     };
 
     // A model class to hold multiple meshes

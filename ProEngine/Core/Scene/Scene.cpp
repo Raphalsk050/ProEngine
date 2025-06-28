@@ -11,7 +11,7 @@ namespace ProEngine
         entt::entity e = registry_.create();
         EntityHandle handle{e, this};
         auto* tc = &registry_.emplace<TransformComponent>(e);
-        tc->id = static_cast<uint>(e);
+        tc->id = static_cast<uint32_t>(e);
         registry_.emplace<TagComponent>(e, TagComponent{name});
         registry_.emplace<InteractableComponent>(e);
         return handle;
