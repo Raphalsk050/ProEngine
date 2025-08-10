@@ -1,0 +1,3 @@
+[submodule "ProEngine/ThirdParty/assimp"]
+	path = ProEngine/ThirdParty/assimp
+	url = https://github.com/assimp/assimp.git

@@ -11,6 +11,7 @@
 #include "Core/Camera/Camera3D.h"
 #include "Core/Renderer/Material.h"
 #include "Core/Renderer/Mesh.h"
+using namespace glm;
 
 namespace ProEngine
 {

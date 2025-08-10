@@ -55,7 +55,7 @@ namespace ProEngine
     {
         std::string Name;
         ShaderDataType Type;
-        uint32_t Size;
+        glm::uint32_t Size;
         size_t Offset;
         bool Normalized;
 

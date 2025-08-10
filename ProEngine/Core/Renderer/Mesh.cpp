@@ -15,6 +15,11 @@
 
 #include "VertexArray.h"
 
+#if WIN32
+#include <corecrt_math_defines.h>
+#endif
+
+
 namespace ProEngine {
 
 Mesh::Mesh() {
