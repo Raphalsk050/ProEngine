@@ -354,6 +354,7 @@ if (PROENGINE_ENABLE_EDITOR)
             Entt
             glm
             PEScene
+            PEApplication
     )
     target_include_directories(PEEditor PUBLIC
             ${imgui_DIR}

@@ -44,11 +44,13 @@ namespace ProEngine
             int ui_id = rand();
             for (auto const& [id, drawer] : _drawers)
             {
+
                 // does this entity actually have T?
                 if (reg.storage(id)->contains(e))
                 {
                     // fetch the raw pointer
                     void* ptr = _getters.at(id)(reg, e);
+                    if (ptr == nullptr) return;
                     // draw UI for it
                     ImGui::Separator();
                     ImGui::Text("%s", _names.at(id).c_str());

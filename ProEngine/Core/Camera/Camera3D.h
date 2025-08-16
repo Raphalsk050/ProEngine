@@ -59,6 +59,7 @@ public:
     float GetFarClip() const { return m_FarClip; }
     float GetAspectRatio() const { return m_AspectRatio; }
     float GetFOV() const { return m_FOV; }
+    float* GetFOV() { return &m_FOV; }
 
     // Debug functions
     void DebugFrustum() const;

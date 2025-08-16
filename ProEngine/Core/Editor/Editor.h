@@ -2,6 +2,7 @@
 #include <functional>
 #include <entt.hpp>
 
+#include "Core/Application/Application.h"
 #include "Core/Scene/Components.h"
 #include "Core/Editor/Frame/Hierarchy/EntityProperties/EditorPropertiesFactory.h"
 #include "Frame/Hierarchy/EntityProperties/EditorVectorProperties.h"
@@ -51,7 +52,8 @@ namespace ProEngine
                 editor_ = new Editor();
             }
 
-            properties_factory.registerDrawer<TransformComponent>("Transform", [](void* ptr){
+            properties_factory.registerDrawer<TransformComponent>("Transform", [](void* ptr)
+            {
                 auto& tc = *static_cast<TransformComponent*>(ptr);
                 Vector3Field::RenderField(&tc.position, tc.id);
                 Vector3Field::RenderField(&tc.rotation, tc.id + 3);
@@ -59,7 +61,8 @@ namespace ProEngine
                 ImGui::Separator();
             });
 
-            properties_factory.registerDrawer<TagComponent>("Tag", [](void* ptr){
+            properties_factory.registerDrawer<TagComponent>("Tag", [](void* ptr)
+            {
                 auto& tc = *static_cast<TagComponent*>(ptr);
                 ImGui::AlignTextToFramePadding();
                 ImGui::Text("Tag: ");
@@ -67,21 +70,35 @@ namespace ProEngine
                 ImGui::Text(tc.tag.c_str());
             });
 
-            properties_factory.registerDrawer<RendererComponent>("Renderer Component", [](void* ptr){
+            properties_factory.registerDrawer<CameraComponent>("Camera", [](void* ptr)
+            {
+                auto& cc = *static_cast<CameraComponent*>(ptr);
+
+                float* fov = cc.camera.GetFOV();
+                ImGui::AlignTextToFramePadding();
+                ImGui::Text("Camera: ");
+                ImGui::SameLine();
+                ImGui::InputFloat("Fov: ", fov);
+                auto a = Application::Get().GetActiveScene();
+                cc.camera.SetFov(*fov);
+            });
+
+            properties_factory.registerDrawer<RendererComponent>("Renderer Component", [](void* ptr)
+            {
                 auto& rc = *static_cast<RendererComponent*>(ptr);
 
 
-                ImGui::Checkbox("##depth_test",&rc.depth_test);
+                ImGui::Checkbox("##depth_test", &rc.depth_test);
                 ImGui::AlignTextToFramePadding();
                 ImGui::SameLine();
                 ImGui::Text("Depth Test");
 
-                ImGui::Checkbox("##culling",&rc.culling);
+                ImGui::Checkbox("##culling", &rc.culling);
                 ImGui::AlignTextToFramePadding();
                 ImGui::SameLine();
                 ImGui::Text("Culling");
 
-                ImGui::Checkbox("##double_sided",&rc.double_sided);
+                ImGui::Checkbox("##double_sided", &rc.double_sided);
                 ImGui::AlignTextToFramePadding();
                 ImGui::SameLine();
                 ImGui::Text("Double Sided");
