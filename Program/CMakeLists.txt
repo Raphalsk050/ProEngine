@@ -21,6 +21,11 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
     set_property(TARGET SampleApp PROPERTY CXX_STANDARD 20)
 endif()
 
+
+set_property(TARGET SampleApp
+  PROPERTY VS_DEBUGGER_WORKING_DIRECTORY
+  "$<TARGET_FILE_DIR:SampleApp>")
+
 add_custom_command(TARGET SampleApp POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/ProEngine/Assets
