@@ -11,21 +11,13 @@
 #include "Core/Scene/Scene.h"
 #include "Core/Window/GenericGLFWWindow.h"
 
-namespace ProEngine
-{
-    class MainEditorInterface;
-}
-
-namespace ProEngine
-{
-    class FpsInspector;
-}
-
 using namespace std;
 
 namespace ProEngine
 {
     class Console;
+    class MainEditorInterface;
+    class FpsInspector;
 
     struct ApplicationCommandLineArgs
     {
